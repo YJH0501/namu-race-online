@@ -14,8 +14,8 @@
     "check": "node --check src/main-online.cjs && node --check src/hud-preload-online.cjs && node --check src/wiki-preload.cjs && node --check src/renderer-online.js && node --test test/routes.test.mjs test/korea-date.test.mjs",
     "server:dev": "wrangler dev --config server/wrangler-final-v2.jsonc",
     "server:deploy": "wrangler deploy --config server/wrangler-final-v2.jsonc",
-    "dist:win": "electron-builder --win portable --x64",
-    "dist:mac": "electron-builder --mac dmg --universal"
+    "dist:win": "electron-builder --win portable --x64 --publish never",
+    "dist:mac": "electron-builder --mac dmg --universal --publish never"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20260902.1",
