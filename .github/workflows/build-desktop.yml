@@ -42,9 +42,9 @@ jobs:
           MOUNT_PATH="$RUNNER_TEMP/namu-race-mount"
           mkdir -p "$MOUNT_PATH"
           hdiutil attach "$DMG_PATH" -nobrowse -readonly -mountpoint "$MOUNT_PATH"
-          APP_PID=''
+          TEST_APP=''
           cleanup() {
-            if [ -n "$APP_PID" ]; then kill "$APP_PID" 2>/dev/null || true; fi
+            if [ -n "$TEST_APP" ]; then pkill -f "$TEST_APP/Contents/MacOS" 2>/dev/null || true; fi
             hdiutil detach "$MOUNT_PATH" >/dev/null 2>&1 || true
           }
           trap cleanup EXIT
@@ -53,10 +53,13 @@ jobs:
           EXECUTABLE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Contents/Info.plist")"
           EXECUTABLE_PATH="$APP_PATH/Contents/MacOS/$EXECUTABLE_NAME"
           lipo "$EXECUTABLE_PATH" -verify_arch x86_64 arm64
+          codesign --verify --deep --strict --verbose=2 "$APP_PATH"
           npx asar list "$APP_PATH/Contents/Resources/app.asar" >"$RUNNER_TEMP/namu-race-asar.txt"
           grep -q 'server-url.txt' "$RUNNER_TEMP/namu-race-asar.txt"
-          ELECTRON_ENABLE_LOGGING=1 "$EXECUTABLE_PATH" --remote-debugging-port=9225 --user-data-dir="$RUNNER_TEMP/namu-race-profile" >"$RUNNER_TEMP/namu-race-app.log" 2>&1 &
-          APP_PID=$!
+          TEST_APP="$RUNNER_TEMP/NamuRaceOnline.app"
+          ditto "$APP_PATH" "$TEST_APP"
+          xattr -cr "$TEST_APP"
+          open -n "$TEST_APP" --stdout "$RUNNER_TEMP/namu-race-app.log" --stderr "$RUNNER_TEMP/namu-race-app.log" --args --remote-debugging-port=9225 --user-data-dir="$RUNNER_TEMP/namu-race-profile"
           READY='false'
           for attempt in {1..30}; do
             if curl --fail --silent http://127.0.0.1:9225/json/list >/dev/null; then READY='true'; break; fi
