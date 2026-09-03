@@ -32,9 +32,11 @@ jobs:
           NAMU_RACE_SERVER_URL: ${{ vars.NAMU_RACE_SERVER_URL }}
         run: node -e "require('node:fs').writeFileSync('server-url.txt', process.env.NAMU_RACE_SERVER_URL || 'http://127.0.0.1:8787')"
       - run: ${{ matrix.command }}
-      - name: Verify and run macOS app
+      - name: Verify macOS package and online play
         if: runner.os == 'macOS'
         shell: bash
+        env:
+          NAMU_RACE_TEST_URL: ${{ vars.NAMU_RACE_SERVER_URL }}
         run: |
           set -euo pipefail
           DMG_PATH="$(find release -maxdepth 1 -name '*.dmg' -print -quit)"
@@ -42,9 +44,7 @@ jobs:
           MOUNT_PATH="$RUNNER_TEMP/namu-race-mount"
           mkdir -p "$MOUNT_PATH"
           hdiutil attach "$DMG_PATH" -nobrowse -readonly -mountpoint "$MOUNT_PATH"
-          TEST_APP=''
           cleanup() {
-            if [ -n "$TEST_APP" ]; then pkill -f "$TEST_APP/Contents/MacOS" 2>/dev/null || true; fi
             hdiutil detach "$MOUNT_PATH" >/dev/null 2>&1 || true
           }
           trap cleanup EXIT
@@ -56,20 +56,8 @@ jobs:
           codesign --verify --deep --strict --verbose=2 "$APP_PATH"
           npx asar list "$APP_PATH/Contents/Resources/app.asar" >"$RUNNER_TEMP/namu-race-asar.txt"
           grep -q 'server-url.txt' "$RUNNER_TEMP/namu-race-asar.txt"
-          TEST_APP="$RUNNER_TEMP/NamuRaceOnline.app"
-          ditto "$APP_PATH" "$TEST_APP"
-          xattr -cr "$TEST_APP"
-          open -n "$TEST_APP" --stdout "$RUNNER_TEMP/namu-race-app.log" --stderr "$RUNNER_TEMP/namu-race-app.log" --args --remote-debugging-port=9225 --user-data-dir="$RUNNER_TEMP/namu-race-profile"
-          READY='false'
-          for attempt in {1..30}; do
-            if curl --fail --silent http://127.0.0.1:9225/json/list >/dev/null; then READY='true'; break; fi
-            sleep 1
-          done
-          if [ "$READY" != 'true' ]; then
-            cat "$RUNNER_TEMP/namu-race-app.log"
-            exit 1
-          fi
-          NAMU_RACE_DEBUG_ORIGIN=http://127.0.0.1:9225 node test/e2e-electron.mjs
+          node test/integration-modes.mjs
+          node test/integration-online.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: namu-race-${{ matrix.artifact }}
