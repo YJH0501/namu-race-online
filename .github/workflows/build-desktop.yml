@@ -31,6 +31,26 @@ jobs:
           NAMU_RACE_SERVER_URL: ${{ vars.NAMU_RACE_SERVER_URL }}
         run: node -e "require('node:fs').writeFileSync('server-url.txt', process.env.NAMU_RACE_SERVER_URL || 'http://127.0.0.1:8787')"
       - run: ${{ matrix.command }}
+      - name: Verify and run macOS app
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_PATH="$(find release/mac-universal -maxdepth 1 -name '*.app' -print -quit)"
+          test -n "$APP_PATH"
+          EXECUTABLE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Contents/Info.plist")"
+          EXECUTABLE_PATH="$APP_PATH/Contents/MacOS/$EXECUTABLE_NAME"
+          lipo -verify_arch x86_64 arm64 "$EXECUTABLE_PATH"
+          npx asar list "$APP_PATH/Contents/Resources/app.asar" | grep -q 'server-url.txt'
+          ELECTRON_ENABLE_LOGGING=1 "$EXECUTABLE_PATH" --remote-debugging-port=9225 --user-data-dir="$RUNNER_TEMP/namu-race-profile" >"$RUNNER_TEMP/namu-race-app.log" 2>&1 &
+          APP_PID=$!
+          cleanup() { kill "$APP_PID" 2>/dev/null || true; }
+          trap cleanup EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:9225/json/list >/dev/null; then break; fi
+            sleep 1
+          done
+          NAMU_RACE_DEBUG_ORIGIN=http://127.0.0.1:9225 node test/e2e-electron.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: namu-race-${{ matrix.artifact }}
