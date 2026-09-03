@@ -52,7 +52,7 @@ jobs:
           test -n "$APP_PATH"
           EXECUTABLE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Contents/Info.plist")"
           EXECUTABLE_PATH="$APP_PATH/Contents/MacOS/$EXECUTABLE_NAME"
-          lipo -verify_arch x86_64 arm64 "$EXECUTABLE_PATH"
+          lipo "$EXECUTABLE_PATH" -verify_arch x86_64 arm64
           npx asar list "$APP_PATH/Contents/Resources/app.asar" >"$RUNNER_TEMP/namu-race-asar.txt"
           grep -q 'server-url.txt' "$RUNNER_TEMP/namu-race-asar.txt"
           ELECTRON_ENABLE_LOGGING=1 "$EXECUTABLE_PATH" --remote-debugging-port=9225 --user-data-dir="$RUNNER_TEMP/namu-race-profile" >"$RUNNER_TEMP/namu-race-app.log" 2>&1 &
