@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: windows-latest
@@ -36,16 +37,26 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          APP_PATH="$(find release/mac-universal -maxdepth 1 -name '*.app' -print -quit)"
+          DMG_PATH="$(find release -maxdepth 1 -name '*.dmg' -print -quit)"
+          test -n "$DMG_PATH"
+          MOUNT_PATH="$RUNNER_TEMP/namu-race-mount"
+          mkdir -p "$MOUNT_PATH"
+          hdiutil attach "$DMG_PATH" -nobrowse -readonly -mountpoint "$MOUNT_PATH"
+          APP_PID=''
+          cleanup() {
+            if [ -n "$APP_PID" ]; then kill "$APP_PID" 2>/dev/null || true; fi
+            hdiutil detach "$MOUNT_PATH" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+          APP_PATH="$(find "$MOUNT_PATH" -maxdepth 1 -name '*.app' -print -quit)"
           test -n "$APP_PATH"
           EXECUTABLE_NAME="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Contents/Info.plist")"
           EXECUTABLE_PATH="$APP_PATH/Contents/MacOS/$EXECUTABLE_NAME"
           lipo -verify_arch x86_64 arm64 "$EXECUTABLE_PATH"
-          npx asar list "$APP_PATH/Contents/Resources/app.asar" | grep -q 'server-url.txt'
+          npx asar list "$APP_PATH/Contents/Resources/app.asar" >"$RUNNER_TEMP/namu-race-asar.txt"
+          grep -q 'server-url.txt' "$RUNNER_TEMP/namu-race-asar.txt"
           ELECTRON_ENABLE_LOGGING=1 "$EXECUTABLE_PATH" --remote-debugging-port=9225 --user-data-dir="$RUNNER_TEMP/namu-race-profile" >"$RUNNER_TEMP/namu-race-app.log" 2>&1 &
           APP_PID=$!
-          cleanup() { kill "$APP_PID" 2>/dev/null || true; }
-          trap cleanup EXIT
           for attempt in {1..30}; do
             if curl --fail --silent http://127.0.0.1:9225/json/list >/dev/null; then break; fi
             sleep 1
