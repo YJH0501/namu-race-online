@@ -54,6 +54,8 @@ jobs:
           EXECUTABLE_PATH="$APP_PATH/Contents/MacOS/$EXECUTABLE_NAME"
           lipo "$EXECUTABLE_PATH" -verify_arch x86_64 arm64
           codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+          ELECTRON_VERSION="$(ELECTRON_RUN_AS_NODE=1 "$EXECUTABLE_PATH" -e "process.stdout.write(process.versions.electron)")"
+          test "$ELECTRON_VERSION" = '43.5.1'
           npx asar list "$APP_PATH/Contents/Resources/app.asar" >"$RUNNER_TEMP/namu-race-asar.txt"
           grep -q 'server-url.txt' "$RUNNER_TEMP/namu-race-asar.txt"
           node test/integration-modes.mjs
