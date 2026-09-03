@@ -57,10 +57,15 @@ jobs:
           grep -q 'server-url.txt' "$RUNNER_TEMP/namu-race-asar.txt"
           ELECTRON_ENABLE_LOGGING=1 "$EXECUTABLE_PATH" --remote-debugging-port=9225 --user-data-dir="$RUNNER_TEMP/namu-race-profile" >"$RUNNER_TEMP/namu-race-app.log" 2>&1 &
           APP_PID=$!
+          READY='false'
           for attempt in {1..30}; do
-            if curl --fail --silent http://127.0.0.1:9225/json/list >/dev/null; then break; fi
+            if curl --fail --silent http://127.0.0.1:9225/json/list >/dev/null; then READY='true'; break; fi
             sleep 1
           done
+          if [ "$READY" != 'true' ]; then
+            cat "$RUNNER_TEMP/namu-race-app.log"
+            exit 1
+          fi
           NAMU_RACE_DEBUG_ORIGIN=http://127.0.0.1:9225 node test/e2e-electron.mjs
       - uses: actions/upload-artifact@v4
         with:
