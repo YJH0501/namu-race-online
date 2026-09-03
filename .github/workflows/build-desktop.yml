@@ -1,0 +1,37 @@
+name: Build desktop apps
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            command: npm run dist:win
+            artifact: windows
+            artifact_path: release/*.exe
+          - os: macos-latest
+            command: npm run dist:mac
+            artifact: macos-universal
+            artifact_path: release/*.dmg
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Configure online server
+        env:
+          NAMU_RACE_SERVER_URL: ${{ vars.NAMU_RACE_SERVER_URL }}
+        run: node -e "require('node:fs').writeFileSync('server-url.txt', process.env.NAMU_RACE_SERVER_URL || 'http://127.0.0.1:8787')"
+      - run: ${{ matrix.command }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: namu-race-${{ matrix.artifact }}
+          path: ${{ matrix.artifact_path }}

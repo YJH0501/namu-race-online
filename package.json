@@ -1,0 +1,49 @@
+{
+  "name": "namu-race-online",
+  "version": "0.3.0",
+  "description": "Windows와 macOS에서 함께 플레이하는 온라인 나무위키 링크 레이스",
+  "main": "src/main-online.cjs",
+  "author": "Namu Race",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "check": "node --check src/main-online.cjs && node --check src/hud-preload-online.cjs && node --check src/wiki-preload.cjs && node --check src/renderer-online.js && node --test test/routes.test.mjs test/korea-date.test.mjs",
+    "server:dev": "wrangler dev --config server/wrangler-final-v2.jsonc",
+    "server:deploy": "wrangler deploy --config server/wrangler-final-v2.jsonc",
+    "dist:win": "electron-builder --win portable --x64",
+    "dist:mac": "electron-builder --mac dmg --universal"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260902.1",
+    "electron": "44.1.1",
+    "electron-builder": "26.15.3",
+    "typescript": "5.9.3",
+    "wrangler": "4.128.0"
+  },
+  "build": {
+    "appId": "online.namurace.desktop",
+    "productName": "나무레이스 온라인",
+    "asar": true,
+    "files": [
+      "src/**/*",
+      "package.json",
+      "server-url.txt"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": [{ "target": "portable", "arch": ["x64"] }],
+      "artifactName": "NamuRace-online-${version}-windows.${ext}"
+    },
+    "mac": {
+      "target": [{ "target": "dmg", "arch": ["universal"] }],
+      "category": "public.app-category.games",
+      "artifactName": "NamuRace-online-${version}-mac-${arch}.${ext}"
+    }
+  }
+}
