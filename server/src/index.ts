@@ -1,6 +1,6 @@
 import { DurableObject } from 'cloudflare:workers';
 // @ts-expect-error Shared runtime module intentionally stays plain ESM for Node tests.
-import { cleanTitle, customRoute, dailyRoute, randomRoute, utcDateKey } from '../../shared/routes.mjs';
+import { WORD_POOL, cleanTitle, customRoute, dailyRoute, randomRoute, utcDateKey } from '../../shared/routes.mjs';
 
 interface Env {
   RACE_ROOMS: DurableObjectNamespace<RaceRoom>;
@@ -111,11 +111,21 @@ const RANDOM_SEARCH_TOKENS = [
 
 const recentRandomTitles: string[] = [];
 const RECENT_RANDOM_LIMIT = 120;
+const ARTICLE_PROXY_ORIGIN = 'https://namu-race.yangkun050178.chatgpt.site';
 
 function randomIndex(length: number) {
   if (length <= 1) return 0;
   const value = crypto.getRandomValues(new Uint32Array(1))[0];
   return value % length;
+}
+
+function shuffled<T>(items: readonly T[]) {
+  const result = [...items];
+  for (let index = result.length - 1; index > 0; index -= 1) {
+    const swapIndex = randomIndex(index + 1);
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+  }
+  return result;
 }
 
 function isPlayableRandomTitle(title: string) {
@@ -180,8 +190,54 @@ async function fetchRandomCandidatePage(path: string) {
   return titlesFromNamuWikiHtml(await response.text());
 }
 
+function decodeHtmlAttribute(value: string) {
+  return value
+    .replace(/&#(\d+);/g, (_match, code: string) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_match, code: string) => String.fromCodePoint(Number.parseInt(code, 16)))
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'")
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&amp;', '&');
+}
+
+function titlesFromArticleProxyHtml(html: string) {
+  const titles: string[] = [];
+  const seen = new Set<string>();
+  for (const match of html.matchAll(/data-namu-title="([^"]+)"/gi)) {
+    const title = cleanTitle(decodeHtmlAttribute(match[1]));
+    if (!isPlayableRandomTitle(title) || seen.has(title)) continue;
+    seen.add(title);
+    titles.push(title);
+  }
+  return titles;
+}
+
+async function fetchArticleProxyCandidates(seedTitle: string) {
+  const url = new URL('/api/article', ARTICLE_PROXY_ORIGIN);
+  url.searchParams.set('title', seedTitle);
+  url.searchParams.set('namuRaceNonce', crypto.randomUUID());
+  const response = await fetch(url, {
+    headers: {
+      Accept: 'text/html',
+      'Cache-Control': 'no-cache',
+    },
+  });
+  if (!response.ok) return [];
+  return titlesFromArticleProxyHtml(await response.text());
+}
+
 async function fallbackNamuWikiCandidates() {
-  const shuffledSources = [...RANDOM_SOURCE_PAGES].sort(() => randomIndex(3) - 1);
+  const proxySeeds = shuffled(WORD_POOL as readonly string[]).slice(0, 3);
+  const proxyResults = await Promise.allSettled(
+    proxySeeds.map((title) => fetchArticleProxyCandidates(title)),
+  );
+  const proxyTitles = [...new Set(
+    proxyResults.flatMap((result) => result.status === 'fulfilled' ? result.value : []),
+  )];
+  if (proxyTitles.length >= 2) return proxyTitles;
+
+  const shuffledSources = shuffled(RANDOM_SOURCE_PAGES);
   const token = RANDOM_SEARCH_TOKENS[randomIndex(RANDOM_SEARCH_TOKENS.length)];
   const paths = [
     ...shuffledSources.slice(0, 3),
