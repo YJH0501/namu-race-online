@@ -95,30 +95,140 @@ function randomTitleFromLocation(location: string | null) {
   }
 }
 
-async function fetchRandomNamuWikiTitle() {
-  const response = await fetch('https://namu.wiki/random', {
+const RANDOM_SOURCE_PAGES = [
+  '/LongestPages',
+  '/ShortestPages',
+  '/OrphanedPages',
+  '/UncategorizedPages',
+] as const;
+
+const RANDOM_SEARCH_TOKENS = [
+  '가', '강', '경', '고', '구', '기', '김', '나', '대', '도', '동', '라', '마', '문', '박', '방', '배', '부',
+  '사', '산', '새', '서', '성', '세', '소', '수', '신', '아', '양', '어', '역', '영', '오', '우', '원',
+  '유', '이', '임', '자', '장', '전', '정', '조', '주', '중', '지', '차', '천', '최', '카', '태', '하', '한',
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'W', 'X', '0', '1', '2',
+] as const;
+
+const recentRandomTitles: string[] = [];
+const RECENT_RANDOM_LIMIT = 120;
+
+function randomIndex(length: number) {
+  if (length <= 1) return 0;
+  const value = crypto.getRandomValues(new Uint32Array(1))[0];
+  return value % length;
+}
+
+function isPlayableRandomTitle(title: string) {
+  return Boolean(title) &&
+    title.length <= 160 &&
+    !/^(?:파일|분류|틀|사용자|나무위키|특수기능|토론|휴지통|미디어위키):/.test(title);
+}
+
+function rememberRandomTitles(titles: string[]) {
+  for (const title of titles) {
+    const previousIndex = recentRandomTitles.indexOf(title);
+    if (previousIndex >= 0) recentRandomTitles.splice(previousIndex, 1);
+    recentRandomTitles.push(title);
+  }
+  if (recentRandomTitles.length > RECENT_RANDOM_LIMIT) {
+    recentRandomTitles.splice(0, recentRandomTitles.length - RECENT_RANDOM_LIMIT);
+  }
+}
+
+function namuWikiRequest(path: string) {
+  const url = new URL(path, 'https://namu.wiki');
+  url.searchParams.set('namuRaceNonce', crypto.randomUUID());
+  return fetch(url, {
     redirect: 'manual',
     headers: {
       Accept: 'text/html',
       'Accept-Language': 'ko-KR,ko;q=0.9',
-      'User-Agent': 'Mozilla/5.0 (compatible; NamuRace/1.0)',
+      'Cache-Control': 'no-cache',
+      'User-Agent': 'Mozilla/5.0 (compatible; NamuRace/1.1)',
     },
   });
-  return randomTitleFromLocation(response.headers.get('location')) || randomTitleFromLocation(response.url);
+}
+
+async function fetchRandomNamuWikiTitle() {
+  const response = await namuWikiRequest('/random');
+  if (response.status < 300 || response.status >= 400) return '';
+  const title = randomTitleFromLocation(response.headers.get('location')) || randomTitleFromLocation(response.url);
+  return isPlayableRandomTitle(title) ? title : '';
+}
+
+function titlesFromNamuWikiHtml(html: string) {
+  const titles: string[] = [];
+  const seen = new Set<string>();
+  const linkPattern = /href=["']\/w\/([^"'?#]+)(?:[?#][^"']*)?["']/gi;
+  for (const match of html.matchAll(linkPattern)) {
+    let title = '';
+    try {
+      title = cleanTitle(decodeURIComponent(match[1]));
+    } catch {
+      continue;
+    }
+    if (!isPlayableRandomTitle(title) || seen.has(title)) continue;
+    seen.add(title);
+    titles.push(title);
+  }
+  return titles;
+}
+
+async function fetchRandomCandidatePage(path: string) {
+  const response = await namuWikiRequest(path);
+  if (!response.ok) return [];
+  return titlesFromNamuWikiHtml(await response.text());
+}
+
+async function fallbackNamuWikiCandidates() {
+  const shuffledSources = [...RANDOM_SOURCE_PAGES].sort(() => randomIndex(3) - 1);
+  const token = RANDOM_SEARCH_TOKENS[randomIndex(RANDOM_SEARCH_TOKENS.length)];
+  const paths = [
+    ...shuffledSources.slice(0, 3),
+    `/Search?q=${encodeURIComponent(token)}`,
+  ];
+  const results = await Promise.allSettled(paths.map((path) => fetchRandomCandidatePage(path)));
+  const titles = results.flatMap((result) => result.status === 'fulfilled' ? result.value : []);
+  return [...new Set(titles)];
+}
+
+function routeFromCandidates(candidates: string[]) {
+  const recent = new Set(recentRandomTitles);
+  const fresh = candidates.filter((title) => !recent.has(title));
+  const pool = fresh.length >= 2 ? fresh : candidates;
+  if (pool.length < 2) return null;
+  const firstIndex = randomIndex(pool.length);
+  let secondIndex = randomIndex(pool.length - 1);
+  if (secondIndex >= firstIndex) secondIndex += 1;
+  const startTitle = pool[firstIndex];
+  const goalTitle = pool[secondIndex];
+  rememberRandomTitles([startTitle, goalTitle]);
+  return { mode: 'random' as const, dateKey: null, startTitle, goalTitle };
 }
 
 async function randomNamuWikiRoute() {
-  const titles: string[] = [];
-  for (let attempt = 0; attempt < 6 && titles.length < 2; attempt += 1) {
-    try {
-      const title = await fetchRandomNamuWikiTitle();
-      if (title && !titles.includes(title)) titles.push(title);
-    } catch {
-      // The local word pool keeps room creation available during an upstream outage.
-    }
+  const recent = new Set(recentRandomTitles);
+  const attempts = await Promise.allSettled(
+    Array.from({ length: 6 }, () => fetchRandomNamuWikiTitle()),
+  );
+  const directTitles = [...new Set(
+    attempts
+      .flatMap((result) => result.status === 'fulfilled' ? [result.value] : [])
+      .filter((title) => title && !recent.has(title)),
+  )];
+  const directRoute = routeFromCandidates(directTitles);
+  if (directRoute) return directRoute;
+
+  try {
+    const discoveredRoute = routeFromCandidates(await fallbackNamuWikiCandidates());
+    if (discoveredRoute) return discoveredRoute;
+  } catch {
+    // Keep room creation available even if every live NamuWiki source is unavailable.
   }
-  if (titles.length < 2) return randomRoute();
-  return { mode: 'random' as const, dateKey: null, startTitle: titles[0], goalTitle: titles[1] };
+
+  const emergencyRoute = randomRoute();
+  rememberRandomTitles([emergencyRoute.startTitle, emergencyRoute.goalTitle]);
+  return emergencyRoute;
 }
 
 function publicRoom(room: Room, viewerPlayerId?: string | null) {
