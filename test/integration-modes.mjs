@@ -20,7 +20,9 @@ assert.equal(daily.dateKey, koreaDateKey());
 
 const random = await create({ mode: 'random' });
 assert.equal(random.mode, 'random');
-assert.notEqual(random.startTitle, random.goalTitle);
+assert.equal(random.routeHidden, true);
+assert.equal(random.startTitle, null);
+assert.equal(random.goalTitle, null);
 
 const custom = await create({ mode: 'custom', startTitle: ' 고양이 ', goalTitle: '우주_탐사' });
 assert.equal(custom.mode, 'custom');
@@ -30,6 +32,6 @@ assert.equal(custom.goalTitle, '우주 탐사');
 console.log(JSON.stringify({
   ok: true,
   daily: `${daily.startTitle} → ${daily.goalTitle}`,
-  random: `${random.startTitle} → ${random.goalTitle}`,
+  random: '시작 시 공개',
   custom: `${custom.startTitle} → ${custom.goalTitle}`,
 }));
