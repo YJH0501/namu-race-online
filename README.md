@@ -57,7 +57,7 @@ npm run dist:win
 npm run dist:mac
 ```
 
-Windows 결과는 `release/NamuRace-online-0.3.3-windows.exe`입니다. macOS DMG는 포함된 GitHub Actions 워크플로에서 Intel Mac과 Apple Silicon Mac을 모두 지원하는 universal 앱으로 빌드합니다.
+Windows 결과는 `release/NamuRace-online-0.3.4-windows.exe`입니다. macOS DMG는 포함된 GitHub Actions 워크플로에서 Intel Mac과 Apple Silicon Mac을 모두 지원하는 universal 앱으로 빌드합니다.
 
 현재 macOS 앱은 다른 Mac에서의 테스트를 위해 서명과 Hardened Runtime을 적용하지 않았으며 Apple 공증도 받지 않았습니다. 처음 실행할 때 macOS가 차단하면 **시스템 설정 → 개인정보 보호 및 보안 → 그래도 열기**를 사용합니다. 공개 배포 단계에서는 Apple Developer ID 서명과 공증을 반드시 추가해야 합니다.
 

@@ -21,6 +21,8 @@ type Player = {
   joinedAt: number;
   finishedAt: number | null;
   forfeitedAt: number | null;
+  disconnectedAt?: number | null;
+  lastSeenAt?: number | null;
 };
 
 type Room = {
@@ -35,6 +37,7 @@ type Room = {
   round: number;
   recentRouteTitles?: string[];
   createdAt: number;
+  expiresAt?: number;
   startedAt: number | null;
   players: Player[];
 };
@@ -52,6 +55,10 @@ const jsonHeaders = {
   'Content-Type': 'application/json; charset=utf-8',
   'Cache-Control': 'no-store',
 };
+
+const ROOM_LIFETIME_MS = 6 * 60 * 60 * 1000;
+const DISCONNECT_GRACE_MS = 5_000;
+const PRESENCE_TIMEOUT_MS = 8_000;
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), { status, headers: jsonHeaders });
@@ -134,10 +141,13 @@ async function randomNamuWikiRoute(excludedTitles: string[] = []) {
 function publicRoom(room: Room, viewerPlayerId?: string | null) {
   const viewer = room.players.find((player) => player.id === viewerPlayerId);
   const viewerCanSpectate = Boolean(viewer?.finishedAt || viewer?.forfeitedAt);
-  const revealRoutes = room.status === 'finished';
   const hideRandomRoute = room.mode === 'random' && room.status === 'waiting';
   return {
     code: room.code,
+    hostPlayerId: room.hostPlayerId,
+    ...(viewerPlayerId === room.hostPlayerId
+      ? { hostToken: room.hostToken }
+      : {}),
     mode: room.mode,
     dateKey: room.dateKey,
     status: room.status,
@@ -157,13 +167,17 @@ function publicRoom(room: Room, viewerPlayerId?: string | null) {
         if (b.forfeitedAt) return -1;
         return a.joinedAt - b.joinedAt;
       })
-      .map(({ token: _token, path, currentTitle, ...player }) => {
+      .map(({ token: _token, path, currentTitle, disconnectedAt: _disconnectedAt, lastSeenAt: _lastSeenAt, ...player }) => {
         const canSeePosition =
           room.status === 'finished' || player.id === viewerPlayerId || viewerCanSpectate;
+        const canSeePath =
+          room.status === 'finished' ||
+          (viewerCanSpectate &&
+            (player.id === viewerPlayerId || Boolean(player.finishedAt)));
         return {
           ...player,
           currentTitle: canSeePosition ? currentTitle : null,
-          ...(revealRoutes ? { path } : {}),
+          ...(canSeePath ? { path } : {}),
         };
       }),
   };
@@ -283,11 +297,12 @@ export class RaceRoom extends DurableObject<Env> {
       round: 1,
       recentRouteTitles: route.mode === 'random' ? [route.startTitle, route.goalTitle] : [],
       createdAt: now,
+      expiresAt: now + ROOM_LIFETIME_MS,
       startedAt: null,
       players: [player],
     };
     await this.persist();
-    await this.ctx.storage.setAlarm(Date.now() + 6 * 60 * 60 * 1000);
+    await this.scheduleAlarm();
     return json({
       room: publicRoom(this.room, player.id),
       session: { code, playerId: player.id, playerToken: player.token, hostToken: this.room.hostToken },
@@ -320,6 +335,37 @@ export class RaceRoom extends DurableObject<Env> {
 
   private async action(payload: ActionPayload) {
     if (!this.room) return json({ error: '방을 찾을 수 없어요.' }, 404);
+    if (payload.action === 'leave') {
+      const player = this.findPlayer(payload);
+      if (!player) return json({ error: '참가자 정보를 확인할 수 없어요.' }, 401);
+      const wasHost = player.id === this.room.hostPlayerId;
+      this.room.players = this.room.players.filter((item) => item.id !== player.id);
+
+      for (const socket of this.ctx.getWebSockets()) {
+        const attachment = socket.deserializeAttachment() as { playerId?: string } | null;
+        if (attachment?.playerId === player.id) socket.close(1000, '방에서 나갔습니다.');
+      }
+
+      if (this.room.players.length === 0) {
+        await this.ctx.storage.deleteAll();
+        this.room = null;
+        return json({ left: true });
+      }
+
+      if (wasHost) {
+        this.room.hostPlayerId = this.room.players[0].id;
+        this.room.hostToken = crypto.randomUUID();
+      }
+      if (
+        this.room.status === 'racing' &&
+        this.room.players.every((item) => item.finishedAt || item.forfeitedAt)
+      ) {
+        this.room.status = 'finished';
+      }
+      await this.persistAndBroadcast();
+      await this.scheduleAlarm();
+      return json({ left: true });
+    }
     if (payload.action === 'ready') {
       if (this.room.status !== 'waiting') return json({ error: '대기실에서만 준비 상태를 바꿀 수 있어요.' }, 409);
       const player = this.findPlayer(payload);
@@ -408,6 +454,12 @@ export class RaceRoom extends DurableObject<Env> {
     const token = url.searchParams.get('token');
     const player = this.room.players.find((item) => item.id === playerId && item.token === token);
     if (!player) return json({ error: '참가자 정보를 확인할 수 없어요.' }, 401);
+    if (player.disconnectedAt) {
+      player.disconnectedAt = null;
+    }
+    player.lastSeenAt = Date.now();
+    await this.persistAndBroadcast();
+    await this.scheduleAlarm();
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair) as [WebSocket, WebSocket];
     server.serializeAttachment({ playerId: player.id });
@@ -417,17 +469,87 @@ export class RaceRoom extends DurableObject<Env> {
   }
 
   async webSocketMessage(socket: WebSocket, message: string | ArrayBuffer) {
-    if (message === 'ping') socket.send('pong');
+    if (message !== 'ping') return;
+    const attachment = socket.deserializeAttachment() as { playerId?: string } | null;
+    const player = this.room?.players.find((item) => item.id === attachment?.playerId);
+    if (player) {
+      player.lastSeenAt = Date.now();
+      player.disconnectedAt = null;
+      await this.persist();
+      await this.scheduleAlarm();
+    }
+    socket.send('pong');
   }
 
-  async webSocketClose(socket: WebSocket, code: number, reason: string) {
-    socket.close(code, reason);
+  async webSocketClose(socket: WebSocket, _code: number, _reason: string) {
+    await this.markDisconnected(socket);
+  }
+
+  async webSocketError(socket: WebSocket) {
+    await this.markDisconnected(socket);
+  }
+
+  private async markDisconnected(socket: WebSocket) {
+    const attachment = socket.deserializeAttachment() as { playerId?: string } | null;
+    if (!this.room || !attachment?.playerId) return;
+    const hasAnotherSocket = this.ctx.getWebSockets().some((candidate) => {
+      if (candidate === socket) return false;
+      const other = candidate.deserializeAttachment() as { playerId?: string } | null;
+      return other?.playerId === attachment.playerId;
+    });
+    if (hasAnotherSocket) return;
+    const player = this.room.players.find((item) => item.id === attachment.playerId);
+    if (!player) return;
+    player.disconnectedAt = Date.now();
+    await this.persistAndBroadcast();
+    await this.scheduleAlarm();
   }
 
   async alarm() {
-    for (const socket of this.ctx.getWebSockets()) socket.close(1001, '방이 만료되었습니다.');
-    await this.ctx.storage.deleteAll();
-    this.room = null;
+    if (!this.room) return;
+    const now = Date.now();
+    const expiresAt = this.room.expiresAt || this.room.createdAt + ROOM_LIFETIME_MS;
+    if (now >= expiresAt) {
+      for (const socket of this.ctx.getWebSockets()) socket.close(1001, '방이 만료되었습니다.');
+      await this.ctx.storage.deleteAll();
+      this.room = null;
+      return;
+    }
+
+    const leavingIds = new Set(
+      this.room.players
+        .filter(
+          (player) =>
+            (player.disconnectedAt &&
+              player.disconnectedAt + DISCONNECT_GRACE_MS <= now) ||
+            (player.lastSeenAt &&
+              player.lastSeenAt + PRESENCE_TIMEOUT_MS <= now),
+        )
+        .map((player) => player.id),
+    );
+    if (leavingIds.size) {
+      const hostLeft = leavingIds.has(this.room.hostPlayerId);
+      this.room.players = this.room.players.filter(
+        (player) => !leavingIds.has(player.id),
+      );
+      if (!this.room.players.length) {
+        await this.ctx.storage.deleteAll();
+        this.room = null;
+        return;
+      }
+      if (hostLeft) {
+        this.room.hostPlayerId = this.room.players[0].id;
+        this.room.hostToken = crypto.randomUUID();
+      }
+      if (
+        this.room.status === 'racing' &&
+        this.room.players.every((item) => item.finishedAt || item.forfeitedAt)
+      ) {
+        this.room.status = 'finished';
+      }
+      await this.persistAndBroadcast();
+    }
+    await this.scheduleAlarm();
   }
 
   private findPlayer(payload: ActionPayload) {
@@ -449,12 +571,30 @@ export class RaceRoom extends DurableObject<Env> {
     if (this.room) await this.ctx.storage.put('room', this.room);
   }
 
+  private async scheduleAlarm() {
+    if (!this.room) return;
+    const expiresAt = this.room.expiresAt || this.room.createdAt + ROOM_LIFETIME_MS;
+    const disconnectDeadlines = this.room.players
+      .map((player) =>
+        player.disconnectedAt
+          ? player.disconnectedAt + DISCONNECT_GRACE_MS
+          : player.lastSeenAt
+            ? player.lastSeenAt + PRESENCE_TIMEOUT_MS
+            : Number.POSITIVE_INFINITY,
+      );
+    await this.ctx.storage.setAlarm(Math.min(expiresAt, ...disconnectDeadlines));
+  }
+
   private async persistAndBroadcast() {
     await this.persist();
     if (!this.room) return;
     for (const socket of this.ctx.getWebSockets()) {
       try {
         const attachment = socket.deserializeAttachment() as { playerId?: string } | null;
+        if (!this.room.players.some((player) => player.id === attachment?.playerId)) {
+          socket.close(1000, '방에서 나갔습니다.');
+          continue;
+        }
         socket.send(JSON.stringify({ type: 'room', room: publicRoom(this.room, attachment?.playerId) }));
       } catch {
         // Closed sockets are discarded by the runtime.

@@ -11,6 +11,7 @@ const state = {
   customGoal: '',
   customStart: '',
   daily: null,
+  expandedPaths: new Set(),
   joinCode: '',
   mode: 'daily',
   nickname: '',
@@ -24,6 +25,7 @@ const state = {
 
 let socket = null;
 let socketRetry = null;
+let socketHeartbeat = null;
 let pollTimer = null;
 
 function readSession() {
@@ -39,6 +41,24 @@ function readSession() {
 function saveSession(session) {
   state.session = { ...session, serverUrl: state.serverUrl };
   localStorage.setItem(SESSION_KEY, JSON.stringify(state.session));
+}
+
+function applyRoom(room) {
+  const previousRound = state.room?.round;
+  state.room = room;
+  if (previousRound && room?.round && previousRound !== room.round) {
+    state.expandedPaths.clear();
+  }
+  if (!state.session || !room) return;
+
+  if (room.hostPlayerId === state.session.playerId && room.hostToken) {
+    if (state.session.hostToken !== room.hostToken) {
+      saveSession({ ...state.session, hostToken: room.hostToken });
+    }
+  } else if (state.session.hostToken) {
+    const { hostToken: _hostToken, ...session } = state.session;
+    saveSession(session);
+  }
 }
 
 function escapeHtml(value) {
@@ -82,7 +102,7 @@ async function runAction(action) {
   try {
     const data = await action();
     if (data.session) saveSession(data.session);
-    if (data.room) state.room = data.room;
+    if (data.room) applyRoom(data.room);
     connectSocket();
   } catch (error) {
     state.notice = error instanceof Error ? error.message : '잠시 후 다시 시도해 주세요.';
@@ -143,7 +163,7 @@ function playerList(room, racing = false) {
     <div class="${racing ? 'rank-row' : 'player-row'} ${player.id === state.session.playerId ? 'me' : ''}">
       ${racing ? `<span class="rank">${index + 1}</span>` : ''}<span class="avatar">${escapeHtml(player.nickname?.[0] || '?')}</span>
       ${racing ? `<span class="player-detail"><strong>${escapeHtml(player.nickname)}</strong><small>${player.finishedAt ? '목표 도착' : player.forfeitedAt ? '레이스 포기' : player.currentTitle ? escapeHtml(player.currentTitle) : '경로 비공개'}</small></span><span class="clicks ${player.forfeitedAt ? 'forfeited' : ''}">${player.clicks} 클릭${player.finishedAt ? ' 🏁' : player.forfeitedAt ? ' 포기' : ''}</span>` : `<span class="player-name">${escapeHtml(player.nickname)}${player.id === state.session.playerId ? ' <small class="muted">(나)</small>' : ''}</span><span class="status ${player.ready ? 'ready' : ''}">${player.ready ? '준비' : '대기'}</span>`}
-      ${room.status === 'finished' && Array.isArray(player.path) ? `<details class="path-details"><summary>자세히보기 · ${player.path.length - 1}번 이동</summary><div class="path-list">${player.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < player.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div></details>` : ''}
+      ${Array.isArray(player.path) ? `<details class="path-details" data-player-path="${escapeHtml(player.id)}" ${state.expandedPaths.has(player.id) ? 'open' : ''}><summary>자세히보기 · ${player.path.length - 1}번 이동</summary><div class="path-list">${player.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < player.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div></details>` : ''}
     </div>`).join('');
 }
 
@@ -163,7 +183,7 @@ function finishView(room, me) {
   const endAt = me.finishedAt || me.forfeitedAt;
   const settled = room.status === 'finished';
   const host = Boolean(state.session.hostToken);
-  return `<main class="shell"><section class="finish"><article class="card finish-card"><span class="finish-icon ${forfeited ? 'forfeited' : ''}">${forfeited ? '⚑' : '★'}</span><p class="eyebrow">${settled ? 'Final results' : 'Spectating'}</p><h1>${settled ? '최종 결과가 나왔어요' : forfeited ? '이번 레이스를 포기했어요' : '목표 문서에 도착!'}</h1><p class="muted">${settled ? '자세히보기를 열면 각 참가자가 지나온 문서를 순서대로 볼 수 있어요.' : '내 레이스가 끝났으므로 이제 다른 참가자의 현재 문서를 실시간으로 볼 수 있어요.'}</p><div class="finish-stats"><div><strong>${me.clicks}</strong><small>클릭</small></div><div><strong>${formatElapsed(room.startedAt, endAt)}</strong><small>${forfeited ? '진행 시간' : '완주 시간'}</small></div></div><div class="player-list">${playerList(room, true)}</div><div class="result-actions">${settled && host ? `<button class="button" data-action="rematch" ${state.busy ? 'disabled' : ''}>같은 방에서 다시하기</button>` : settled ? '<p class="muted rematch-note">방장이 다시하기를 누르면 같은 방에서 다음 라운드를 준비합니다.</p>' : '<p class="muted rematch-note">남은 참가자들의 이동 상황을 기다리는 중…</p>'}<button class="button secondary" data-action="leave">첫 화면으로</button></div></article></section></main>`;
+  return `<main class="shell"><section class="finish"><article class="card finish-card"><span class="finish-icon ${forfeited ? 'forfeited' : ''}">${forfeited ? '⚑' : '★'}</span><p class="eyebrow">${settled ? 'Final results' : 'Spectating'}</p><h1>${settled ? '최종 결과가 나왔어요' : forfeited ? '이번 레이스를 포기했어요' : '목표 문서에 도착!'}</h1><p class="muted">${settled ? '자세히보기를 열면 각 참가자가 지나온 문서를 순서대로 볼 수 있어요.' : '다른 참가자의 현재 위치와 이미 도착한 참가자의 자세한 경로를 바로 볼 수 있어요.'}</p><div class="finish-stats"><div><strong>${me.clicks}</strong><small>클릭</small></div><div><strong>${formatElapsed(room.startedAt, endAt)}</strong><small>${forfeited ? '진행 시간' : '완주 시간'}</small></div></div><div class="player-list">${playerList(room, true)}</div><div class="result-actions">${settled && host ? `<button class="button" data-action="rematch" ${state.busy ? 'disabled' : ''}>같은 방에서 다시하기</button>` : settled ? '<p class="muted rematch-note">방장이 다시하기를 누르면 같은 방에서 다음 라운드를 준비합니다.</p>' : '<p class="muted rematch-note">남은 참가자들의 이동 상황을 기다리는 중…</p>'}<button class="button secondary" data-action="leave">첫 화면으로</button></div></article></section></main>`;
 }
 
 function render() {
@@ -205,6 +225,8 @@ function updateWikiBounds() {
 
 function closeSocket() {
   window.clearTimeout(socketRetry);
+  window.clearInterval(socketHeartbeat);
+  socketHeartbeat = null;
   if (socket) {
     socket.onclose = null;
     socket.close();
@@ -223,12 +245,19 @@ function connectSocket() {
     url.searchParams.set('playerId', state.session.playerId);
     url.searchParams.set('token', state.session.playerToken);
     socket = new WebSocket(url);
-    socket.onopen = () => { state.connection = 'live'; render(); };
+    socket.onopen = () => {
+      state.connection = 'live';
+      socket.send('ping');
+      socketHeartbeat = window.setInterval(() => {
+        if (socket?.readyState === WebSocket.OPEN) socket.send('ping');
+      }, 2500);
+      render();
+    };
     socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
         if (message.type === 'room' && message.room) {
-          state.room = message.room;
+          applyRoom(message.room);
           state.notice = '';
           render();
         }
@@ -238,6 +267,8 @@ function connectSocket() {
     };
     socket.onerror = () => { state.connection = 'offline'; };
     socket.onclose = () => {
+      window.clearInterval(socketHeartbeat);
+      socketHeartbeat = null;
       state.connection = 'offline';
       render();
       socketRetry = window.setTimeout(connectSocket, 2200);
@@ -258,7 +289,7 @@ async function refreshRoom() {
   try {
     const query = new URLSearchParams({ playerId: state.session.playerId, token: state.session.playerToken });
     const data = await request('GET', `/rooms/${state.session.code}?${query}`);
-    state.room = data.room;
+    applyRoom(data.room);
     render();
   } catch (error) {
     state.notice = error instanceof Error ? error.message : '방 정보를 갱신하지 못했어요.';
@@ -269,6 +300,7 @@ async function refreshRoom() {
 }
 
 function leaveRoom() {
+  const departing = state.session;
   closeSocket();
   window.clearTimeout(pollTimer);
   localStorage.removeItem(SESSION_KEY);
@@ -277,7 +309,23 @@ function leaveRoom() {
   state.notice = '';
   state.restoring = false;
   render();
+  if (departing) {
+    void request('POST', `/rooms/${departing.code}/action`, {
+      action: 'leave',
+      playerId: departing.playerId,
+      playerToken: departing.playerToken,
+    }).catch(() => undefined);
+  }
 }
+
+document.addEventListener('toggle', (event) => {
+  const details = event.target;
+  if (!(details instanceof HTMLDetailsElement)) return;
+  const playerId = details.dataset.playerPath;
+  if (!playerId) return;
+  if (details.open) state.expandedPaths.add(playerId);
+  else state.expandedPaths.delete(playerId);
+}, true);
 
 document.addEventListener('input', (event) => {
   const field = event.target.dataset?.field;
@@ -379,7 +427,7 @@ async function boot() {
     try {
       const query = new URLSearchParams({ playerId: state.session.playerId, token: state.session.playerToken });
       const data = await request('GET', `/rooms/${state.session.code}?${query}`);
-      state.room = data.room;
+      applyRoom(data.room);
     } catch {
       localStorage.removeItem(SESSION_KEY);
       state.session = null;

@@ -23,9 +23,25 @@ function isSamePageAnchor(href) {
   }
 }
 
+function isCategoryPagination(href) {
+  try {
+    const current = new URL(window.location.href);
+    const next = new URL(href, current);
+    const title = decodeURIComponent(current.pathname.slice('/w/'.length));
+    const hasCursor = next.searchParams.has('cfrom') || next.searchParams.has('cuntil');
+    return current.origin === next.origin
+      && current.pathname === next.pathname
+      && current.pathname.startsWith('/w/')
+      && title.startsWith('분류:')
+      && hasCursor;
+  } catch {
+    return false;
+  }
+}
+
 window.addEventListener('click', (event) => {
   const anchor = event.target instanceof Element ? event.target.closest('a[href]') : null;
-  if (!anchor || isSamePageAnchor(anchor.href)) return;
+  if (!anchor || isSamePageAnchor(anchor.href) || isCategoryPagination(anchor.href)) return;
   event.preventDefault();
   event.stopImmediatePropagation();
   ipcRenderer.send('wiki-link-clicked-from-page', anchor.href);
