@@ -1,6 +1,8 @@
 import { DurableObject } from 'cloudflare:workers';
 // @ts-expect-error Shared runtime module intentionally stays plain ESM for Node tests.
-import { WORD_POOL, cleanTitle, customRoute, dailyRoute, randomRoute, utcDateKey } from '../../shared/routes.mjs';
+import { cleanTitle, customRoute, dailyRoute, randomRoute, utcDateKey } from '../../shared/routes.mjs';
+// @ts-expect-error Generated title snapshot intentionally stays plain ESM.
+import { RANDOM_TITLE_POOL } from '../../shared/random-title-pool.mjs';
 
 interface Env {
   RACE_ROOMS: DurableObjectNamespace<RaceRoom>;
@@ -31,6 +33,7 @@ type Room = {
   startTitle: string;
   goalTitle: string;
   round: number;
+  recentRouteTitles?: string[];
   createdAt: number;
   startedAt: number | null;
   players: Player[];
@@ -84,54 +87,13 @@ function makeCode() {
   return Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join('');
 }
 
-function randomTitleFromLocation(location: string | null) {
-  if (!location) return '';
-  try {
-    const url = new URL(location, 'https://namu.wiki');
-    if (url.origin !== 'https://namu.wiki' || !url.pathname.startsWith('/w/')) return '';
-    return cleanTitle(decodeURIComponent(url.pathname.slice(3)));
-  } catch {
-    return '';
-  }
-}
-
-const RANDOM_SOURCE_PAGES = [
-  '/LongestPages',
-  '/ShortestPages',
-  '/OrphanedPages',
-  '/UncategorizedPages',
-] as const;
-
-const RANDOM_SEARCH_TOKENS = [
-  '가', '강', '경', '고', '구', '기', '김', '나', '대', '도', '동', '라', '마', '문', '박', '방', '배', '부',
-  '사', '산', '새', '서', '성', '세', '소', '수', '신', '아', '양', '어', '역', '영', '오', '우', '원',
-  '유', '이', '임', '자', '장', '전', '정', '조', '주', '중', '지', '차', '천', '최', '카', '태', '하', '한',
-  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'W', 'X', '0', '1', '2',
-] as const;
-
 const recentRandomTitles: string[] = [];
-const RECENT_RANDOM_LIMIT = 120;
-const ARTICLE_PROXY_ORIGIN = 'https://namu-race.yangkun050178.chatgpt.site';
+const RECENT_RANDOM_LIMIT = 240;
 
 function randomIndex(length: number) {
   if (length <= 1) return 0;
   const value = crypto.getRandomValues(new Uint32Array(1))[0];
   return value % length;
-}
-
-function shuffled<T>(items: readonly T[]) {
-  const result = [...items];
-  for (let index = result.length - 1; index > 0; index -= 1) {
-    const swapIndex = randomIndex(index + 1);
-    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
-  }
-  return result;
-}
-
-function isPlayableRandomTitle(title: string) {
-  return Boolean(title) &&
-    title.length <= 160 &&
-    !/^(?:파일|분류|틀|사용자|나무위키|특수기능|토론|휴지통|미디어위키):/.test(title);
 }
 
 function rememberRandomTitles(titles: string[]) {
@@ -145,142 +107,24 @@ function rememberRandomTitles(titles: string[]) {
   }
 }
 
-function namuWikiRequest(path: string) {
-  const url = new URL(path, 'https://namu.wiki');
-  url.searchParams.set('namuRaceNonce', crypto.randomUUID());
-  return fetch(url, {
-    redirect: 'manual',
-    headers: {
-      Accept: 'text/html',
-      'Accept-Language': 'ko-KR,ko;q=0.9',
-      'Cache-Control': 'no-cache',
-      'User-Agent': 'Mozilla/5.0 (compatible; NamuRace/1.1)',
-    },
-  });
-}
-
-async function fetchRandomNamuWikiTitle() {
-  const response = await namuWikiRequest('/random');
-  if (response.status < 300 || response.status >= 400) return '';
-  const title = randomTitleFromLocation(response.headers.get('location')) || randomTitleFromLocation(response.url);
-  return isPlayableRandomTitle(title) ? title : '';
-}
-
-function titlesFromNamuWikiHtml(html: string) {
-  const titles: string[] = [];
-  const seen = new Set<string>();
-  const linkPattern = /href=["']\/w\/([^"'?#]+)(?:[?#][^"']*)?["']/gi;
-  for (const match of html.matchAll(linkPattern)) {
-    let title = '';
-    try {
-      title = cleanTitle(decodeURIComponent(match[1]));
-    } catch {
-      continue;
-    }
-    if (!isPlayableRandomTitle(title) || seen.has(title)) continue;
-    seen.add(title);
-    titles.push(title);
-  }
-  return titles;
-}
-
-async function fetchRandomCandidatePage(path: string) {
-  const response = await namuWikiRequest(path);
-  if (!response.ok) return [];
-  return titlesFromNamuWikiHtml(await response.text());
-}
-
-function decodeHtmlAttribute(value: string) {
-  return value
-    .replace(/&#(\d+);/g, (_match, code: string) => String.fromCodePoint(Number(code)))
-    .replace(/&#x([0-9a-f]+);/gi, (_match, code: string) => String.fromCodePoint(Number.parseInt(code, 16)))
-    .replaceAll('&quot;', '"')
-    .replaceAll('&#39;', "'")
-    .replaceAll('&lt;', '<')
-    .replaceAll('&gt;', '>')
-    .replaceAll('&amp;', '&');
-}
-
-function titlesFromArticleProxyHtml(html: string) {
-  const titles: string[] = [];
-  const seen = new Set<string>();
-  for (const match of html.matchAll(/data-namu-title="([^"]+)"/gi)) {
-    const title = cleanTitle(decodeHtmlAttribute(match[1]));
-    if (!isPlayableRandomTitle(title) || seen.has(title)) continue;
-    seen.add(title);
-    titles.push(title);
-  }
-  return titles;
-}
-
-async function fetchArticleProxyCandidates(seedTitle: string) {
-  const url = new URL('/api/article', ARTICLE_PROXY_ORIGIN);
-  url.searchParams.set('title', seedTitle);
-  url.searchParams.set('namuRaceNonce', crypto.randomUUID());
-  const response = await fetch(url, {
-    headers: {
-      Accept: 'text/html',
-      'Cache-Control': 'no-cache',
-    },
-  });
-  if (!response.ok) return [];
-  return titlesFromArticleProxyHtml(await response.text());
-}
-
-async function fallbackNamuWikiCandidates() {
-  const proxySeeds = shuffled(WORD_POOL as readonly string[]).slice(0, 3);
-  const proxyResults = await Promise.allSettled(
-    proxySeeds.map((title) => fetchArticleProxyCandidates(title)),
-  );
-  const proxyTitles = [...new Set(
-    proxyResults.flatMap((result) => result.status === 'fulfilled' ? result.value : []),
-  )];
-  if (proxyTitles.length >= 2) return proxyTitles;
-
-  const shuffledSources = shuffled(RANDOM_SOURCE_PAGES);
-  const token = RANDOM_SEARCH_TOKENS[randomIndex(RANDOM_SEARCH_TOKENS.length)];
-  const paths = [
-    ...shuffledSources.slice(0, 3),
-    `/Search?q=${encodeURIComponent(token)}`,
-  ];
-  const results = await Promise.allSettled(paths.map((path) => fetchRandomCandidatePage(path)));
-  const titles = results.flatMap((result) => result.status === 'fulfilled' ? result.value : []);
-  return [...new Set(titles)];
-}
-
-function routeFromCandidates(candidates: string[]) {
-  const recent = new Set(recentRandomTitles);
-  const fresh = candidates.filter((title) => !recent.has(title));
-  const pool = fresh.length >= 2 ? fresh : candidates;
-  if (pool.length < 2) return null;
-  const firstIndex = randomIndex(pool.length);
-  let secondIndex = randomIndex(pool.length - 1);
+function routeFromCandidates(candidates: readonly string[]) {
+  if (candidates.length < 2) return null;
+  const firstIndex = randomIndex(candidates.length);
+  let secondIndex = randomIndex(candidates.length - 1);
   if (secondIndex >= firstIndex) secondIndex += 1;
-  const startTitle = pool[firstIndex];
-  const goalTitle = pool[secondIndex];
+  const startTitle = candidates[firstIndex];
+  const goalTitle = candidates[secondIndex];
   rememberRandomTitles([startTitle, goalTitle]);
   return { mode: 'random' as const, dateKey: null, startTitle, goalTitle };
 }
 
-async function randomNamuWikiRoute() {
-  const recent = new Set(recentRandomTitles);
-  const attempts = await Promise.allSettled(
-    Array.from({ length: 6 }, () => fetchRandomNamuWikiTitle()),
+async function randomNamuWikiRoute(excludedTitles: string[] = []) {
+  const excluded = new Set([...recentRandomTitles, ...excludedTitles]);
+  const candidates = (RANDOM_TITLE_POOL as readonly string[]).filter(
+    (title) => !excluded.has(title),
   );
-  const directTitles = [...new Set(
-    attempts
-      .flatMap((result) => result.status === 'fulfilled' ? [result.value] : [])
-      .filter((title) => title && !recent.has(title)),
-  )];
-  const directRoute = routeFromCandidates(directTitles);
-  if (directRoute) return directRoute;
-
-  try {
-    const discoveredRoute = routeFromCandidates(await fallbackNamuWikiCandidates());
-    if (discoveredRoute) return discoveredRoute;
-  } catch {
-    // Keep room creation available even if every live NamuWiki source is unavailable.
-  }
+  const snapshotRoute = routeFromCandidates(candidates);
+  if (snapshotRoute) return snapshotRoute;
 
   const emergencyRoute = randomRoute();
   rememberRandomTitles([emergencyRoute.startTitle, emergencyRoute.goalTitle]);
@@ -437,6 +281,7 @@ export class RaceRoom extends DurableObject<Env> {
       startTitle: route.startTitle,
       goalTitle: route.goalTitle,
       round: 1,
+      recentRouteTitles: route.mode === 'random' ? [route.startTitle, route.goalTitle] : [],
       createdAt: now,
       startedAt: null,
       players: [player],
@@ -530,9 +375,14 @@ export class RaceRoom extends DurableObject<Env> {
       if (payload.hostToken !== this.room.hostToken) return json({ error: '방장만 다시 시작할 수 있어요.' }, 403);
       if (this.room.status !== 'finished') return json({ error: '모든 참가자의 결과가 확정된 뒤 다시 할 수 있어요.' }, 409);
       if (this.room.mode === 'random') {
-        const route = await randomNamuWikiRoute();
+        const route = await randomNamuWikiRoute(this.room.recentRouteTitles || []);
         this.room.startTitle = route.startTitle;
         this.room.goalTitle = route.goalTitle;
+        this.room.recentRouteTitles = [
+          ...(this.room.recentRouteTitles || []),
+          route.startTitle,
+          route.goalTitle,
+        ].slice(-80);
       }
       this.room.status = 'waiting';
       this.room.startedAt = null;
