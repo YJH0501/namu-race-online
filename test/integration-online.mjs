@@ -76,6 +76,11 @@ const hostView = await api(
   `/rooms/${code}?playerId=${encodeURIComponent(created.session.playerId)}&token=${encodeURIComponent(created.session.playerToken)}`,
 );
 assert.equal(
+  hostView.room.players.find((player) => player.id === created.session.playerId).currentTitle,
+  '축구',
+  '인증된 참가자에게는 자신의 현재 문서를 보여줘야 합니다.',
+);
+assert.equal(
   hostView.room.players.find((player) => player.id === joined.session.playerId).currentTitle,
   null,
   '레이스 중에는 다른 참가자의 현재 문서를 숨겨야 합니다.',

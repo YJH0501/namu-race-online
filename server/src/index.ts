@@ -211,8 +211,9 @@ export default {
       target.search = url.search;
       return stub.fetch(new Request(target, request));
     }
-    const targetPath = operation === 'room' ? '/room' : `/${operation}`;
-    const response = await stub.fetch(new Request(`https://room${targetPath}`, request));
+    const target = new URL(`https://room${operation === 'room' ? '/room' : `/${operation}`}`);
+    target.search = url.search;
+    const response = await stub.fetch(new Request(target, request));
     return withCors(response);
   },
 } satisfies ExportedHandler<Env>;
