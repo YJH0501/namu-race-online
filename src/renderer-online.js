@@ -108,7 +108,7 @@ function customPanel() {
 }
 
 function randomPanel() {
-  return '<div class="mode-panel"><p><strong>출발과 목표를 서버가 무작위로 선택합니다.</strong><br><span class="muted">방을 만든 후 선택된 두 문서를 확인할 수 있어요.</span></p></div>';
+  return '<div class="mode-panel"><p><strong>나무위키 전체 문서에서 무작위로 선택합니다.</strong><br><span class="muted">출발과 목표는 모두가 준비한 뒤 시작과 동시에 공개돼요.</span></p></div>';
 }
 
 function landingView() {
@@ -132,6 +132,9 @@ function landingView() {
 }
 
 function routeView(room) {
+  if (room.routeHidden) {
+    return '<div class="route hidden-route"><div><small>출발 문서</small><strong>시작 시 공개</strong></div><span class="route-arrow">?</span><div><small>목표 문서</small><strong>시작 시 공개</strong></div></div>';
+  }
   return `<div class="route"><div><small>출발 문서</small><strong>${escapeHtml(room.startTitle)}</strong></div><span class="route-arrow">→</span><div><small>목표 문서</small><strong>${escapeHtml(room.goalTitle)}</strong></div></div>`;
 }
 
@@ -139,7 +142,8 @@ function playerList(room, racing = false) {
   return room.players.map((player, index) => `
     <div class="${racing ? 'rank-row' : 'player-row'} ${player.id === state.session.playerId ? 'me' : ''}">
       ${racing ? `<span class="rank">${index + 1}</span>` : ''}<span class="avatar">${escapeHtml(player.nickname?.[0] || '?')}</span>
-      ${racing ? `<span class="player-detail"><strong>${escapeHtml(player.nickname)}</strong><small>${player.finishedAt ? '목표 도착' : escapeHtml(player.currentTitle || room.startTitle)}</small></span><span class="clicks">${player.clicks} 클릭${player.finishedAt ? ' 🏁' : ''}</span>` : `<span class="player-name">${escapeHtml(player.nickname)}${player.id === state.session.playerId ? ' <small class="muted">(나)</small>' : ''}</span><span class="status ${player.ready ? 'ready' : ''}">${player.ready ? '준비' : '대기'}</span>`}
+      ${racing ? `<span class="player-detail"><strong>${escapeHtml(player.nickname)}</strong><small>${player.finishedAt ? '목표 도착' : player.forfeitedAt ? '레이스 포기' : player.currentTitle ? escapeHtml(player.currentTitle) : '경로 비공개'}</small></span><span class="clicks ${player.forfeitedAt ? 'forfeited' : ''}">${player.clicks} 클릭${player.finishedAt ? ' 🏁' : player.forfeitedAt ? ' 포기' : ''}</span>` : `<span class="player-name">${escapeHtml(player.nickname)}${player.id === state.session.playerId ? ' <small class="muted">(나)</small>' : ''}</span><span class="status ${player.ready ? 'ready' : ''}">${player.ready ? '준비' : '대기'}</span>`}
+      ${room.status === 'finished' && Array.isArray(player.path) ? `<details class="path-details"><summary>자세히보기 · ${player.path.length - 1}번 이동</summary><div class="path-list">${player.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < player.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div></details>` : ''}
     </div>`).join('');
 }
 
@@ -151,11 +155,15 @@ function lobbyView(room) {
 
 function raceView(room, me) {
   const activity = state.notice || (state.wikiLoading ? '나무위키 문서를 불러오는 중…' : '본문 링크만 눌러서 이동하세요.');
-  return `<main class="shell race"><header class="race-top">${brand()}<div class="race-route"><span>${escapeHtml(me.currentTitle)}</span><b class="muted">→</b><span class="goal">${escapeHtml(room.goalTitle)}</span></div><div class="race-meta"><span class="race-note ${state.notice || state.wikiLoading ? 'active' : ''}">${escapeHtml(activity)}</span><div class="metric"><strong data-elapsed>${formatElapsed(room.startedAt)}</strong><small>경과 시간</small></div><div class="metric"><strong>${me.clicks}</strong><small>클릭 수</small></div><button class="room-code" data-copy="${escapeHtml(room.code)}">${escapeHtml(room.code)}</button></div></header><div class="race-grid"><div id="wiki-slot" class="wiki-slot" aria-label="나무위키 원문"></div><aside class="card scoreboard"><div class="score-head"><h2>실시간 순위</h2><p class="muted">${escapeHtml(modeName(room.mode))} · ${room.players.length}명</p></div>${playerList(room, true)}</aside></div></main>`;
+  return `<main class="shell race"><header class="race-top">${brand()}<div class="race-route"><span>${escapeHtml(me.currentTitle)}</span><b class="muted">→</b><span class="goal">${escapeHtml(room.goalTitle)}</span></div><div class="race-meta"><span class="race-note ${state.notice || state.wikiLoading ? 'active' : ''}">${escapeHtml(activity)}</span><div class="metric"><strong data-elapsed>${formatElapsed(room.startedAt)}</strong><small>경과 시간</small></div><div class="metric"><strong>${me.clicks}</strong><small>클릭 수</small></div><button class="room-code" data-copy="${escapeHtml(room.code)}">${escapeHtml(room.code)}</button><button class="button danger compact" data-action="forfeit" ${state.busy ? 'disabled' : ''}>포기하기</button></div></header><div class="race-grid"><div id="wiki-slot" class="wiki-slot" aria-label="나무위키 원문"></div><aside class="card scoreboard"><div class="score-head"><h2>실시간 순위</h2><p class="muted">${escapeHtml(modeName(room.mode))} · ${room.players.length}명</p></div>${playerList(room, true)}</aside></div></main>`;
 }
 
 function finishView(room, me) {
-  return `<main class="shell"><section class="finish"><article class="card finish-card"><span class="finish-icon">★</span><p class="eyebrow">Finished</p><h1>목표 문서에 도착!</h1><p class="muted"><strong>${escapeHtml(room.goalTitle)}</strong>까지 완주했어요. 다른 플레이어의 결과도 온라인으로 계속 갱신됩니다.</p><div class="finish-stats"><div><strong>${me.clicks}</strong><small>클릭</small></div><div><strong>${formatElapsed(room.startedAt, me.finishedAt)}</strong><small>완주 시간</small></div></div><div class="player-list">${playerList(room)}</div><button class="button secondary" data-action="leave">첫 화면으로</button></article></section></main>`;
+  const forfeited = Boolean(me.forfeitedAt);
+  const endAt = me.finishedAt || me.forfeitedAt;
+  const settled = room.status === 'finished';
+  const host = Boolean(state.session.hostToken);
+  return `<main class="shell"><section class="finish"><article class="card finish-card"><span class="finish-icon ${forfeited ? 'forfeited' : ''}">${forfeited ? '⚑' : '★'}</span><p class="eyebrow">${settled ? 'Final results' : 'Spectating'}</p><h1>${settled ? '최종 결과가 나왔어요' : forfeited ? '이번 레이스를 포기했어요' : '목표 문서에 도착!'}</h1><p class="muted">${settled ? '자세히보기를 열면 각 참가자가 지나온 문서를 순서대로 볼 수 있어요.' : '내 레이스가 끝났으므로 이제 다른 참가자의 현재 문서를 실시간으로 볼 수 있어요.'}</p><div class="finish-stats"><div><strong>${me.clicks}</strong><small>클릭</small></div><div><strong>${formatElapsed(room.startedAt, endAt)}</strong><small>${forfeited ? '진행 시간' : '완주 시간'}</small></div></div><div class="player-list">${playerList(room, true)}</div><div class="result-actions">${settled && host ? `<button class="button" data-action="rematch" ${state.busy ? 'disabled' : ''}>같은 방에서 다시하기</button>` : settled ? '<p class="muted rematch-note">방장이 다시하기를 누르면 같은 방에서 다음 라운드를 준비합니다.</p>' : '<p class="muted rematch-note">남은 참가자들의 이동 상황을 기다리는 중…</p>'}<button class="button secondary" data-action="leave">첫 화면으로</button></div></article></section></main>`;
 }
 
 function render() {
@@ -176,7 +184,7 @@ function render() {
   }
   const me = currentPlayer();
   if (!me) return leaveRoom();
-  if (me.finishedAt) {
+  if (me.finishedAt || me.forfeitedAt) {
     window.namuRace.hideWiki();
     appRoot.innerHTML = finishView(state.room, me);
     return;
@@ -248,7 +256,8 @@ function schedulePoll() {
 async function refreshRoom() {
   if (!state.session || state.busy) return schedulePoll();
   try {
-    const data = await request('GET', `/rooms/${state.session.code}`);
+    const query = new URLSearchParams({ playerId: state.session.playerId, token: state.session.playerToken });
+    const data = await request('GET', `/rooms/${state.session.code}?${query}`);
     state.room = data.room;
     render();
   } catch (error) {
@@ -317,6 +326,17 @@ document.addEventListener('click', (event) => {
   if (action === 'start') {
     return runAction(async () => request('POST', `/rooms/${state.session.code}/action`, { action: 'start', hostToken: state.session.hostToken }));
   }
+  if (action === 'forfeit') {
+    if (!window.confirm('이번 레이스를 포기할까요? 순위에는 포기로 표시됩니다.')) return;
+    return runAction(async () => request('POST', `/rooms/${state.session.code}/action`, {
+      action: 'forfeit', playerId: state.session.playerId, playerToken: state.session.playerToken,
+    }));
+  }
+  if (action === 'rematch') {
+    return runAction(async () => request('POST', `/rooms/${state.session.code}/action`, {
+      action: 'rematch', hostToken: state.session.hostToken,
+    }));
+  }
 });
 
 window.addEventListener('resize', updateWikiBounds);
@@ -357,7 +377,8 @@ async function boot() {
   await fetchDaily();
   if (state.session) {
     try {
-      const data = await request('GET', `/rooms/${state.session.code}`);
+      const query = new URLSearchParams({ playerId: state.session.playerId, token: state.session.playerToken });
+      const data = await request('GET', `/rooms/${state.session.code}?${query}`);
       state.room = data.room;
     } catch {
       localStorage.removeItem(SESSION_KEY);

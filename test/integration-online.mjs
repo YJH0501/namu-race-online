@@ -69,16 +69,72 @@ await api('POST', `/rooms/${code}/action`, {
   action: 'progress',
   playerId: joined.session.playerId,
   playerToken: joined.session.playerToken,
+  nextTitle: '과학',
+});
+const hostView = await api(
+  'GET',
+  `/rooms/${code}?playerId=${encodeURIComponent(created.session.playerId)}&token=${encodeURIComponent(created.session.playerToken)}`,
+);
+assert.equal(
+  hostView.room.players.find((player) => player.id === joined.session.playerId).currentTitle,
+  null,
+  '레이스 중에는 다른 참가자의 현재 문서를 숨겨야 합니다.',
+);
+assert.equal(
+  'path' in hostView.room.players.find((player) => player.id === joined.session.playerId),
+  false,
+  '레이스 중에는 다른 참가자의 전체 경로를 보내면 안 됩니다.',
+);
+
+await api('POST', `/rooms/${code}/action`, {
+  action: 'progress',
+  playerId: joined.session.playerId,
+  playerToken: joined.session.playerToken,
   nextTitle: '인공지능',
 });
 const finished = await api('POST', `/rooms/${code}/action`, {
-  action: 'progress',
+  action: 'forfeit',
   playerId: created.session.playerId,
   playerToken: created.session.playerToken,
-  nextTitle: '인공지능',
 });
 assert.equal(finished.room.status, 'finished');
-assert.equal(finished.room.players.every((player) => player.finishedAt), true);
+assert.equal(finished.room.players.some((player) => player.finishedAt), true);
+assert.equal(finished.room.players.some((player) => player.forfeitedAt), true);
+assert.deepEqual(
+  finished.room.players.find((player) => player.id === joined.session.playerId).path,
+  ['축구', '과학', '인공지능'],
+  '최종 결과에는 참가자의 전체 이동 경로를 포함해야 합니다.',
+);
+
+const rematch = await api('POST', `/rooms/${code}/action`, {
+  action: 'rematch',
+  hostToken: created.session.hostToken,
+});
+assert.equal(rematch.room.status, 'waiting');
+assert.equal(rematch.room.round, 2);
+assert.equal(rematch.room.mode, 'custom');
+assert.equal(rematch.room.startTitle, '축구');
+assert.equal(rematch.room.goalTitle, '인공지능');
+assert.equal(rematch.room.players.find((player) => player.id === created.session.playerId).ready, true);
+assert.equal(rematch.room.players.find((player) => player.id === joined.session.playerId).ready, false);
+
+const randomCreated = await api('POST', '/rooms', { nickname: '랜덤방장', mode: 'random' });
+assert.equal(randomCreated.room.routeHidden, true);
+assert.equal(randomCreated.room.startTitle, null);
+assert.equal(randomCreated.room.goalTitle, null);
+const randomStarted = await api('POST', `/rooms/${randomCreated.session.code}/action`, {
+  action: 'start',
+  hostToken: randomCreated.session.hostToken,
+});
+assert.equal(randomStarted.room.status, 'racing');
+assert.equal(typeof randomStarted.room.startTitle, 'string');
+assert.equal(typeof randomStarted.room.goalTitle, 'string');
+assert.notEqual(randomStarted.room.startTitle, randomStarted.room.goalTitle);
+await api('POST', `/rooms/${randomCreated.session.code}/action`, {
+  action: 'forfeit',
+  playerId: randomCreated.session.playerId,
+  playerToken: randomCreated.session.playerToken,
+});
 
 socket.close(1000, 'test complete');
 await new Promise((resolve) => setTimeout(resolve, 150));

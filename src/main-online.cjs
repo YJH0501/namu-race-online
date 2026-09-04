@@ -32,6 +32,17 @@ function titleFromWikiUrl(input) {
   }
 }
 
+function isWikiSearchUrl(input) {
+  try {
+    const url = new URL(input, NAMU_ORIGIN);
+    if (url.origin !== NAMU_ORIGIN) return false;
+    const pathname = url.pathname.toLowerCase();
+    return pathname === '/search' || pathname.startsWith('/search/');
+  } catch {
+    return false;
+  }
+}
+
 function normalizeServerUrl(value) {
   const url = new URL(String(value || ''));
   const localhost = ['127.0.0.1', 'localhost'].includes(url.hostname);
@@ -95,6 +106,10 @@ function setWikiVisible(visible) {
 }
 
 function sendWikiCandidate(href) {
+  if (isWikiSearchUrl(href)) {
+    sendToHud('wiki-navigation-blocked', { message: '레이스 중에는 검색을 사용할 수 없어요.' });
+    return;
+  }
   const title = titleFromWikiUrl(href);
   if (!title) {
     sendToHud('wiki-navigation-blocked', { message: '나무위키 문서 링크만 이동할 수 있어요.' });
@@ -140,8 +155,10 @@ function createWikiView() {
   });
   wikiView.webContents.on('before-input-event', (event, input) => {
     const key = String(input.key || '').toLowerCase();
-    if (key === 'f12' || ((input.control || input.meta) && ['l', 'r', 'u'].includes(key)) || (input.alt && ['left', 'right'].includes(key))) {
+    const findShortcut = (input.control || input.meta) && key === 'f';
+    if (key === 'f12' || ((input.control || input.meta) && ['l', 'r', 'u', 'f'].includes(key)) || (input.alt && ['left', 'right'].includes(key))) {
       event.preventDefault();
+      if (findShortcut) sendToHud('wiki-navigation-blocked', { message: '레이스 중에는 검색을 사용할 수 없어요.' });
     }
   });
   wikiView.webContents.on('app-command', (event, command) => {
@@ -232,6 +249,11 @@ ipcMain.on('hide-wiki', (event) => {
 });
 ipcMain.on('wiki-link-clicked-from-page', (event, href) => {
   if (wikiView && event.sender === wikiView.webContents) sendWikiCandidate(href);
+});
+ipcMain.on('wiki-search-blocked-from-page', (event) => {
+  if (wikiView && event.sender === wikiView.webContents) {
+    sendToHud('wiki-navigation-blocked', { message: '레이스 중에는 검색을 사용할 수 없어요.' });
+  }
 });
 
 app.setName(APP_NAME);

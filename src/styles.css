@@ -55,6 +55,9 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 .button.secondary:hover:not(:disabled) { background: rgba(255, 255, 255, 0.08); }
 .button.ghost { min-height: 38px; padding: 0 12px; border-color: transparent; background: transparent; color: var(--muted); }
 .button.ghost:hover { background: rgba(255, 255, 255, 0.06); color: var(--text); }
+.button.danger { border-color: rgba(255, 155, 145, 0.28); background: rgba(255, 155, 145, 0.08); color: var(--danger); }
+.button.danger:hover:not(:disabled) { background: rgba(255, 155, 145, 0.16); }
+.button.compact { min-height: 38px; padding: 0 12px; font-size: 11px; }
 .notice { min-height: 21px; margin: 13px 0 0; color: var(--accent); font-size: 13px; line-height: 1.5; }
 .tip { margin-top: 18px; padding: 13px 14px; border: 1px solid rgba(190, 242, 100, 0.13); border-radius: 12px; background: rgba(190, 242, 100, 0.04); color: #aebeb3; font-size: 11px; line-height: 1.65; }
 
@@ -74,6 +77,7 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 .route small { display: block; margin-bottom: 6px; color: var(--muted); }
 .route strong { font-size: 18px; }
 .route-arrow { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: rgba(190, 242, 100, 0.1); color: var(--accent); }
+.hidden-route strong { color: var(--muted); }
 .host-box { margin-top: 16px; padding: 16px; border: 1px solid rgba(190, 242, 100, 0.14); border-radius: 14px; background: rgba(190, 242, 100, 0.045); color: #c8d3cb; font-size: 13px; line-height: 1.7; }
 .host-box strong { color: var(--accent); }
 .address-list { display: grid; gap: 7px; margin-top: 10px; }
@@ -108,15 +112,25 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 .player-detail strong, .player-detail small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .player-detail small { margin-top: 3px; color: var(--muted); font-size: 10px; }
 .clicks { color: #cbd5cd; font-size: 11px; white-space: nowrap; }
+.clicks.forfeited { color: var(--danger); }
+.path-details { grid-column: 1 / -1; margin-top: 5px; border-top: 1px solid var(--line); padding-top: 9px; text-align: left; }
+.path-details summary { cursor: pointer; color: var(--accent); font-size: 11px; font-weight: 800; }
+.path-list { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 9px; color: #d7e1da; font-size: 11px; line-height: 1.55; }
+.path-list span { border: 1px solid var(--line); border-radius: 8px; padding: 4px 7px; background: rgba(255, 255, 255, 0.035); }
+.path-list b { color: var(--muted); }
 
 .finish { display: grid; width: min(840px, 100%); height: 100%; margin: auto; place-items: center; }
-.finish-card { width: 100%; padding: 42px; text-align: center; }
+.finish-card { width: 100%; max-height: calc(100vh - 56px); overflow: auto; padding: 42px; text-align: center; }
 .finish-icon { display: grid; width: 70px; height: 70px; margin: auto; place-items: center; border-radius: 22px; background: var(--accent); color: #10210e; font-size: 32px; }
+.finish-icon.forfeited { background: rgba(255, 155, 145, 0.13); color: var(--danger); }
 .finish-card h1 { margin: 21px 0 10px; font-size: 40px; letter-spacing: -0.05em; }
 .finish-stats { display: flex; justify-content: center; gap: 12px; margin: 24px 0; }
 .finish-stats div { min-width: 120px; padding: 15px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255, 255, 255, 0.03); }
 .finish-stats strong { display: block; font-size: 24px; }
 .finish-stats small { color: var(--muted); }
+.finish-card .rank-row { text-align: left; }
+.result-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
+.rematch-note { flex-basis: 100%; margin: 0 0 4px; font-size: 12px; }
 .loading { display: grid; width: 100%; height: 100%; place-items: center; text-align: center; }
 .spinner { width: 34px; height: 34px; margin: auto; border: 3px solid rgba(190, 242, 100, 0.18); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }

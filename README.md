@@ -5,11 +5,15 @@ Windows와 macOS 12 Monterey 이상 사용자가 6자리 방 코드로 함께 �
 ## 들어 있는 기능
 
 - 오늘의 레이스: 한국 시간 자정마다 모든 사용자에게 같은 출발·목표 제공
-- 랜덤 레이스: 방을 만들 때 서버가 서로 다른 두 문서를 선택
+- 랜덤 레이스: 나무위키 전체 문서에서 두 문서를 뽑아 시작 순간에 공개
 - 직접 지정: 방장이 원하는 출발 문서와 목표 문서를 입력
 - 온라인 멀티플레이: 다른 네트워크의 Windows·Mac 사용자가 방 코드로 참가
-- 실시간 대기실, 준비 상태, 동시 출발, 현재 문서, 클릭 수, 완주 순위
+- 실시간 대기실, 준비 상태, 동시 출발, 클릭 수, 완주 순위
+- 레이스 중 포기하기와 모든 기기에 동기화되는 포기 상태
 - 나무위키 원본 문서 링크만 게임 이동으로 인정하고 검색·외부 이동·뒤로 가기 차단
+- 달리는 동안 상대 경로 비공개, 내 완주 후 남은 참가자 실시간 관전
+- 최종 결과에서 참가자별 전체 이동 경로 확인
+- 같은 방과 레이스 방식을 유지하는 다시하기
 - 최대 8명, 방은 6시간 뒤 자동 만료
 
 ## 구조
@@ -53,7 +57,7 @@ npm run dist:win
 npm run dist:mac
 ```
 
-Windows 결과는 `release/NamuRace-online-0.3.2-windows.exe`입니다. macOS DMG는 포함된 GitHub Actions 워크플로에서 Intel Mac과 Apple Silicon Mac을 모두 지원하는 universal 앱으로 빌드합니다.
+Windows 결과는 `release/NamuRace-online-0.3.3-windows.exe`입니다. macOS DMG는 포함된 GitHub Actions 워크플로에서 Intel Mac과 Apple Silicon Mac을 모두 지원하는 universal 앱으로 빌드합니다.
 
 현재 macOS 앱은 다른 Mac에서의 테스트를 위해 서명과 Hardened Runtime을 적용하지 않았으며 Apple 공증도 받지 않았습니다. 처음 실행할 때 macOS가 차단하면 **시스템 설정 → 개인정보 보호 및 보안 → 그래도 열기**를 사용합니다. 공개 배포 단계에서는 Apple Developer ID 서명과 공증을 반드시 추가해야 합니다.
 
