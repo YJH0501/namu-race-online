@@ -149,6 +149,12 @@ function createWikiView() {
   });
   wikiView.webContents.on('did-start-loading', () => sendToHud('wiki-load-state', { loading: true }));
   wikiView.webContents.on('did-stop-loading', () => sendToHud('wiki-load-state', { loading: false }));
+  wikiView.webContents.on('did-navigate', (_event, url) => {
+    const title = titleFromWikiUrl(url);
+    if (!activeWikiTitle || !title || title === activeWikiTitle) return;
+    const activeUrl = wikiUrl(activeWikiTitle);
+    if (activeUrl) wikiView.webContents.loadURL(activeUrl).catch(() => undefined);
+  });
   wikiView.webContents.on('did-fail-load', (_event, code, description, url, mainFrame) => {
     if (!mainFrame || code === -3) return;
     sendToHud('wiki-load-state', { loading: false, error: `나무위키를 열지 못했어요. (${description})`, url });
@@ -156,7 +162,7 @@ function createWikiView() {
   wikiView.webContents.on('before-input-event', (event, input) => {
     const key = String(input.key || '').toLowerCase();
     const findShortcut = (input.control || input.meta) && key === 'f';
-    if (key === 'f12' || ((input.control || input.meta) && ['l', 'r', 'u', 'f'].includes(key)) || (input.alt && ['left', 'right'].includes(key))) {
+    if (key === 'f12' || ((input.control || input.meta) && ['l', 'r', 'u', 'f', '[', ']'].includes(key)) || (input.alt && ['left', 'right'].includes(key)) || ['browserback', 'browserforward'].includes(key)) {
       event.preventDefault();
       if (findShortcut) sendToHud('wiki-navigation-blocked', { message: '레이스 중에는 검색을 사용할 수 없어요.' });
     }

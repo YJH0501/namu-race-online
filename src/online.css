@@ -2,12 +2,15 @@
 .start-card { max-height: calc(100vh - 40px); overflow: auto; }
 .online-badge { display: inline-flex; align-items: center; gap: 7px; margin-left: 10px; color: var(--muted); font-size: 11px; font-weight: 700; }
 .online-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px rgba(190, 242, 100, 0.6); }
-.mode-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 18px; padding: 5px; border: 1px solid var(--line); border-radius: 14px; background: rgba(0, 0, 0, 0.16); }
+.mode-picker { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: 18px; padding: 5px; border: 1px solid var(--line); border-radius: 14px; background: rgba(0, 0, 0, 0.16); }
 .mode-button { min-height: 40px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-size: 12px; font-weight: 850; }
 .mode-button:hover { color: var(--text); }
 .mode-button.active { background: var(--accent); color: #12210f; }
 .mode-panel { margin-top: 10px; padding: 13px 14px; border: 1px solid rgba(190, 242, 100, 0.13); border-radius: 13px; background: rgba(190, 242, 100, 0.04); }
 .mode-panel p { margin: 0; font-size: 12px; line-height: 1.55; }
+.round-count { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.round-count label { color: var(--muted); font-size: 11px; }
+.round-count select { height: 38px; border: 1px solid var(--line); border-radius: 10px; outline: 0; background: var(--panel-2); color: var(--text); padding: 0 28px 0 11px; }
 .daily-route { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 9px; margin-top: 10px; }
 .daily-route div:last-child { text-align: right; }
 .daily-route small { display: block; color: var(--muted); font-size: 10px; }

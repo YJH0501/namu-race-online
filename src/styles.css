@@ -20,7 +20,7 @@ body {
   background: radial-gradient(circle at 12% 12%, rgba(57, 110, 62, 0.24), transparent 34%), var(--bg);
   color: var(--text);
 }
-button, input { font: inherit; }
+button, input, select { font: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: 0.48; }
 
@@ -118,6 +118,8 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 .path-list { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 9px; color: #d7e1da; font-size: 11px; line-height: 1.55; }
 .path-list span { border: 1px solid var(--line); border-radius: 8px; padding: 4px 7px; background: rgba(255, 255, 255, 0.035); }
 .path-list b { color: var(--muted); }
+.round-path + .round-path { margin-top: 12px; }
+.round-path > strong { display: block; margin-top: 9px; color: var(--accent); font-size: 11px; }
 
 .finish { display: grid; width: min(840px, 100%); height: 100%; margin: auto; place-items: center; }
 .finish-card { width: 100%; max-height: calc(100vh - 56px); overflow: auto; padding: 42px; text-align: center; }

@@ -29,9 +29,15 @@ assert.equal(custom.mode, 'custom');
 assert.equal(custom.startTitle, '고양이');
 assert.equal(custom.goalTitle, '우주 탐사');
 
+const rounds = await create({ mode: 'rounds', roundCount: 5 });
+assert.equal(rounds.mode, 'rounds');
+assert.equal(rounds.totalRounds, 5);
+assert.equal(rounds.routeHidden, true);
+
 console.log(JSON.stringify({
   ok: true,
   daily: `${daily.startTitle} → ${daily.goalTitle}`,
   random: '시작 시 공개',
   custom: `${custom.startTitle} → ${custom.goalTitle}`,
+  rounds: `${rounds.totalRounds}라운드 · 시작 시 공개`,
 }));

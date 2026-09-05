@@ -14,6 +14,17 @@ async function api(method, path, body) {
   return data;
 }
 
+async function apiError(method, path, body, expectedStatus) {
+  const response = await fetch(`${baseUrl}${path}`, {
+    method,
+    headers: body ? { 'content-type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await response.json();
+  assert.equal(response.status, expectedStatus, `${method} ${path}`);
+  return data;
+}
+
 function firstSocketMessage(socket) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('WebSocket 응답 시간 초과')), 3_000);
@@ -71,6 +82,28 @@ await api('POST', `/rooms/${code}/action`, {
   playerToken: joined.session.playerToken,
   nextTitle: '과학',
 });
+const backed = await api('POST', `/rooms/${code}/action`, {
+  action: 'back',
+  playerId: joined.session.playerId,
+  playerToken: joined.session.playerToken,
+});
+const backedPlayer = backed.room.players.find(
+  (player) => player.id === joined.session.playerId,
+);
+assert.equal(backedPlayer.currentTitle, '축구');
+assert.equal(backedPlayer.clicks, 2, '뒤로가기도 클릭 수에 포함해야 합니다.');
+assert.equal(backedPlayer.canGoBack, false);
+await apiError('POST', `/rooms/${code}/action`, {
+  action: 'back',
+  playerId: joined.session.playerId,
+  playerToken: joined.session.playerToken,
+}, 409);
+await api('POST', `/rooms/${code}/action`, {
+  action: 'progress',
+  playerId: joined.session.playerId,
+  playerToken: joined.session.playerToken,
+  nextTitle: '과학',
+});
 const hostView = await api(
   'GET',
   `/rooms/${code}?playerId=${encodeURIComponent(created.session.playerId)}&token=${encodeURIComponent(created.session.playerToken)}`,
@@ -107,7 +140,7 @@ assert.equal(finished.room.players.some((player) => player.finishedAt), true);
 assert.equal(finished.room.players.some((player) => player.forfeitedAt), true);
 assert.deepEqual(
   finished.room.players.find((player) => player.id === joined.session.playerId).path,
-  ['축구', '과학', '인공지능'],
+  ['축구', '과학', '축구', '과학', '인공지능'],
   '최종 결과에는 참가자의 전체 이동 경로를 포함해야 합니다.',
 );
 
@@ -127,6 +160,7 @@ const randomCreated = await api('POST', '/rooms', { nickname: '랜덤방장', mo
 assert.equal(randomCreated.room.routeHidden, true);
 assert.equal(randomCreated.room.startTitle, null);
 assert.equal(randomCreated.room.goalTitle, null);
+assert.equal(randomCreated.room.players[0].currentTitle, null);
 const randomStarted = await api('POST', `/rooms/${randomCreated.session.code}/action`, {
   action: 'start',
   hostToken: randomCreated.session.hostToken,
@@ -140,6 +174,92 @@ await api('POST', `/rooms/${randomCreated.session.code}/action`, {
   playerId: randomCreated.session.playerId,
   playerToken: randomCreated.session.playerToken,
 });
+
+const roundsCreated = await api('POST', '/rooms', {
+  nickname: '라운드방장',
+  mode: 'rounds',
+  roundCount: 3,
+});
+assert.equal(roundsCreated.room.mode, 'rounds');
+assert.equal(roundsCreated.room.totalRounds, 3);
+assert.equal(roundsCreated.room.routeHidden, true);
+assert.equal(roundsCreated.room.players[0].currentTitle, null);
+const roundsJoined = await api(
+  'POST',
+  `/rooms/${roundsCreated.session.code}/join`,
+  { nickname: '라운드친구' },
+);
+await api('POST', `/rooms/${roundsCreated.session.code}/action`, {
+  action: 'ready',
+  playerId: roundsJoined.session.playerId,
+  playerToken: roundsJoined.session.playerToken,
+});
+let roundsRoom = (
+  await api('POST', `/rooms/${roundsCreated.session.code}/action`, {
+    action: 'start',
+    hostToken: roundsCreated.session.hostToken,
+  })
+).room;
+assert.equal(roundsRoom.routeHidden, false);
+
+for (let round = 1; round <= 3; round += 1) {
+  if (round > 1) {
+    await api('POST', `/rooms/${roundsCreated.session.code}/action`, {
+      action: 'ready',
+      playerId: roundsJoined.session.playerId,
+      playerToken: roundsJoined.session.playerToken,
+    });
+    roundsRoom = (
+      await api('POST', `/rooms/${roundsCreated.session.code}/action`, {
+        action: 'start',
+        hostToken: roundsCreated.session.hostToken,
+      })
+    ).room;
+  }
+  await api('POST', `/rooms/${roundsCreated.session.code}/action`, {
+    action: 'progress',
+    playerId: roundsCreated.session.playerId,
+    playerToken: roundsCreated.session.playerToken,
+    nextTitle: roundsRoom.goalTitle,
+  });
+  roundsRoom = (
+    await api('POST', `/rooms/${roundsCreated.session.code}/action`, {
+      action: 'forfeit',
+      playerId: roundsJoined.session.playerId,
+      playerToken: roundsJoined.session.playerToken,
+    })
+  ).room;
+  assert.equal(
+    roundsRoom.status,
+    round < 3 ? 'round_result' : 'finished',
+  );
+  const leader = roundsRoom.players.find(
+    (player) => player.id === roundsCreated.session.playerId,
+  );
+  assert.equal(leader.roundResults.length, round);
+  assert.equal(leader.score, round * 1000);
+  if (round < 3) {
+    roundsRoom = (
+      await api('POST', `/rooms/${roundsCreated.session.code}/action`, {
+        action: 'next-round',
+        hostToken: roundsCreated.session.hostToken,
+      })
+    ).room;
+    assert.equal(roundsRoom.status, 'waiting');
+    assert.equal(roundsRoom.round, round + 1);
+    assert.equal(roundsRoom.routeHidden, true);
+  }
+}
+
+const roundsRematch = await api(
+  'POST',
+  `/rooms/${roundsCreated.session.code}/action`,
+  { action: 'rematch', hostToken: roundsCreated.session.hostToken },
+);
+assert.equal(roundsRematch.room.status, 'waiting');
+assert.equal(roundsRematch.room.round, 1);
+assert.equal(roundsRematch.room.totalRounds, 3);
+assert.equal(roundsRematch.room.players.every((player) => player.score === 0), true);
 
 socket.close(1000, 'test complete');
 await new Promise((resolve) => setTimeout(resolve, 150));

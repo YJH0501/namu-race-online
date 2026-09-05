@@ -3,12 +3,23 @@ import { DurableObject } from 'cloudflare:workers';
 import { cleanTitle, customRoute, dailyRoute, randomRoute, utcDateKey } from '../../shared/routes.mjs';
 // @ts-expect-error Generated title snapshot intentionally stays plain ESM.
 import { RANDOM_TITLE_POOL } from '../../shared/random-title-pool.mjs';
+// @ts-expect-error Shared runtime module intentionally stays plain ESM for Node tests.
+import { calculateRoundScores } from '../../shared/scoring.mjs';
 
 interface Env {
   RACE_ROOMS: DurableObjectNamespace<RaceRoom>;
 }
 
-type RaceMode = 'daily' | 'random' | 'custom';
+type RaceMode = 'daily' | 'random' | 'custom' | 'rounds';
+
+type RoundResult = {
+  round: number;
+  clicks: number;
+  elapsedMs: number;
+  score: number;
+  finished: boolean;
+  path: string[];
+};
 
 type Player = {
   id: string;
@@ -21,6 +32,9 @@ type Player = {
   joinedAt: number;
   finishedAt: number | null;
   forfeitedAt: number | null;
+  navigationStack?: string[];
+  score?: number;
+  roundResults?: RoundResult[];
   disconnectedAt?: number | null;
   lastSeenAt?: number | null;
 };
@@ -31,10 +45,11 @@ type Room = {
   hostPlayerId: string;
   mode: RaceMode;
   dateKey: string | null;
-  status: 'waiting' | 'racing' | 'finished';
+  status: 'waiting' | 'racing' | 'round_result' | 'finished';
   startTitle: string;
   goalTitle: string;
   round: number;
+  totalRounds?: number;
   recentRouteTitles?: string[];
   createdAt: number;
   expiresAt?: number;
@@ -59,6 +74,9 @@ const jsonHeaders = {
 const ROOM_LIFETIME_MS = 6 * 60 * 60 * 1000;
 const DISCONNECT_GRACE_MS = 5_000;
 const PRESENCE_TIMEOUT_MS = 8_000;
+const MIN_ROUNDS = 2;
+const MAX_ROUNDS = 10;
+const DEFAULT_ROUNDS = 3;
 
 function json(data: unknown, status = 200) {
   return new Response(JSON.stringify(data), { status, headers: jsonHeaders });
@@ -86,6 +104,12 @@ function cleanNickname(value: unknown) {
 
 function cleanCode(value: unknown) {
   return typeof value === 'string' ? value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6) : '';
+}
+
+function cleanRoundCount(value: unknown) {
+  const parsed = Math.floor(Number(value));
+  if (!Number.isFinite(parsed)) return DEFAULT_ROUNDS;
+  return Math.min(MAX_ROUNDS, Math.max(MIN_ROUNDS, parsed));
 }
 
 function makeCode() {
@@ -141,7 +165,14 @@ async function randomNamuWikiRoute(excludedTitles: string[] = []) {
 function publicRoom(room: Room, viewerPlayerId?: string | null) {
   const viewer = room.players.find((player) => player.id === viewerPlayerId);
   const viewerCanSpectate = Boolean(viewer?.finishedAt || viewer?.forfeitedAt);
-  const hideRandomRoute = room.mode === 'random' && room.status === 'waiting';
+  const hideRandomRoute =
+    (room.mode === 'random' || room.mode === 'rounds') &&
+    room.status === 'waiting';
+  const roundSettled =
+    room.status === 'round_result' || room.status === 'finished';
+  const sortBySeriesScore =
+    room.mode === 'rounds' &&
+    (roundSettled || (room.status === 'waiting' && room.round > 1));
   return {
     code: room.code,
     hostPlayerId: room.hostPlayerId,
@@ -155,10 +186,24 @@ function publicRoom(room: Room, viewerPlayerId?: string | null) {
     goalTitle: hideRandomRoute ? null : room.goalTitle,
     routeHidden: hideRandomRoute,
     round: room.round || 1,
+    totalRounds: room.mode === 'rounds' ? room.totalRounds || DEFAULT_ROUNDS : 1,
     createdAt: room.createdAt,
     startedAt: room.startedAt,
     players: [...room.players]
       .sort((a, b) => {
+        if (sortBySeriesScore) {
+          const scoreDifference = (b.score || 0) - (a.score || 0);
+          if (scoreDifference) return scoreDifference;
+          const elapsedA = (a.roundResults || []).reduce(
+            (sum, result) => sum + result.elapsedMs,
+            0,
+          );
+          const elapsedB = (b.roundResults || []).reduce(
+            (sum, result) => sum + result.elapsedMs,
+            0,
+          );
+          if (elapsedA !== elapsedB) return elapsedA - elapsedB;
+        }
         if (a.finishedAt && b.finishedAt) return a.finishedAt - b.finishedAt;
         if (a.finishedAt) return -1;
         if (b.finishedAt) return 1;
@@ -167,16 +212,21 @@ function publicRoom(room: Room, viewerPlayerId?: string | null) {
         if (b.forfeitedAt) return -1;
         return a.joinedAt - b.joinedAt;
       })
-      .map(({ token: _token, path, currentTitle, disconnectedAt: _disconnectedAt, lastSeenAt: _lastSeenAt, ...player }) => {
+      .map(({ token: _token, path, currentTitle, navigationStack, disconnectedAt: _disconnectedAt, lastSeenAt: _lastSeenAt, ...player }) => {
         const canSeePosition =
-          room.status === 'finished' || player.id === viewerPlayerId || viewerCanSpectate;
+          !hideRandomRoute &&
+          (roundSettled || player.id === viewerPlayerId || viewerCanSpectate);
         const canSeePath =
-          room.status === 'finished' ||
+          roundSettled ||
           (viewerCanSpectate &&
             (player.id === viewerPlayerId || Boolean(player.finishedAt)));
         return {
           ...player,
+          score: player.score || 0,
+          roundResults: player.roundResults || [],
           currentTitle: canSeePosition ? currentTitle : null,
+          canGoBack:
+            player.id === viewerPlayerId && (navigationStack?.length || 0) > 1,
           ...(canSeePath ? { path } : {}),
         };
       }),
@@ -186,6 +236,10 @@ function publicRoom(room: Room, viewerPlayerId?: string | null) {
 async function routeFor(mode: RaceMode, startTitle?: unknown, goalTitle?: unknown) {
   if (mode === 'daily') return dailyRoute(utcDateKey());
   if (mode === 'custom') return customRoute(startTitle, goalTitle);
+  if (mode === 'rounds') {
+    const route = await randomNamuWikiRoute();
+    return { ...route, mode: 'rounds' as const };
+  }
   return randomNamuWikiRoute();
 }
 
@@ -205,17 +259,18 @@ export default {
     }
     if (request.method === 'POST' && url.pathname === '/rooms') {
       try {
-        const body = await readBody<{ nickname?: unknown; mode?: RaceMode; startTitle?: unknown; goalTitle?: unknown }>(request);
+        const body = await readBody<{ nickname?: unknown; mode?: RaceMode; startTitle?: unknown; goalTitle?: unknown; roundCount?: unknown }>(request);
         const nickname = cleanNickname(body.nickname);
         if (nickname.length < 2) return withCors(json({ error: '닉네임은 2글자 이상 입력해 주세요.' }, 400));
-        const mode: RaceMode = ['daily', 'random', 'custom'].includes(body.mode || '') ? body.mode! : 'random';
+        const mode: RaceMode = ['daily', 'random', 'custom', 'rounds'].includes(body.mode || '') ? body.mode! : 'random';
         const route = await routeFor(mode, body.startTitle, body.goalTitle);
+        const totalRounds = mode === 'rounds' ? cleanRoundCount(body.roundCount) : 1;
         for (let attempt = 0; attempt < 6; attempt += 1) {
           const code = makeCode();
           const stub = await roomStub(env, code);
           const response = await stub.fetch('https://room/init', {
             method: 'POST',
-            body: JSON.stringify({ code, nickname, route }),
+            body: JSON.stringify({ code, nickname, route, totalRounds }),
           });
           if (response.status !== 409) return withCors(response);
         }
@@ -266,7 +321,7 @@ export class RaceRoom extends DurableObject<Env> {
     return json({ error: '지원하지 않는 요청이에요.' }, 404);
   }
 
-  private async initialize(payload: { code?: unknown; nickname?: unknown; route?: ReturnType<typeof dailyRoute> }) {
+  private async initialize(payload: { code?: unknown; nickname?: unknown; route?: ReturnType<typeof dailyRoute>; totalRounds?: unknown }) {
     if (this.room) return json({ error: '이미 사용 중인 방 코드예요.' }, 409);
     const code = cleanCode(payload.code);
     const nickname = cleanNickname(payload.nickname);
@@ -284,6 +339,9 @@ export class RaceRoom extends DurableObject<Env> {
       joinedAt: now,
       finishedAt: null,
       forfeitedAt: null,
+      navigationStack: [route.startTitle],
+      score: 0,
+      roundResults: [],
     };
     this.room = {
       code,
@@ -295,7 +353,8 @@ export class RaceRoom extends DurableObject<Env> {
       startTitle: route.startTitle,
       goalTitle: route.goalTitle,
       round: 1,
-      recentRouteTitles: route.mode === 'random' ? [route.startTitle, route.goalTitle] : [],
+      totalRounds: route.mode === 'rounds' ? cleanRoundCount(payload.totalRounds) : 1,
+      recentRouteTitles: ['random', 'rounds'].includes(route.mode) ? [route.startTitle, route.goalTitle] : [],
       createdAt: now,
       expiresAt: now + ROOM_LIFETIME_MS,
       startedAt: null,
@@ -312,6 +371,9 @@ export class RaceRoom extends DurableObject<Env> {
   private async join(payload: { nickname?: unknown }) {
     if (!this.room) return json({ error: '방을 찾을 수 없어요.' }, 404);
     if (this.room.status !== 'waiting') return json({ error: '이미 게임이 시작된 방이에요.' }, 409);
+    if (this.room.mode === 'rounds' && this.room.round > 1) {
+      return json({ error: '이미 라운드가 진행 중인 방에는 참가할 수 없어요.' }, 409);
+    }
     const nickname = cleanNickname(payload.nickname);
     if (nickname.length < 2) return json({ error: '닉네임은 2글자 이상 입력해 주세요.' }, 400);
     if (this.room.players.length >= 8) return json({ error: '방이 가득 찼어요.' }, 409);
@@ -327,6 +389,9 @@ export class RaceRoom extends DurableObject<Env> {
       joinedAt: Date.now(),
       finishedAt: null,
       forfeitedAt: null,
+      navigationStack: [this.room.startTitle],
+      score: 0,
+      roundResults: [],
     };
     this.room.players.push(player);
     await this.persistAndBroadcast();
@@ -356,12 +421,7 @@ export class RaceRoom extends DurableObject<Env> {
         this.room.hostPlayerId = this.room.players[0].id;
         this.room.hostToken = crypto.randomUUID();
       }
-      if (
-        this.room.status === 'racing' &&
-        this.room.players.every((item) => item.finishedAt || item.forfeitedAt)
-      ) {
-        this.room.status = 'finished';
-      }
+      this.settleRoundIfComplete();
       await this.persistAndBroadcast();
       await this.scheduleAlarm();
       return json({ left: true });
@@ -384,6 +444,7 @@ export class RaceRoom extends DurableObject<Env> {
         player.clicks = 0;
         player.currentTitle = this.room.startTitle;
         player.path = [this.room.startTitle];
+        player.navigationStack = [this.room.startTitle];
         player.finishedAt = null;
         player.forfeitedAt = null;
       }
@@ -401,8 +462,30 @@ export class RaceRoom extends DurableObject<Env> {
       player.currentTitle = nextTitle;
       player.clicks += 1;
       if (player.path.length < 500) player.path.push(nextTitle);
+      player.navigationStack ||= [...player.path.slice(0, -1)];
+      if (player.navigationStack.length >= 500) player.navigationStack.shift();
+      player.navigationStack.push(nextTitle);
       if (nextTitle === this.room.goalTitle) player.finishedAt = Date.now();
-      if (this.room.players.every((item) => item.finishedAt || item.forfeitedAt)) this.room.status = 'finished';
+      this.settleRoundIfComplete();
+      await this.persistAndBroadcast();
+      return json({ room: publicRoom(this.room, player.id) });
+    }
+    if (payload.action === 'back') {
+      if (this.room.status !== 'racing') return json({ error: '진행 중인 게임이 아니에요.' }, 409);
+      const player = this.findPlayer(payload);
+      if (!player) return json({ error: '참가자 정보를 확인할 수 없어요.' }, 401);
+      if (player.finishedAt) return json({ error: '이미 도착했어요.' }, 409);
+      if (player.forfeitedAt) return json({ error: '이미 포기한 레이스예요.' }, 409);
+      player.navigationStack ||= [...player.path];
+      if (player.navigationStack.length <= 1) {
+        return json({ error: '더 이상 뒤로 갈 문서가 없어요.' }, 409);
+      }
+      player.navigationStack.pop();
+      const previousTitle = player.navigationStack.at(-1);
+      if (!previousTitle) return json({ error: '이전 문서를 확인할 수 없어요.' }, 409);
+      player.currentTitle = previousTitle;
+      player.clicks += 1;
+      if (player.path.length < 500) player.path.push(previousTitle);
       await this.persistAndBroadcast();
       return json({ room: publicRoom(this.room, player.id) });
     }
@@ -413,14 +496,32 @@ export class RaceRoom extends DurableObject<Env> {
       if (player.finishedAt) return json({ error: '이미 도착했어요.' }, 409);
       if (player.forfeitedAt) return json({ room: publicRoom(this.room, player.id) });
       player.forfeitedAt = Date.now();
-      if (this.room.players.every((item) => item.finishedAt || item.forfeitedAt)) this.room.status = 'finished';
+      this.settleRoundIfComplete();
       await this.persistAndBroadcast();
       return json({ room: publicRoom(this.room, player.id) });
+    }
+    if (payload.action === 'next-round') {
+      if (payload.hostToken !== this.room.hostToken) return json({ error: '방장만 다음 라운드를 준비할 수 있어요.' }, 403);
+      if (this.room.mode !== 'rounds' || this.room.status !== 'round_result') {
+        return json({ error: '다음 라운드를 시작할 수 있는 상태가 아니에요.' }, 409);
+      }
+      const route = await randomNamuWikiRoute(this.room.recentRouteTitles || []);
+      this.room.startTitle = route.startTitle;
+      this.room.goalTitle = route.goalTitle;
+      this.room.recentRouteTitles = [
+        ...(this.room.recentRouteTitles || []),
+        route.startTitle,
+        route.goalTitle,
+      ].slice(-80);
+      this.room.round += 1;
+      this.prepareWaitingRoom();
+      await this.persistAndBroadcast();
+      return json({ room: publicRoom(this.room, this.hostPlayerId()) });
     }
     if (payload.action === 'rematch') {
       if (payload.hostToken !== this.room.hostToken) return json({ error: '방장만 다시 시작할 수 있어요.' }, 403);
       if (this.room.status !== 'finished') return json({ error: '모든 참가자의 결과가 확정된 뒤 다시 할 수 있어요.' }, 409);
-      if (this.room.mode === 'random') {
+      if (this.room.mode === 'random' || this.room.mode === 'rounds') {
         const route = await randomNamuWikiRoute(this.room.recentRouteTitles || []);
         this.room.startTitle = route.startTitle;
         this.room.goalTitle = route.goalTitle;
@@ -430,18 +531,17 @@ export class RaceRoom extends DurableObject<Env> {
           route.goalTitle,
         ].slice(-80);
       }
-      this.room.status = 'waiting';
-      this.room.startedAt = null;
-      this.room.round = (this.room.round || 1) + 1;
-      const hostPlayerId = this.hostPlayerId();
-      for (const player of this.room.players) {
-        player.ready = player.id === hostPlayerId;
-        player.clicks = 0;
-        player.currentTitle = this.room.startTitle;
-        player.path = [this.room.startTitle];
-        player.finishedAt = null;
-        player.forfeitedAt = null;
+      if (this.room.mode === 'rounds') {
+        this.room.round = 1;
+        for (const player of this.room.players) {
+          player.score = 0;
+          player.roundResults = [];
+        }
+      } else {
+        this.room.round = (this.room.round || 1) + 1;
       }
+      this.prepareWaitingRoom();
+      const hostPlayerId = this.hostPlayerId();
       await this.persistAndBroadcast();
       return json({ room: publicRoom(this.room, hostPlayerId) });
     }
@@ -541,12 +641,7 @@ export class RaceRoom extends DurableObject<Env> {
         this.room.hostPlayerId = this.room.players[0].id;
         this.room.hostToken = crypto.randomUUID();
       }
-      if (
-        this.room.status === 'racing' &&
-        this.room.players.every((item) => item.finishedAt || item.forfeitedAt)
-      ) {
-        this.room.status = 'finished';
-      }
+      this.settleRoundIfComplete();
       await this.persistAndBroadcast();
     }
     await this.scheduleAlarm();
@@ -565,6 +660,62 @@ export class RaceRoom extends DurableObject<Env> {
   private hostPlayerId() {
     if (!this.room) return '';
     return this.room.hostPlayerId || this.room.players[0]?.id || '';
+  }
+
+  private settleRoundIfComplete() {
+    if (
+      !this.room ||
+      this.room.status !== 'racing' ||
+      !this.room.players.length ||
+      !this.room.players.every((player) => player.finishedAt || player.forfeitedAt)
+    ) {
+      return;
+    }
+    if (this.room.mode !== 'rounds') {
+      this.room.status = 'finished';
+      return;
+    }
+    const startedAt = this.room.startedAt || Date.now();
+    const scores = calculateRoundScores(this.room.players, startedAt) as Record<string, number>;
+    for (const player of this.room.players) {
+      player.roundResults ||= [];
+      if (player.roundResults.some((result) => result.round === this.room!.round)) continue;
+      const endAt = player.finishedAt || player.forfeitedAt || startedAt;
+      const score = scores[player.id] || 0;
+      player.roundResults.push({
+        round: this.room.round,
+        clicks: player.clicks,
+        elapsedMs: Math.max(0, endAt - startedAt),
+        score,
+        finished: Boolean(player.finishedAt),
+        path: [...player.path],
+      });
+      player.score = (player.score || 0) + score;
+    }
+    this.room.status =
+      this.room.round < (this.room.totalRounds || DEFAULT_ROUNDS)
+        ? 'round_result'
+        : 'finished';
+  }
+
+  private prepareWaitingRoom() {
+    if (!this.room) return;
+    this.room.status = 'waiting';
+    this.room.startedAt = null;
+    const hostPlayerId = this.hostPlayerId();
+    for (const player of this.room.players) {
+      player.ready = player.id === hostPlayerId;
+      player.clicks = 0;
+      player.currentTitle = this.room.startTitle;
+      player.path = [this.room.startTitle];
+      player.navigationStack = [this.room.startTitle];
+      player.finishedAt = null;
+      player.forfeitedAt = null;
+      if (this.room.mode !== 'rounds') {
+        player.score = player.score || 0;
+        player.roundResults ||= [];
+      }
+    }
   }
 
   private async persist() {

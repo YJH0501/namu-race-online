@@ -16,6 +16,7 @@ const state = {
   mode: 'daily',
   nickname: '',
   notice: '',
+  roundCount: 3,
   restoring: true,
   room: null,
   serverUrl: localStorage.getItem(SERVER_KEY) || '',
@@ -77,7 +78,7 @@ function formatElapsed(startedAt, finishedAt = null) {
 }
 
 function modeName(mode) {
-  return mode === 'daily' ? '오늘의 레이스' : mode === 'custom' ? '직접 지정' : '랜덤 레이스';
+  return mode === 'daily' ? '오늘의 레이스' : mode === 'custom' ? '직접 지정' : mode === 'rounds' ? '라운드 레이스' : '랜덤 레이스';
 }
 
 function currentPlayer() {
@@ -131,8 +132,12 @@ function randomPanel() {
   return '<div class="mode-panel"><p><strong>나무위키 전체 문서에서 무작위로 선택합니다.</strong><br><span class="muted">출발과 목표는 모두가 준비한 뒤 시작과 동시에 공개돼요.</span></p></div>';
 }
 
+function roundsPanel() {
+  return `<div class="mode-panel"><p><strong>여러 랜덤 경로를 연속으로 달립니다.</strong><br><span class="muted">클릭 수 50%와 완주 시간 50%를 점수로 환산해 누적합니다.</span></p><div class="round-count"><label for="round-count">전체 라운드</label><select id="round-count" data-field="roundCount">${Array.from({ length: 9 }, (_, index) => index + 2).map((count) => `<option value="${count}" ${Number(state.roundCount) === count ? 'selected' : ''}>${count}라운드</option>`).join('')}</select></div></div>`;
+}
+
 function landingView() {
-  const panel = state.mode === 'daily' ? dailyPanel() : state.mode === 'custom' ? customPanel() : randomPanel();
+  const panel = state.mode === 'daily' ? dailyPanel() : state.mode === 'custom' ? customPanel() : state.mode === 'rounds' ? roundsPanel() : randomPanel();
   return `
     <main class="shell">
       <section class="landing">
@@ -140,7 +145,7 @@ function landingView() {
         <section class="card start-card">
           <p class="eyebrow">Cross-platform race</p><h2>온라인 레이스</h2><p class="muted">레이스 방식을 고르고 방을 만들거나 친구의 코드로 참가하세요.</p>
           <div class="field"><label for="nickname">닉네임</label><input id="nickname" data-field="nickname" maxlength="12" value="${escapeHtml(state.nickname)}" placeholder="2~12글자"></div>
-          <div class="mode-picker"><button class="mode-button ${state.mode === 'daily' ? 'active' : ''}" data-mode="daily">오늘</button><button class="mode-button ${state.mode === 'random' ? 'active' : ''}" data-mode="random">랜덤</button><button class="mode-button ${state.mode === 'custom' ? 'active' : ''}" data-mode="custom">직접 지정</button></div>
+          <div class="mode-picker"><button class="mode-button ${state.mode === 'daily' ? 'active' : ''}" data-mode="daily">오늘</button><button class="mode-button ${state.mode === 'random' ? 'active' : ''}" data-mode="random">랜덤</button><button class="mode-button ${state.mode === 'custom' ? 'active' : ''}" data-mode="custom">직접 지정</button><button class="mode-button ${state.mode === 'rounds' ? 'active' : ''}" data-mode="rounds">라운드</button></div>
           ${panel}
           <button class="button create-button" data-action="create" ${state.busy ? 'disabled' : ''}>새 방 만들기</button>
           <div class="join-section"><div class="join-row"><input data-field="joinCode" maxlength="6" value="${escapeHtml(state.joinCode)}" placeholder="방 코드 6자리"><button class="button secondary" data-action="join" ${state.busy ? 'disabled' : ''}>참가</button></div></div>
@@ -158,32 +163,45 @@ function routeView(room) {
   return `<div class="route"><div><small>출발 문서</small><strong>${escapeHtml(room.startTitle)}</strong></div><span class="route-arrow">→</span><div><small>목표 문서</small><strong>${escapeHtml(room.goalTitle)}</strong></div></div>`;
 }
 
+function playerPathDetails(room, player) {
+  if (!Array.isArray(player.path)) return '';
+  const rounds = room.mode === 'rounds' ? player.roundResults || [] : [];
+  const summary = rounds.length
+    ? `자세히보기 · ${rounds.length}개 라운드`
+    : `자세히보기 · ${player.path.length - 1}번 이동`;
+  const content = rounds.length
+    ? rounds.map((result) => `<section class="round-path"><strong>${result.round}라운드 · ${result.score}점 · ${result.finished ? '완주' : '포기'}</strong><div class="path-list">${result.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < result.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div></section>`).join('')
+    : `<div class="path-list">${player.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < player.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div>`;
+  return `<details class="path-details" data-player-path="${escapeHtml(player.id)}" ${state.expandedPaths.has(player.id) ? 'open' : ''}><summary>${summary}</summary>${content}</details>`;
+}
+
 function playerList(room, racing = false) {
   return room.players.map((player, index) => `
     <div class="${racing ? 'rank-row' : 'player-row'} ${player.id === state.session.playerId ? 'me' : ''}">
       ${racing ? `<span class="rank">${index + 1}</span>` : ''}<span class="avatar">${escapeHtml(player.nickname?.[0] || '?')}</span>
-      ${racing ? `<span class="player-detail"><strong>${escapeHtml(player.nickname)}</strong><small>${player.finishedAt ? '목표 도착' : player.forfeitedAt ? '레이스 포기' : player.currentTitle ? escapeHtml(player.currentTitle) : '경로 비공개'}</small></span><span class="clicks ${player.forfeitedAt ? 'forfeited' : ''}">${player.clicks} 클릭${player.finishedAt ? ' 🏁' : player.forfeitedAt ? ' 포기' : ''}</span>` : `<span class="player-name">${escapeHtml(player.nickname)}${player.id === state.session.playerId ? ' <small class="muted">(나)</small>' : ''}</span><span class="status ${player.ready ? 'ready' : ''}">${player.ready ? '준비' : '대기'}</span>`}
-      ${Array.isArray(player.path) ? `<details class="path-details" data-player-path="${escapeHtml(player.id)}" ${state.expandedPaths.has(player.id) ? 'open' : ''}><summary>자세히보기 · ${player.path.length - 1}번 이동</summary><div class="path-list">${player.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < player.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div></details>` : ''}
+      ${racing ? `<span class="player-detail"><strong>${escapeHtml(player.nickname)}</strong><small>${player.finishedAt ? '목표 도착' : player.forfeitedAt ? '레이스 포기' : player.currentTitle ? escapeHtml(player.currentTitle) : '경로 비공개'}</small></span><span class="clicks ${player.forfeitedAt ? 'forfeited' : ''}">${room.mode === 'rounds' ? `${player.score || 0}점 · ` : ''}${player.clicks} 클릭${player.finishedAt ? ' 🏁' : player.forfeitedAt ? ' 포기' : ''}</span>` : `<span class="player-name">${escapeHtml(player.nickname)}${player.id === state.session.playerId ? ' <small class="muted">(나)</small>' : ''}${room.mode === 'rounds' && room.round > 1 ? ` <small class="accent">${player.score || 0}점</small>` : ''}</span><span class="status ${player.ready ? 'ready' : ''}">${player.ready ? '준비' : '대기'}</span>`}
+      ${playerPathDetails(room, player)}
     </div>`).join('');
 }
 
 function lobbyView(room) {
   const me = currentPlayer();
   const host = Boolean(state.session.hostToken);
-  return `<main class="shell"><section class="lobby"><div class="lobby-top">${brand()}<div><span class="mode-label">${escapeHtml(modeName(room.mode))}</span><button class="room-code" data-copy="${escapeHtml(room.code)}">${escapeHtml(room.code)} ${state.copied ? '✓' : '⎘'}</button><button class="button ghost" data-action="leave">나가기</button></div></div><article class="card lobby-card"><header class="lobby-head"><div><p class="eyebrow">Online waiting room</p><h1>친구들을 기다리는 중</h1><p class="muted">6자리 방 코드를 공유하고 모두 준비되면 출발하세요.</p></div><span class="status ready">${room.players.length} / 8명</span></header><div class="lobby-body"><div>${routeView(room)}<div class="host-box"><strong>Windows·Mac 공통 방 코드</strong><br>다른 네트워크에 있는 친구도 코드만 입력하면 참가할 수 있어요.<br><span class="connection-state ${state.connection === 'live' ? 'live' : ''}"><i class="online-dot"></i>${state.connection === 'live' ? '실시간 연결됨' : '재연결 중'}</span></div><p class="notice">${escapeHtml(state.notice)}</p></div><div><div class="player-list">${playerList(room)}</div><div class="lobby-actions">${host ? `<button class="button" data-action="start" ${state.busy || !allReady() ? 'disabled' : ''}>${allReady() ? '레이스 시작' : '모두의 준비를 기다리는 중'}</button>` : `<button class="button ${me?.ready ? 'secondary' : ''}" data-action="ready" ${state.busy ? 'disabled' : ''}>${me?.ready ? '준비 취소' : '준비 완료'}</button>`}</div></div></div></article></section></main>`;
+  return `<main class="shell"><section class="lobby"><div class="lobby-top">${brand()}<div><span class="mode-label">${escapeHtml(modeName(room.mode))}${room.mode === 'rounds' ? ` · ${room.round}/${room.totalRounds}` : ''}</span><button class="room-code" data-copy="${escapeHtml(room.code)}">${escapeHtml(room.code)} ${state.copied ? '✓' : '⎘'}</button><button class="button ghost" data-action="leave">나가기</button></div></div><article class="card lobby-card"><header class="lobby-head"><div><p class="eyebrow">Online waiting room</p><h1>${room.mode === 'rounds' && room.round > 1 ? `${room.round}라운드 준비` : '친구들을 기다리는 중'}</h1><p class="muted">6자리 방 코드를 공유하고 모두 준비되면 출발하세요.</p></div><span class="status ready">${room.players.length} / 8명</span></header><div class="lobby-body"><div>${routeView(room)}<div class="host-box"><strong>${room.mode === 'rounds' ? `${room.round} / ${room.totalRounds}라운드` : 'Windows·Mac 공통 방 코드'}</strong><br>${room.mode === 'rounds' ? '새 경로는 모두가 준비한 뒤 시작할 때 공개됩니다.' : '다른 네트워크에 있는 친구도 코드만 입력하면 참가할 수 있어요.'}<br><span class="connection-state ${state.connection === 'live' ? 'live' : ''}"><i class="online-dot"></i>${state.connection === 'live' ? '실시간 연결됨' : '재연결 중'}</span></div><p class="notice">${escapeHtml(state.notice)}</p></div><div><div class="player-list">${playerList(room)}</div><div class="lobby-actions">${host ? `<button class="button" data-action="start" ${state.busy || !allReady() ? 'disabled' : ''}>${allReady() ? `${room.mode === 'rounds' ? `${room.round}라운드` : '레이스'} 시작` : '모두의 준비를 기다리는 중'}</button>` : `<button class="button ${me?.ready ? 'secondary' : ''}" data-action="ready" ${state.busy ? 'disabled' : ''}>${me?.ready ? '준비 취소' : '준비 완료'}</button>`}</div></div></div></article></section></main>`;
 }
 
 function raceView(room, me) {
   const activity = state.notice || (state.wikiLoading ? '나무위키 문서를 불러오는 중…' : '본문 링크만 눌러서 이동하세요.');
-  return `<main class="shell race"><header class="race-top">${brand()}<div class="race-route"><span>${escapeHtml(me.currentTitle)}</span><b class="muted">→</b><span class="goal">${escapeHtml(room.goalTitle)}</span></div><div class="race-meta"><span class="race-note ${state.notice || state.wikiLoading ? 'active' : ''}">${escapeHtml(activity)}</span><div class="metric"><strong data-elapsed>${formatElapsed(room.startedAt)}</strong><small>경과 시간</small></div><div class="metric"><strong>${me.clicks}</strong><small>클릭 수</small></div><button class="room-code" data-copy="${escapeHtml(room.code)}">${escapeHtml(room.code)}</button><button class="button danger compact" data-action="forfeit" ${state.busy ? 'disabled' : ''}>포기하기</button></div></header><div class="race-grid"><div id="wiki-slot" class="wiki-slot" aria-label="나무위키 원문"></div><aside class="card scoreboard"><div class="score-head"><h2>실시간 순위</h2><p class="muted">${escapeHtml(modeName(room.mode))} · ${room.players.length}명</p></div>${playerList(room, true)}</aside></div></main>`;
+  return `<main class="shell race"><header class="race-top">${brand()}<div class="race-route"><span>${escapeHtml(me.currentTitle)}</span><b class="muted">→</b><span class="goal">${escapeHtml(room.goalTitle)}</span></div><div class="race-meta"><span class="race-note ${state.notice || state.wikiLoading ? 'active' : ''}">${escapeHtml(activity)}</span><div class="metric"><strong data-elapsed>${formatElapsed(room.startedAt)}</strong><small>경과 시간</small></div><div class="metric"><strong>${me.clicks}</strong><small>클릭 수</small></div><button class="room-code" data-copy="${escapeHtml(room.code)}">${escapeHtml(room.code)}</button><button class="button secondary compact" data-action="back" ${state.busy || !me.canGoBack ? 'disabled' : ''}>← 뒤로가기 (+1)</button><button class="button danger compact" data-action="forfeit" ${state.busy ? 'disabled' : ''}>포기하기</button></div></header><div class="race-grid"><div id="wiki-slot" class="wiki-slot" aria-label="나무위키 원문"></div><aside class="card scoreboard"><div class="score-head"><h2>실시간 순위</h2><p class="muted">${escapeHtml(modeName(room.mode))}${room.mode === 'rounds' ? ` · ${room.round}/${room.totalRounds}` : ''} · ${room.players.length}명</p></div>${playerList(room, true)}</aside></div></main>`;
 }
 
 function finishView(room, me) {
   const forfeited = Boolean(me.forfeitedAt);
   const endAt = me.finishedAt || me.forfeitedAt;
   const settled = room.status === 'finished';
+  const roundComplete = room.status === 'round_result';
   const host = Boolean(state.session.hostToken);
-  return `<main class="shell"><section class="finish"><article class="card finish-card"><span class="finish-icon ${forfeited ? 'forfeited' : ''}">${forfeited ? '⚑' : '★'}</span><p class="eyebrow">${settled ? 'Final results' : 'Spectating'}</p><h1>${settled ? '최종 결과가 나왔어요' : forfeited ? '이번 레이스를 포기했어요' : '목표 문서에 도착!'}</h1><p class="muted">${settled ? '자세히보기를 열면 각 참가자가 지나온 문서를 순서대로 볼 수 있어요.' : '다른 참가자의 현재 위치와 이미 도착한 참가자의 자세한 경로를 바로 볼 수 있어요.'}</p><div class="finish-stats"><div><strong>${me.clicks}</strong><small>클릭</small></div><div><strong>${formatElapsed(room.startedAt, endAt)}</strong><small>${forfeited ? '진행 시간' : '완주 시간'}</small></div></div><div class="player-list">${playerList(room, true)}</div><div class="result-actions">${settled && host ? `<button class="button" data-action="rematch" ${state.busy ? 'disabled' : ''}>같은 방에서 다시하기</button>` : settled ? '<p class="muted rematch-note">방장이 다시하기를 누르면 같은 방에서 다음 라운드를 준비합니다.</p>' : '<p class="muted rematch-note">남은 참가자들의 이동 상황을 기다리는 중…</p>'}<button class="button secondary" data-action="leave">첫 화면으로</button></div></article></section></main>`;
+  return `<main class="shell"><section class="finish"><article class="card finish-card"><span class="finish-icon ${forfeited ? 'forfeited' : ''}">${forfeited ? '⚑' : '★'}</span><p class="eyebrow">${settled ? 'Final results' : roundComplete ? 'Round results' : 'Spectating'}</p><h1>${settled ? '최종 결과가 나왔어요' : roundComplete ? `${room.round}라운드 결과` : forfeited ? '이번 레이스를 포기했어요' : '목표 문서에 도착!'}</h1><p class="muted">${settled || roundComplete ? '자세히보기를 열면 이번 라운드의 이동 경로를 확인할 수 있어요.' : '다른 참가자의 현재 위치와 이미 도착한 참가자의 자세한 경로를 바로 볼 수 있어요.'}</p><div class="finish-stats">${room.mode === 'rounds' ? `<div><strong>${me.score || 0}</strong><small>누적 점수</small></div>` : ''}<div><strong>${me.clicks}</strong><small>클릭</small></div><div><strong>${formatElapsed(room.startedAt, endAt)}</strong><small>${forfeited ? '진행 시간' : '완주 시간'}</small></div></div><div class="player-list">${playerList(room, true)}</div><div class="result-actions">${roundComplete && host ? `<button class="button" data-action="next-round" ${state.busy ? 'disabled' : ''}>다음 라운드 준비</button>` : roundComplete ? '<p class="muted rematch-note">방장이 다음 라운드를 열 때까지 기다리는 중…</p>' : settled && host ? `<button class="button" data-action="rematch" ${state.busy ? 'disabled' : ''}>같은 방에서 다시하기</button>` : settled ? '<p class="muted rematch-note">방장이 다시하기를 누르면 같은 방에서 새 경기를 준비합니다.</p>' : '<p class="muted rematch-note">남은 참가자들의 이동 상황을 기다리는 중…</p>'}<button class="button secondary" data-action="leave">첫 화면으로</button></div></article></section></main>`;
 }
 
 function render() {
@@ -361,6 +379,7 @@ document.addEventListener('click', (event) => {
       mode: state.mode,
       startTitle: state.customStart,
       goalTitle: state.customGoal,
+      roundCount: Number(state.roundCount),
     }));
   }
   if (action === 'join') {
@@ -378,6 +397,16 @@ document.addEventListener('click', (event) => {
     if (!window.confirm('이번 레이스를 포기할까요? 순위에는 포기로 표시됩니다.')) return;
     return runAction(async () => request('POST', `/rooms/${state.session.code}/action`, {
       action: 'forfeit', playerId: state.session.playerId, playerToken: state.session.playerToken,
+    }));
+  }
+  if (action === 'back') {
+    return runAction(async () => request('POST', `/rooms/${state.session.code}/action`, {
+      action: 'back', playerId: state.session.playerId, playerToken: state.session.playerToken,
+    }));
+  }
+  if (action === 'next-round') {
+    return runAction(async () => request('POST', `/rooms/${state.session.code}/action`, {
+      action: 'next-round', hostToken: state.session.hostToken,
     }));
   }
   if (action === 'rematch') {
