@@ -476,6 +476,7 @@ export class RaceRoom extends DurableObject<Env> {
       if (!this.room.players.every((player) => player.ready)) return json({ error: '모든 참가자가 준비해야 시작할 수 있어요.' }, 409);
       this.room.status = 'racing';
       this.room.startedAt = Date.now();
+      this.room.scoreWeights = { clicks: 600, time: 400 };
       this.room.hint = newHintState();
       for (const player of this.room.players) {
         player.clicks = 0;

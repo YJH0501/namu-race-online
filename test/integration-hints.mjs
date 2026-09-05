@@ -8,7 +8,8 @@ const fixture = '<meta property="og:title" content="인공지능"><meta property
 const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: compiled.outputFiles[0].text, compatibilityDate: '2026-09-02',
   durableObjects: { RACE_ROOMS: { className: 'RaceRoom', useSQLite: true } },
   outboundService: async (request) => {
-    assert.equal(new URL(request.url).origin, 'https://namu.wiki');
+    assert.equal(new URL(request.url).origin, 'https://namu-race.yangkun050178.chatgpt.site');
+    assert.equal(new URL(request.url).pathname, '/api/article');
     upstreamCalls++;
     return new Response(fixture, { headers: { 'content-type': 'text/html' } });
   },

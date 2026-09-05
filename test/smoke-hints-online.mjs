@@ -22,6 +22,18 @@ try {
   assert.equal(hint.level, 1, JSON.stringify(hint));
   assert.ok(hint.categories.length);
   assert.equal(hint.summary, '');
+  if (process.env.NAMU_RACE_FULL_HINT_SMOKE === '1') {
+    await new Promise((resolve) => setTimeout(resolve, Math.max(0, hint.nextAvailableAt - Date.now()) + 100));
+    await api(`/rooms/${session.code}/action`, { ...body, action: 'hint-vote', hintLevel: 2, startedAt: room.startedAt });
+    for (let i = 0; i < 20; i++) {
+      hint = (await api(`/rooms/${session.code}?playerId=${session.playerId}&token=${session.playerToken}`)).room.hint;
+      if (hint.level === 2 || hint.status === 'unavailable') break;
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+    assert.equal(hint.level, 2);
+    assert.match(hint.summary, /학습능력/);
+    console.log(JSON.stringify({ liveStageTwo: true, description: hint.summary }));
+  }
   console.log(JSON.stringify({ ok: true, liveSource: true, categories: hint.categories, hiddenSummary: true }));
 } finally {
   if (session) await api(`/rooms/${session.code}/action`, { action: 'leave', playerId: session.playerId, playerToken: session.playerToken });
