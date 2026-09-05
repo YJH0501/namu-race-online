@@ -19,8 +19,8 @@ export function calculateRoundScores(players, startedAt) {
     finishers.map((player) => [
       player.id,
       Math.round(
-        500 * (bestClicks / player.clicks) +
-          500 * (bestElapsedMs / player.elapsedMs),
+        700 * (bestClicks / player.clicks) +
+          300 * (bestElapsedMs / player.elapsedMs),
       ),
     ]),
   );

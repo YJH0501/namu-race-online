@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { calculateRoundScores } from '../shared/scoring.mjs';
 
-test('라운드 점수는 클릭 수와 완주 시간을 절반씩 반영한다', () => {
+test('라운드 점수는 클릭 수 70%와 완주 시간 30%를 반영한다', () => {
   const scores = calculateRoundScores(
     [
       { id: 'balanced', clicks: 4, finishedAt: 11_000 },
@@ -12,8 +12,8 @@ test('라운드 점수는 클릭 수와 완주 시간을 절반씩 반영한다'
     1_000,
   );
 
-  assert.equal(scores.balanced, 750);
-  assert.equal(scores.fast, 750);
+  assert.equal(scores.balanced, 850);
+  assert.equal(scores.fast, 650);
   assert.equal(scores.forfeit, 0);
 });
 

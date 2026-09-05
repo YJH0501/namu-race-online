@@ -133,7 +133,7 @@ function randomPanel() {
 }
 
 function roundsPanel() {
-  return `<div class="mode-panel"><p><strong>여러 랜덤 경로를 연속으로 달립니다.</strong><br><span class="muted">클릭 수 50%와 완주 시간 50%를 점수로 환산해 누적합니다.</span></p><div class="round-count"><label for="round-count">전체 라운드</label><select id="round-count" data-field="roundCount">${Array.from({ length: 9 }, (_, index) => index + 2).map((count) => `<option value="${count}" ${Number(state.roundCount) === count ? 'selected' : ''}>${count}라운드</option>`).join('')}</select></div></div>`;
+  return `<div class="mode-panel"><p><strong>여러 랜덤 경로를 연속으로 달립니다.</strong><br><span class="muted">클릭 수 70%와 완주 시간 30%를 점수로 환산해 누적합니다.</span></p><div class="round-count"><label for="round-count">전체 라운드</label><select id="round-count" data-field="roundCount">${Array.from({ length: 9 }, (_, index) => index + 2).map((count) => `<option value="${count}" ${Number(state.roundCount) === count ? 'selected' : ''}>${count}라운드</option>`).join('')}</select></div></div>`;
 }
 
 function landingView() {
@@ -353,6 +353,12 @@ document.addEventListener('input', (event) => {
     state.serverUrl = state.serverUrl.trim();
     localStorage.setItem(SERVER_KEY, state.serverUrl);
   }
+});
+
+document.addEventListener('change', (event) => {
+  const field = event.target.dataset?.field;
+  if (field !== 'roundCount') return;
+  state.roundCount = Number(event.target.value) || 3;
 });
 
 document.addEventListener('click', (event) => {
