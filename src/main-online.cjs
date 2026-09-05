@@ -2,14 +2,54 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { app, BrowserWindow, WebContentsView, clipboard, ipcMain, net, session } = require('electron');
+const { app, BrowserWindow, WebContentsView, clipboard, dialog, ipcMain, net, session, shell } = require('electron');
 const { APP_NAME, FALLBACK_SERVER_URL, NAMU_ORIGIN } = require('./config-online.cjs');
+const { createUpdateController } = require('./updater-online.cjs');
 
 let mainWindow = null;
 let wikiView = null;
 let wikiVisible = false;
 let activeWikiTitle = '';
 let requestedWikiBounds = { x: 16, y: 96, width: 900, height: 700 };
+let updateController = null;
+let updateBlocked = true;
+const RELEASES_URL = 'https://github.com/YJH0501/namu-race-online/releases';
+
+function configureUpdates() {
+  const unsupportedReason = process.platform !== 'win32' ? 'platform'
+    : !app.isPackaged ? 'development'
+    : process.env.PORTABLE_EXECUTABLE_FILE ? 'portable' : '';
+  updateController = createUpdateController({
+    updater: unsupportedReason ? null : require('electron-updater').autoUpdater,
+    currentVersion: app.getVersion(),
+    unsupportedReason,
+    notify: (state) => sendToHud('update-state', state),
+    canInstall: () => !updateBlocked && Boolean(mainWindow && !mainWindow.isDestroyed()),
+    confirmInstall: async (version) => {
+      const result = await dialog.showMessageBox(mainWindow, {
+        type: 'question',
+        title: '나무레이스 업데이트',
+        message: `v${version}(으)로 업데이트할까요?`,
+        detail: '프로그램을 종료하고 새 버전으로 교체한 뒤 다시 실행합니다. 저장된 설정은 유지됩니다.',
+        buttons: ['업데이트 후 다시 시작', '나중에'],
+        defaultId: 0,
+        cancelId: 1,
+        noLink: true,
+      });
+      return result.response === 0;
+    },
+  });
+  if (!unsupportedReason) {
+    const startupCheck = setTimeout(() => void updateController.check(), 5000);
+    const recurringCheck = setInterval(() => void updateController.check(), 6 * 60 * 60 * 1000);
+    startupCheck.unref();
+    recurringCheck.unref();
+    app.once('before-quit', () => {
+      clearTimeout(startupCheck);
+      clearInterval(recurringCheck);
+    });
+  }
+}
 
 function normalizeTitle(value) {
   return typeof value === 'string'
@@ -173,6 +213,7 @@ function createWikiView() {
 }
 
 function createWindow() {
+  updateBlocked = true;
   mainWindow = new BrowserWindow({
     title: APP_NAME,
     width: 1440,
@@ -201,6 +242,18 @@ function createWindow() {
   mainWindow.loadFile(path.join(__dirname, 'index-online.html'));
 }
 
+for (const [channel, action] of [['get-update-state', 'getState'], ['check-update', 'check'], ['download-update', 'download'], ['install-update', 'install']]) {
+  ipcMain.handle(channel, (event) => {
+    if (!isHudSender(event) || !updateController) throw new Error('허용되지 않은 요청입니다.');
+    return updateController[action]();
+  });
+}
+ipcMain.on('set-update-blocked', (event, blocked) => {
+  if (isHudSender(event)) updateBlocked = blocked !== false;
+});
+ipcMain.handle('open-update-releases', (event) => {
+  if (isHudSender(event)) return shell.openExternal(RELEASES_URL);
+});
 ipcMain.handle('get-default-server-url', (event) => isHudSender(event) ? configuredServerUrl() : '');
 ipcMain.handle('online-request', async (event, request) => {
   if (!isHudSender(event)) return { ok: false, status: 403, data: { error: '허용되지 않은 요청입니다.' } };
@@ -263,7 +316,10 @@ ipcMain.on('wiki-search-blocked-from-page', (event) => {
 });
 
 app.setName(APP_NAME);
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  configureUpdates();
+  createWindow();
+});
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });

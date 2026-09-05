@@ -2,6 +2,7 @@
 
 const SESSION_KEY = 'namu-race-online-session-v1';
 const SERVER_KEY = 'namu-race-online-server-v1';
+const NICKNAME_KEY = 'namu-race-online-nickname-v1';
 const appRoot = document.querySelector('#app');
 
 const state = {
@@ -14,7 +15,7 @@ const state = {
   expandedPaths: new Set(),
   joinCode: '',
   mode: 'daily',
-  nickname: '',
+  nickname: localStorage.getItem(NICKNAME_KEY) || '',
   notice: '',
   roundCount: 3,
   restoring: true,
@@ -22,6 +23,7 @@ const state = {
   serverUrl: localStorage.getItem(SERVER_KEY) || '',
   session: readSession(),
   wikiLoading: false,
+  update: null,
 };
 
 let socket = null;
@@ -51,6 +53,11 @@ function applyRoom(room) {
     state.expandedPaths.clear();
   }
   if (!state.session || !room) return;
+  const me = currentPlayer();
+  if (me?.nickname) {
+    state.nickname = me.nickname;
+    localStorage.setItem(NICKNAME_KEY, me.nickname);
+  }
 
   if (room.hostPlayerId === state.session.playerId && room.hostToken) {
     if (state.session.hostToken !== room.hostToken) {
@@ -118,6 +125,46 @@ function brand() {
   return `<div class="brand"><span class="brand-mark">♣</span><span>나무레이스</span><span class="online-badge"><i class="online-dot"></i>ONLINE</span></div>`;
 }
 
+function renderUpdatePanel() {
+  const panel = document.querySelector('#update-panel');
+  const update = state.update;
+  if (!panel || !update) return;
+  let message = '새 버전이 있으면 여기에서 업데이트할 수 있어요.';
+  let button = '업데이트 확인';
+  let action = 'check';
+  let disabled = false;
+  if (update.phase === 'unsupported') {
+    message = update.reason === 'platform' ? '이 기기에서는 다운로드 페이지에서 새 버전을 받아 주세요.'
+      : update.reason === 'portable' ? '설치형 버전을 한 번 설치하면 앱 안에서 업데이트할 수 있어요.'
+      : '설치형 배포 버전에서 업데이트할 수 있어요.';
+    button = '다운로드 페이지';
+    action = 'releases';
+  } else if (update.phase === 'checking') {
+    message = '새 버전을 확인하는 중…';
+    disabled = true;
+  } else if (update.phase === 'current') {
+    message = '최신 버전을 사용하고 있어요.';
+  } else if (update.phase === 'available') {
+    message = `v${update.version} 업데이트가 있어요.`;
+    button = '새 버전 다운로드';
+    action = 'download';
+  } else if (update.phase === 'downloading') {
+    message = `새 버전 다운로드 중 · ${Math.round(update.percent)}%`;
+    button = '다운로드 중…';
+    disabled = true;
+  } else if (update.phase === 'downloaded') {
+    message = `v${update.version} 다운로드 완료. 설정을 유지하며 새 버전으로 교체합니다.`;
+    button = '업데이트 후 다시 시작';
+    action = 'install';
+  } else if (update.phase === 'installing') {
+    message = '새 버전으로 교체하고 다시 시작하는 중…';
+    disabled = true;
+  } else if (update.phase === 'error') {
+    button = '다시 확인';
+  }
+  panel.innerHTML = `<div class="update-heading"><strong>프로그램 업데이트</strong><span>v${escapeHtml(update.currentVersion)}</span></div><p>${escapeHtml(update.message || message)}</p>${update.phase === 'downloading' ? `<progress max="100" value="${Number(update.percent) || 0}" aria-label="업데이트 다운로드 진행률"></progress>` : ''}<button class="button secondary compact" data-update-action="${action}" ${disabled || state.busy || state.restoring ? 'disabled' : ''}>${button}</button>`;
+}
+
 function dailyPanel() {
   const route = state.daily;
   if (!route) return '<div class="mode-panel"><p class="muted">오늘의 경로를 불러오는 중…</p></div>';
@@ -141,7 +188,7 @@ function landingView() {
   return `
     <main class="shell">
       <section class="landing">
-        <div class="hero">${brand()}<h1>원본 나무위키에서,<br><span>모두 함께 달리자.</span></h1><p class="muted">Windows와 Mac에서 같은 방 코드로 접속하세요. 각자의 프로그램 안에 실제 나무위키를 열고, 링크 이동과 순위만 온라인으로 동기화합니다.</p><div class="features"><span><i></i>Windows · macOS</span><span><i></i>6자리 방 코드</span><span><i></i>원본 나무위키</span></div></div>
+        <div class="hero">${brand()}<h1>원본 나무위키에서,<br><span>모두 함께 달리자.</span></h1><p class="muted">Windows와 Mac에서 같은 방 코드로 접속하세요. 각자의 프로그램 안에 실제 나무위키를 열고, 링크 이동과 순위만 온라인으로 동기화합니다.</p><div class="features"><span><i></i>Windows · macOS</span><span><i></i>6자리 방 코드</span><span><i></i>원본 나무위키</span></div><section id="update-panel" class="update-panel" aria-label="프로그램 업데이트" aria-live="polite"></section></div>
         <section class="card start-card">
           <p class="eyebrow">Cross-platform race</p><h2>온라인 레이스</h2><p class="muted">레이스 방식을 고르고 방을 만들거나 친구의 코드로 참가하세요.</p>
           <div class="field"><label for="nickname">닉네임</label><input id="nickname" data-field="nickname" maxlength="12" value="${escapeHtml(state.nickname)}" placeholder="2~12글자"></div>
@@ -205,6 +252,7 @@ function finishView(room, me) {
 }
 
 function render() {
+  window.namuRace.setUpdateBlocked(Boolean(state.restoring || state.busy || (state.session && state.room)));
   if (state.restoring) {
     window.namuRace.hideWiki();
     appRoot.innerHTML = '<main class="loading"><div><div class="spinner"></div><p class="muted">온라인 레이스 서버에 연결하는 중…</p></div></main>';
@@ -213,6 +261,7 @@ function render() {
   if (!state.session || !state.room) {
     window.namuRace.hideWiki();
     appRoot.innerHTML = landingView();
+    renderUpdatePanel();
     return;
   }
   if (state.room.status === 'waiting') {
@@ -349,6 +398,7 @@ document.addEventListener('input', (event) => {
   const field = event.target.dataset?.field;
   if (!field || !(field in state)) return;
   state[field] = event.target.value;
+  if (field === 'nickname') localStorage.setItem(NICKNAME_KEY, state.nickname);
   if (field === 'serverUrl') {
     state.serverUrl = state.serverUrl.trim();
     localStorage.setItem(SERVER_KEY, state.serverUrl);
@@ -362,6 +412,20 @@ document.addEventListener('change', (event) => {
 });
 
 document.addEventListener('click', (event) => {
+  const updateButton = event.target.closest('[data-update-action]');
+  if (updateButton) {
+    if (updateButton.disabled) return;
+    const methods = { check: 'checkUpdate', download: 'downloadUpdate', install: 'installUpdate', releases: 'openUpdateReleases' };
+    const method = methods[updateButton.dataset.updateAction];
+    if (!method) return;
+    updateButton.disabled = true;
+    void window.namuRace[method]().then((update) => {
+      if (update) state.update = update;
+    }).catch(() => {
+      if (state.update) state.update.message = '업데이트 요청을 처리하지 못했어요. 다시 시도해 주세요.';
+    }).finally(renderUpdatePanel);
+    return;
+  }
   const modeButton = event.target.closest('[data-mode]');
   if (modeButton) {
     state.mode = modeButton.dataset.mode;
@@ -421,6 +485,15 @@ document.addEventListener('click', (event) => {
     }));
   }
 });
+
+window.namuRace.onUpdateState((update) => {
+  state.update = update;
+  renderUpdatePanel();
+});
+void window.namuRace.getUpdateState().then((update) => {
+  state.update = update;
+  renderUpdatePanel();
+}).catch(() => undefined);
 
 window.addEventListener('resize', updateWikiBounds);
 window.setInterval(() => {

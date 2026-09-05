@@ -1,6 +1,6 @@
 {
   "name": "namu-race-online",
-  "version": "0.4.0-test.2",
+  "version": "0.4.1-beta.1",
   "description": "Windows와 macOS에서 함께 플레이하는 온라인 나무위키 링크 레이스",
   "main": "src/main-online.cjs",
   "author": "Namu Race",
@@ -11,10 +11,10 @@
   },
   "scripts": {
     "start": "electron .",
-    "check": "node --check src/main-online.cjs && node --check src/hud-preload-online.cjs && node --check src/wiki-preload.cjs && node --check src/renderer-online.js && node --test test/routes.test.mjs test/korea-date.test.mjs test/scoring.test.mjs",
+    "check": "node --check src/main-online.cjs && node --check src/hud-preload-online.cjs && node --check src/wiki-preload.cjs && node --check src/renderer-online.js && node --check src/updater-online.cjs && node --test test/*.test.mjs",
     "server:dev": "wrangler dev --config server/wrangler-final-v2.jsonc",
     "server:deploy": "wrangler deploy --config server/wrangler-final-v2.jsonc",
-    "dist:win": "electron-builder --win portable --x64 --publish never",
+    "dist:win": "electron-builder --win nsis --x64 --publish never",
     "dist:mac": "electron-builder --mac dmg --universal --publish never"
   },
   "devDependencies": {
@@ -36,17 +36,47 @@
     "directories": {
       "output": "release"
     },
+    "publish": {
+      "provider": "github",
+      "owner": "YJH0501",
+      "repo": "namu-race-online"
+    },
     "win": {
-      "target": [{ "target": "portable", "arch": ["x64"] }],
-      "artifactName": "NamuRace-online-${version}-windows.${ext}"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "NamuRace-online-${version}-setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true
     },
     "mac": {
-      "target": [{ "target": "dmg", "arch": ["universal"] }],
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
       "category": "public.app-category.games",
       "identity": null,
       "hardenedRuntime": false,
       "minimumSystemVersion": "12.0",
       "artifactName": "NamuRace-online-${version}-mac-${arch}.${ext}"
     }
+  },
+  "dependencies": {
+    "electron-updater": "6.8.9"
   }
 }
