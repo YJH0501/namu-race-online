@@ -122,7 +122,7 @@ async function runAction(action) {
 }
 
 function brand() {
-  return `<div class="brand"><span class="brand-mark">♣</span><span>나무레이스</span><span class="online-badge"><i class="online-dot"></i>ONLINE</span></div>`;
+  return `<div class="brand"><span class="brand-mark"><img src="assets/icon.svg" width="38" height="38" alt=""></span><span>나무레이스</span><span class="online-badge"><i class="online-dot"></i>ONLINE</span></div>`;
 }
 
 function renderUpdatePanel() {
@@ -180,7 +180,7 @@ function randomPanel() {
 }
 
 function roundsPanel() {
-  return `<div class="mode-panel"><p><strong>여러 랜덤 경로를 연속으로 달립니다.</strong><br><span class="muted">클릭 수 70%와 완주 시간 30%를 점수로 환산해 누적합니다.</span></p><div class="round-count"><label for="round-count">전체 라운드</label><select id="round-count" data-field="roundCount">${Array.from({ length: 9 }, (_, index) => index + 2).map((count) => `<option value="${count}" ${Number(state.roundCount) === count ? 'selected' : ''}>${count}라운드</option>`).join('')}</select></div></div>`;
+  return `<div class="mode-panel"><p><strong>여러 랜덤 경로를 연속으로 달립니다.</strong><br><span class="muted">클릭 수 60%와 완주 시간 40%의 상대점수를 누적합니다. 두 기록 모두 최고면 1,000점입니다.</span></p><div class="round-count"><label for="round-count">전체 라운드</label><select id="round-count" data-field="roundCount">${Array.from({ length: 9 }, (_, index) => index + 2).map((count) => `<option value="${count}" ${Number(state.roundCount) === count ? 'selected' : ''}>${count}라운드</option>`).join('')}</select></div></div>`;
 }
 
 function landingView() {
@@ -217,9 +217,33 @@ function playerPathDetails(room, player) {
     ? `자세히보기 · ${rounds.length}개 라운드`
     : `자세히보기 · ${player.path.length - 1}번 이동`;
   const content = rounds.length
-    ? rounds.map((result) => `<section class="round-path"><strong>${result.round}라운드 · ${result.score}점 · ${result.finished ? '완주' : '포기'}</strong><div class="path-list">${result.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < result.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div></section>`).join('')
+    ? rounds.map((result) => `<section class="round-path"><strong>${result.round}라운드 · ${result.score}점 · ${result.finished ? '완주' : '포기'}</strong><p class="result-detail">${result.clicks}클릭 · ${(result.elapsedMs / 1000).toFixed(1)}초${result.clickScore != null ? ` · 클릭 ${result.clickScore}점 + 시간 ${result.timeScore}점` : ''} · 힌트 ${result.hintLevel || 0}단계</p><div class="path-list">${result.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < result.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div></section>`).join('')
     : `<div class="path-list">${player.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < player.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div>`;
-  return `<details class="path-details" data-player-path="${escapeHtml(player.id)}" ${state.expandedPaths.has(player.id) ? 'open' : ''}><summary>${summary}</summary>${content}</details>`;
+  return `${player.departed ? '<p class="result-detail departed-note">방 나감 · 기록 유지</p>' : ''}<details class="path-details" data-player-path="${escapeHtml(player.id)}" ${state.expandedPaths.has(player.id) ? 'open' : ''}><summary>${summary}</summary>${!rounds.length ? `<p class="result-detail">힌트 ${player.hintLevel || 0}단계 사용</p>` : ''}${content}</details>`;
+}
+
+function hintPanelHtml() {
+  const hint = state.room?.hint;
+  if (!hint) return '';
+  const wait = Math.max(0, Math.ceil((hint.nextAvailableAt - Date.now()) / 1000));
+  const loading = hint.status === 'loading';
+  const button = loading ? '목표 문서에서 힌트 가져오는 중…' : wait ? `${wait}초 후 다음 투표 가능` : hint.voted ? `찬성했어요 · ${hint.votes}/${hint.required}표` : `${hint.level + 1}단계 힌트 찬성 · ${hint.votes}/${hint.required}표`;
+  return `<div class="hint-head"><strong>목표 문서 힌트</strong><span>${hint.level}/2단계</span></div><p class="hint-rule">진행 중인 참가자의 과반수가 찬성하면 모두에게 공개돼요. 점수 감점은 없어요.</p>${hint.level >= 1 ? `<p><strong>분류</strong><br>${hint.categories.length ? hint.categories.map(escapeHtml).join(' · ') : '분류 정보를 추출하지 못했어요.'}</p>` : ''}${hint.level >= 2 ? `<p><strong>짧은 설명</strong><br>${escapeHtml(hint.summary)}</p>` : ''}${hint.status === 'unavailable' ? '<p class="hint-error" role="status">힌트를 가져오지 못했어요. 잠시 후 다시 투표할 수 있어요.</p>' : ''}${hint.level < 2 && hint.eligible ? `<button class="button secondary" data-action="hint-vote" ${state.busy || loading || wait || hint.voted ? 'disabled' : ''}>${button}</button>` : ''}${hint.level >= 1 ? '<small>나무위키 발췌·일부 생략 · CC BY-NC-SA 2.0 KR<br>힌트 내용은 이동 링크가 아니에요.</small>' : ''}`;
+}
+
+function mountHintPanel() {
+  if (!state.room?.hint) return;
+  const target = document.querySelector('.scoreboard') || document.querySelector('.finish-card');
+  if (!target) return;
+  let panel = document.querySelector('#hint-panel');
+  if (!panel) {
+    panel = document.createElement('section');
+    panel.id = 'hint-panel';
+    panel.className = 'hint-panel';
+    target.append(panel);
+  }
+  const html = hintPanelHtml();
+  if (panel.innerHTML !== html) panel.innerHTML = html;
 }
 
 function playerList(room, racing = false) {
@@ -274,9 +298,11 @@ function render() {
   if (me.finishedAt || me.forfeitedAt) {
     window.namuRace.hideWiki();
     appRoot.innerHTML = finishView(state.room, me);
+    mountHintPanel();
     return;
   }
   appRoot.innerHTML = raceView(state.room, me);
+  mountHintPanel();
   requestAnimationFrame(() => {
     updateWikiBounds();
     window.namuRace.showWiki(me.currentTitle || state.room.startTitle);
@@ -474,6 +500,12 @@ document.addEventListener('click', (event) => {
       action: 'back', playerId: state.session.playerId, playerToken: state.session.playerToken,
     }));
   }
+  if (action === 'hint-vote') {
+    return runAction(async () => request('POST', `/rooms/${state.session.code}/action`, {
+      action: 'hint-vote', playerId: state.session.playerId, playerToken: state.session.playerToken,
+      hintLevel: (state.room.hint?.level || 0) + 1, startedAt: state.room.startedAt,
+    }));
+  }
   if (action === 'next-round') {
     return runAction(async () => request('POST', `/rooms/${state.session.code}/action`, {
       action: 'next-round', hostToken: state.session.hostToken,
@@ -498,6 +530,7 @@ void window.namuRace.getUpdateState().then((update) => {
 window.addEventListener('resize', updateWikiBounds);
 window.setInterval(() => {
   for (const element of document.querySelectorAll('[data-elapsed]')) element.textContent = formatElapsed(state.room?.startedAt);
+  if (document.querySelector('#hint-panel')) mountHintPanel();
 }, 500);
 
 window.namuRace.onWikiLink(({ title }) => {

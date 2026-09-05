@@ -1,4 +1,4 @@
-export function calculateRoundScores(players, startedAt) {
+export function calculateRoundScoreDetails(players, startedAt, weights = { clicks: 600, time: 400 }) {
   const finishers = players
     .filter((player) => Number.isFinite(player.finishedAt))
     .map((player) => ({
@@ -8,7 +8,7 @@ export function calculateRoundScores(players, startedAt) {
     }));
 
   if (!finishers.length) {
-    return Object.fromEntries(players.map((player) => [player.id, 0]));
+    return Object.fromEntries(players.map((player) => [player.id, { score: 0, clickScore: 0, timeScore: 0 }]));
   }
 
   const bestClicks = Math.min(...finishers.map((player) => player.clicks));
@@ -18,14 +18,21 @@ export function calculateRoundScores(players, startedAt) {
   const finisherScores = new Map(
     finishers.map((player) => [
       player.id,
-      Math.round(
-        700 * (bestClicks / player.clicks) +
-          300 * (bestElapsedMs / player.elapsedMs),
-      ),
+      { clickScore: Math.round(weights.clicks * (bestClicks / player.clicks)),
+        timeScore: Math.round(weights.time * (bestElapsedMs / player.elapsedMs)),
+        bestClicks, bestElapsedMs },
     ]),
   );
 
   return Object.fromEntries(
-    players.map((player) => [player.id, finisherScores.get(player.id) || 0]),
+    players.map((player) => {
+      const detail = finisherScores.get(player.id) || { clickScore: 0, timeScore: 0, bestClicks, bestElapsedMs };
+      return [player.id, { ...detail, score: detail.clickScore + detail.timeScore }];
+    }),
   );
+}
+
+export function calculateRoundScores(players, startedAt, weights) {
+  const details = calculateRoundScoreDetails(players, startedAt, weights);
+  return Object.fromEntries(players.map((player) => [player.id, details[player.id]?.score || 0]));
 }

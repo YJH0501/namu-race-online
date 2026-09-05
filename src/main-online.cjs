@@ -216,6 +216,7 @@ function createWindow() {
   updateBlocked = true;
   mainWindow = new BrowserWindow({
     title: APP_NAME,
+    icon: path.join(__dirname, 'assets', 'icon.png'),
     width: 1440,
     height: 900,
     minWidth: 1080,

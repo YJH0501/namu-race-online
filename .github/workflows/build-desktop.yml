@@ -34,6 +34,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      - name: Verify hint voting and retained results
+        timeout-minutes: 3
+        run: node test/integration-hints.mjs
       - name: Configure online server
         env:
           NAMU_RACE_SERVER_URL: ${{ vars.NAMU_RACE_SERVER_URL }}
