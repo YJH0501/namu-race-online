@@ -41,6 +41,7 @@ jobs:
       - run: ${{ matrix.command }}
       - name: Verify Windows update download and checksum rejection
         if: runner.os == 'Windows'
+        timeout-minutes: 3
         run: npx electron test/integration-updater.cjs
       - name: Verify macOS package and online play
         if: runner.os == 'macOS'

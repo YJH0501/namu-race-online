@@ -2,12 +2,12 @@
 
 // Exercise the real updater and its SHA-512 validation without ever starting an installer.
 const assert = require('node:assert/strict');
-const { createReadStream, mkdtempSync, readFileSync, rmSync, statSync } = require('node:fs');
+const { createReadStream, mkdtempSync, readFileSync, statSync } = require('node:fs');
 const { createHash } = require('node:crypto');
 const { createServer } = require('node:http');
 const { tmpdir } = require('node:os');
 const path = require('node:path');
-const { app } = require('electron');
+const { app, session } = require('electron');
 const { NsisUpdater } = require('electron-updater');
 const { ElectronHttpExecutor } = require('electron-updater/out/electronHttpExecutor');
 const yaml = require('js-yaml');
@@ -18,6 +18,10 @@ const releaseDir = path.resolve(__dirname, '../release');
 const metadata = yaml.load(readFileSync(path.join(releaseDir, 'latest.yml'), 'utf8'));
 const installedVersion = '0.4.1-beta.0';
 let httpServer;
+const deadline = setTimeout(() => {
+  console.error('Updater integration test exceeded 90 seconds');
+  app.exit(1);
+}, 90_000);
 
 function makeUpdater(name, feed) {
   const updater = new NsisUpdater(null, {
@@ -100,14 +104,22 @@ async function run() {
   console.log(JSON.stringify({ ok: true, source: useGitHub ? 'public GitHub release' : 'local installer', version: metadata.version, checksumVerified: true, invalidChecksumRejected: !useGitHub, installerExecuted: false }));
 }
 
-run().then(() => app.exit(0), (error) => {
+async function finish(exitCode) {
+  await session.defaultSession.closeAllConnections();
+  if (httpServer) {
+    httpServer.closeAllConnections();
+    await new Promise((resolve) => httpServer.close(resolve));
+  }
+  clearTimeout(deadline);
+  // Chromium can still hold profile files during process exit on Windows.
+  // Leave this dedicated OS temp profile for normal temp/runner cleanup.
+  app.exit(exitCode);
+}
+
+run().then(() => finish(0), (error) => {
+  console.error(error);
+  return finish(1);
+}).catch((error) => {
   console.error(error);
   app.exit(1);
-});
-app.on('will-quit', () => httpServer?.close());
-process.on('exit', () => {
-  // This directory is freshly created by this test and never points at a user profile.
-  if (path.dirname(scratch) === path.resolve(tmpdir()) && path.basename(scratch).startsWith('namu-race-updater-test-')) {
-    rmSync(scratch, { recursive: true, force: true, maxRetries: 3 });
-  }
 });
