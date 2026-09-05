@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+const expectedVersion = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version;
 
 // Run only against a dedicated test profile started with --remote-debugging-port.
 const origin = process.env.NAMU_RACE_DEBUG_ORIGIN || 'http://127.0.0.1:9333';
@@ -37,7 +39,7 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
   assert.equal(result.panel, true, 'updater panel must appear independently of the online game');
-  assert.equal(result.update.currentVersion, '0.4.1-beta.1');
+  assert.equal(result.update.currentVersion, expectedVersion);
   assert.notEqual(result.update.phase, 'unsupported', 'packaged Windows updater must be enabled');
   assert.equal(await evaluate(`(() => {
     const input = document.querySelector('[data-field=nickname]');

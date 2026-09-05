@@ -60,7 +60,9 @@ npm run dist:win
 npm run dist:mac
 ```
 
-Windows 설치 파일은 `release/NamuRace-online-0.4.1-beta.1-setup.exe`입니다. macOS DMG는 포함된 GitHub Actions 워크플로에서 Intel Mac과 Apple Silicon Mac을 모두 지원하는 universal 앱으로 빌드합니다.
+Windows 설치 파일은 `release/NamuRace-online-0.4.1-beta.2-setup.exe`입니다. macOS DMG는 포함된 GitHub Actions 워크플로에서 Intel Mac과 Apple Silicon Mac을 모두 지원하는 universal 앱으로 빌드합니다.
+
+Windows 설치 마법사의 **설치 위치** 단계에서 원하는 드라이브와 폴더를 선택할 수 있습니다. 이미 설치한 앱의 위치를 옮기려면 게임을 종료한 뒤 설치 파일을 직접 다시 실행하고 새 폴더를 선택합니다. 기존 설치는 새 위치로 교체되며 저장된 설정은 유지합니다. 앱 안에서 진행하는 업데이트는 설치 위치를 묻지 않고 기존에 선택한 경로를 그대로 사용합니다.
 
 ### Windows 업데이트
 

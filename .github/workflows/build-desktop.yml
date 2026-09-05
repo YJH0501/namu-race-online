@@ -43,6 +43,11 @@ jobs:
         if: runner.os == 'Windows'
         timeout-minutes: 3
         run: npx electron test/integration-updater.cjs
+      - name: Verify custom installation, relocation and update path
+        if: runner.os == 'Windows'
+        timeout-minutes: 6
+        shell: pwsh
+        run: ./test/installer-paths.ps1
       - name: Verify macOS package and online play
         if: runner.os == 'macOS'
         shell: bash

@@ -1,6 +1,6 @@
 {
   "name": "namu-race-online",
-  "version": "0.4.1-beta.1",
+  "version": "0.4.1-beta.2",
   "description": "Windows와 macOS에서 함께 플레이하는 온라인 나무위키 링크 레이스",
   "main": "src/main-online.cjs",
   "author": "Namu Race",
@@ -53,7 +53,8 @@
       "artifactName": "NamuRace-online-${version}-setup.${ext}"
     },
     "nsis": {
-      "oneClick": true,
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
       "perMachine": false,
       "deleteAppDataOnUninstall": false,
       "createDesktopShortcut": true,
