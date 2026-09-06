@@ -27,7 +27,14 @@ try {
   if (process.env.NAMU_RACE_EXPECT_HINT_SOURCE) assert.equal(hint.source, process.env.NAMU_RACE_EXPECT_HINT_SOURCE);
   const stageOneSource = hint.sourceUrl;
   if (process.env.NAMU_RACE_FULL_HINT_SMOKE === '1') {
-    await new Promise((resolve) => setTimeout(resolve, Math.max(0, hint.nextAvailableAt - Date.now()) + 100));
+    console.log(JSON.stringify({ stageOne: true, goalTitle, source: hint.source }));
+    // The test machine's wall clock can differ from the server. Use the server's
+    // eligibility flag rather than subtracting timestamps from two clocks.
+    for (let i = 0; i < 90 && !hint.canRequest; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      hint = (await api(`/rooms/${session.code}?playerId=${session.playerId}&token=${session.playerToken}`)).room.hint;
+    }
+    assert.equal(hint.canRequest, true, 'Server did not enable the second ballot within 90 seconds');
     await api(`/rooms/${session.code}/action`, { ...body, action: 'hint-vote', hintLevel: 2, startedAt: room.startedAt });
     for (let i = 0; i < 20; i++) {
       hint = (await api(`/rooms/${session.code}?playerId=${session.playerId}&token=${session.playerToken}`)).room.hint;
