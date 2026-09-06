@@ -3,8 +3,8 @@ import { cleanHintText, createHintCache, selectHintText } from '../../shared/hin
 
 const cache = createHintCache();
 const ORIGIN = 'https://namu.wiki';
-// Reuse the game's existing public reader service: its normal article-fetch path
-// works from the deployed web runtime, unlike direct fetches from the room DO.
+// Reuse the game's reader service. Success from a browser/local request does not
+// prove DO-to-reader requests work: the source can deny those requests with 403.
 const READER_ORIGIN = 'https://namu-race.yangkun050178.chatgpt.site';
 const MAX_HTML_BYTES = 2 * 1024 * 1024;
 
@@ -89,8 +89,18 @@ async function fetchHint(title: string) {
       if (url.origin !== READER_ORIGIN || url.pathname !== '/api/article') return null;
     }
     if (!response?.ok || !response.headers.get('content-type')?.includes('text/html') || !response.body) {
-      console.warn('NAMU_HINT upstream status', response?.status);
-      await response?.body?.cancel(); return null;
+      // Keep a bounded, text-only error reason from our own reader service.
+      // A 502 alone hides whether the source denied access or the reader failed.
+      let reason = '';
+      if (response?.body) {
+        const errorReader = response.body.getReader();
+        const chunk = await errorReader.read();
+        const errorHtml = new TextDecoder().decode(chunk.value?.subarray(0, 2048));
+        reason = cleanHintText(errorHtml.match(/<p>([\s\S]*?)<\/p>/i)?.[1] || '', 240);
+        await errorReader.cancel();
+      }
+      console.warn('NAMU_HINT upstream failure', JSON.stringify({ status: response?.status, reason }));
+      return null;
     }
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
