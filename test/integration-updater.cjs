@@ -15,7 +15,10 @@ const { createUpdateController } = require('../src/updater-online.cjs');
 const scratch = mkdtempSync(path.join(tmpdir(), 'namu-race-updater-test-'));
 app.setPath('userData', scratch);
 const releaseDir = path.resolve(__dirname, '../release');
-const metadata = yaml.load(readFileSync(path.join(releaseDir, 'latest.yml'), 'utf8'));
+// Public smoke tests verify this checkout's version, not a stale local build.
+const metadata = process.argv.includes('--github')
+  ? { version: require('../package.json').version }
+  : yaml.load(readFileSync(path.join(releaseDir, 'latest.yml'), 'utf8'));
 const installedVersion = '0.4.1-beta.0';
 let httpServer;
 const deadline = setTimeout(() => {
