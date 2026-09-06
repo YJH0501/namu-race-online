@@ -1,13 +1,16 @@
 import { DurableObject } from 'cloudflare:workers';
 // @ts-expect-error Shared runtime module intentionally stays plain ESM for Node tests.
-import { cleanTitle, customRoute, dailyRoute, randomRoute, utcDateKey } from '../../shared/routes.mjs';
+import { cleanTitle, customRoute, dailyRoute, utcDateKey } from '../../shared/routes.mjs';
 // @ts-expect-error Generated title snapshot intentionally stays plain ESM.
 import { RANDOM_TITLE_POOL } from '../../shared/random-title-pool.mjs';
 // @ts-expect-error Shared runtime module intentionally stays plain ESM for Node tests.
 import { calculateRoundScoreDetails } from '../../shared/scoring.mjs';
 // @ts-expect-error Plain ESM helpers are shared with deterministic Node tests.
-import { newHintState, publicHint, hintVoteInfo, reconcileHint, completeHint, HINT_LOAD_TIMEOUT_MS } from '../../shared/hints.mjs';
-import { getGoalHint } from './hint-source';
+import { publicHint, hintVoteInfo } from '../../shared/hints.mjs';
+// @ts-expect-error Server-owned static catalog, intentionally plain ESM.
+import { HINT_GOAL_TITLES } from '../../shared/hint-catalog.mjs';
+// @ts-expect-error Plain ESM helpers shared with deterministic tests.
+import { newPreparedHintState, prepareRoomHint, reconcilePreparedHint } from '../../shared/prepared-hints.mjs';
 
 interface Env {
   RACE_ROOMS: DurableObjectNamespace<RaceRoom>;
@@ -66,7 +69,7 @@ type Room = {
   startedAt: number | null;
   players: Player[];
   departedPlayers?: Player[];
-  hint?: ReturnType<typeof newHintState>;
+  hint?: ReturnType<typeof newPreparedHintState>;
   scoreWeights?: { clicks: number; time: number };
 };
 
@@ -153,28 +156,22 @@ function rememberRandomTitles(titles: string[]) {
   }
 }
 
-function routeFromCandidates(candidates: readonly string[]) {
-  if (candidates.length < 2) return null;
-  const firstIndex = randomIndex(candidates.length);
-  let secondIndex = randomIndex(candidates.length - 1);
-  if (secondIndex >= firstIndex) secondIndex += 1;
-  const startTitle = candidates[firstIndex];
-  const goalTitle = candidates[secondIndex];
+async function randomNamuWikiRoute(excludedTitles: string[] = []) {
+  const goals = HINT_GOAL_TITLES as readonly string[];
+  // A small prepared goal pool must not be exhausted by the 240-title start LRU.
+  const recentGoals = recentRandomTitles.filter(t => goals.includes(t)).slice(-Math.floor(goals.length / 2));
+  const roomExcluded = new Set(excludedTitles);
+  let goalCandidates = goals.filter(t => !roomExcluded.has(t) && !recentGoals.includes(t));
+  if (!goalCandidates.length) goalCandidates = goals.filter(t => !roomExcluded.has(t));
+  if (!goalCandidates.length) goalCandidates = [...goals];
+  if (!goalCandidates.length) throw new Error('준비된 힌트 목표 목록이 비어 있어요.');
+  const goalTitle = goalCandidates[randomIndex(goalCandidates.length)];
+  const excluded = new Set([...recentRandomTitles, ...excludedTitles, goalTitle]);
+  let starts = (RANDOM_TITLE_POOL as readonly string[]).filter(t => !excluded.has(t));
+  if (!starts.length) starts = (RANDOM_TITLE_POOL as readonly string[]).filter(t => t !== goalTitle);
+  const startTitle = starts[randomIndex(starts.length)];
   rememberRandomTitles([startTitle, goalTitle]);
   return { mode: 'random' as const, dateKey: null, startTitle, goalTitle };
-}
-
-async function randomNamuWikiRoute(excludedTitles: string[] = []) {
-  const excluded = new Set([...recentRandomTitles, ...excludedTitles]);
-  const candidates = (RANDOM_TITLE_POOL as readonly string[]).filter(
-    (title) => !excluded.has(title),
-  );
-  const snapshotRoute = routeFromCandidates(candidates);
-  if (snapshotRoute) return snapshotRoute;
-
-  const emergencyRoute = randomRoute();
-  rememberRandomTitles([emergencyRoute.startTitle, emergencyRoute.goalTitle]);
-  return emergencyRoute;
 }
 
 function publicRoom(room: Room, viewerPlayerId?: string | null) {
@@ -205,6 +202,10 @@ function publicRoom(room: Room, viewerPlayerId?: string | null) {
     createdAt: room.createdAt,
     startedAt: room.startedAt,
     hint: publicHint(room, viewerPlayerId),
+    hintAvailable: room.hint?.available !== false,
+    hintPolicy: 'prepared-v1',
+    hintGoalCount: HINT_GOAL_TITLES.length,
+    randomStartCount: RANDOM_TITLE_POOL.length,
     scoreWeights: room.scoreWeights || { clicks: 700, time: 300 },
     activePlayerCount: room.players.length,
     players: [...room.players, ...(room.status === 'waiting' ? [] : room.departedPlayers || [])]
@@ -322,6 +323,7 @@ export class RaceRoom extends DurableObject<Env> {
     super(ctx, env);
     this.ctx.blockConcurrencyWhile(async () => {
       this.room = (await this.ctx.storage.get<Room>('room')) || null;
+      if (prepareRoomHint(this.room)) await this.persist();
     });
   }
 
@@ -378,7 +380,7 @@ export class RaceRoom extends DurableObject<Env> {
       startedAt: null,
       players: [player],
       departedPlayers: [],
-      hint: newHintState(),
+      hint: newPreparedHintState(route.goalTitle),
       scoreWeights: { clicks: 600, time: 400 },
     };
     await this.persist();
@@ -458,10 +460,11 @@ export class RaceRoom extends DurableObject<Env> {
     if (payload.action === 'hint-vote') {
       const player = this.findPlayer(payload);
       if (!player) return json({ error: '참가자 정보를 확인할 수 없어요.' }, 401);
-      this.room.hint ||= newHintState();
+      prepareRoomHint(this.room);
       const hint = this.room.hint;
       if (this.room.status !== 'racing' || player.finishedAt || player.forfeitedAt) return json({ error: '아직 달리는 참가자만 힌트에 투표할 수 있어요.' }, 409);
       if (payload.startedAt !== this.room.startedAt || payload.hintLevel !== hint.level + 1) return json({ error: '라운드나 힌트 단계가 바뀌었어요. 다시 확인해 주세요.' }, 409);
+      if (!hint.available) return json({ error: '이 목표는 준비된 힌트 카드가 없어요. 이 레이스는 힌트 없이 진행해 주세요.' }, 409);
       // Retransmission does not become an extra vote or start another fetch.
       if (hint.votes.includes(player.id) || hint.status === 'loading') return json({ room: publicRoom(this.room, player.id) });
       const info = hintVoteInfo(this.room, player.id);
@@ -477,7 +480,7 @@ export class RaceRoom extends DurableObject<Env> {
       this.room.status = 'racing';
       this.room.startedAt = Date.now();
       this.room.scoreWeights = { clicks: 600, time: 400 };
-      this.room.hint = newHintState();
+      this.room.hint = newPreparedHintState(this.room.goalTitle);
       for (const player of this.room.players) {
         player.clicks = 0;
         player.currentTitle = this.room.startTitle;
@@ -762,7 +765,7 @@ export class RaceRoom extends DurableObject<Env> {
     this.room.status = 'waiting';
     this.room.startedAt = null;
     this.room.departedPlayers = [];
-    this.room.hint = newHintState();
+    this.room.hint = newPreparedHintState(this.room.goalTitle);
     this.room.scoreWeights = { clicks: 600, time: 400 };
     const hostPlayerId = this.hostPlayerId();
     for (const player of this.room.players) {
@@ -796,19 +799,14 @@ export class RaceRoom extends DurableObject<Env> {
             ? player.lastSeenAt + PRESENCE_TIMEOUT_MS
             : Number.POSITIVE_INFINITY,
       );
-    const hintDeadline = this.room.status === 'racing' && this.room.hint?.status === 'loading'
-      ? this.room.hint.requestedAt + HINT_LOAD_TIMEOUT_MS : Number.POSITIVE_INFINITY;
-    await this.ctx.storage.setAlarm(Math.min(expiresAt, hintDeadline, ...disconnectDeadlines));
+    await this.ctx.storage.setAlarm(Math.min(expiresAt, ...disconnectDeadlines));
   }
 
   private async persistAndBroadcast() {
-    const shouldLoadHint = this.room && reconcileHint(this.room);
-    const hintRequestId = shouldLoadHint ? this.room!.hint.requestId : null;
-    const hintTitle = shouldLoadHint ? this.room!.goalTitle : '';
+    reconcilePreparedHint(this.room);
     await this.persist();
     if (!this.room) return;
     await this.scheduleAlarm();
-    if (hintRequestId) this.ctx.waitUntil(this.loadHint(hintRequestId, hintTitle));
     for (const socket of this.ctx.getWebSockets()) {
       try {
         const attachment = socket.deserializeAttachment() as { playerId?: string } | null;
@@ -823,12 +821,4 @@ export class RaceRoom extends DurableObject<Env> {
     }
   }
 
-  private async loadHint(requestId: string, title: string) {
-    // The unreleased short description is already persisted with stage one.
-    // Reuse that exact source after hibernation instead of depending on isolate cache.
-    const stored = this.room?.hint;
-    const data = stored?.level === 1 && stored.summary && this.room?.goalTitle === title
-      ? { ...stored } : await getGoalHint(title).catch(() => null);
-    if (this.room && completeHint(this.room, requestId, data)) await this.persistAndBroadcast();
-  }
 }

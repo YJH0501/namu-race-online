@@ -1,33 +1,13 @@
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
+import { getHintCard, HINT_GOAL_TITLES } from '../shared/hint-catalog.mjs';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 
 const compiled = await build({ entryPoints: ['test/hints-worker.ts'], bundle: true, format: 'esm', write: false, external: ['cloudflare:workers'], target: 'es2022' });
 let upstreamCalls = 0;
-const fallback = process.argv.includes('--wikipedia');
-let fixtureTitle = '';
-const fixture = '<meta property="og:title" content="인공지능"><meta property="og:description" content="인공지능의 설명입니다."><a href="/w/분류:컴퓨터%20과학">컴퓨터 과학</a><table><div class="wiki-paragraph">이 표 안의 내용은 힌트에 들어가면 안 됩니다.</div></table><div class="wiki-paragraph">인공지능은 인간의 학습 능력과 추론 능력을 컴퓨터로 구현하는 기술이다.<sup class="wiki-footnote">[1]</sup> 두 번째 문장.</div>';
 const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: compiled.outputFiles[0].text, compatibilityDate: '2026-09-02',
   durableObjects: { RACE_ROOMS: { className: 'RaceRoom', useSQLite: true } },
-  outboundService: async (request) => {
-    const url = new URL(request.url);
-    upstreamCalls++;
-    if (fallback && url.origin === 'https://ko.wikipedia.org') {
-      if (url.pathname.startsWith('/api/rest_v1/page/summary/')) {
-        fixtureTitle = decodeURIComponent(url.pathname.slice('/api/rest_v1/page/summary/'.length));
-        return Response.json({ type: 'standard', namespace: { id: 0 }, pageid: 123,
-          title: fixtureTitle, extract: `${fixtureTitle}은 인간의 학습 능력과 추론 능력을 컴퓨터로 구현하는 기술이다. 두 번째 문장.` });
-      }
-      assert.equal(url.pathname, '/w/api.php');
-      assert.equal(url.searchParams.get('pageids'), '123');
-      return Response.json({ query: { pages: [{ pageid: 123, ns: 0, title: fixtureTitle,
-        categories: [{ title: '분류:컴퓨터 과학' }], pageprops: {} }] } });
-    }
-    assert.equal(new URL(request.url).origin, 'https://namu-race.yangkun050178.chatgpt.site');
-    assert.equal(new URL(request.url).pathname, '/api/article');
-    if (fallback) return new Response('<p>나무위키 문서를 불러오지 못했습니다. (403)</p>', { status: 502, headers: { 'content-type': 'text/html' } });
-    return new Response(fixture, { headers: { 'content-type': 'text/html' } });
-  },
+  outboundService: () => { upstreamCalls++; throw Error('Prepared hints must never request an external document'); },
 }));
 
 async function api(path, body, status = 200) {
@@ -65,12 +45,16 @@ try {
   assert.equal(upstreamCalls, 0);
   await action(guest, 'hint-vote', ballot);
   const first = await waitFor(host, (r) => r.hint.level === 1);
-  assert.deepEqual(first.hint.categories, ['컴퓨터 과학']);
-  assert.equal(first.hint.summary, '', 'Summary must not leak before stage two');
+  const card = getHintCard(started.goalTitle);
+  assert.ok(card);
+  assert.equal(first.hint.format, 'card-v1');
+  assert.equal(first.hint.summary, card.summary);
+  assert.deepEqual(first.hint.relatedTitles, [], 'Related concepts must not leak before stage two');
+  assert.equal(first.hint.card, undefined, 'Private card snapshot never leaves the server');
   assert.equal((await view(guest)).room.hint.level, 1);
-  assert.equal(first.hint.source, fallback ? 'wikipedia' : 'namuwiki');
-  assert.equal(first.hint.sourceLicense, fallback ? 'CC BY-SA 4.0' : 'CC BY-NC-SA 2.0 KR');
-  assert.equal(upstreamCalls, fallback ? 3 : 1);
+  assert.equal(first.hint.source, card.source);
+  assert.equal(first.hint.sourceLicense, card.sourceLicense);
+  assert.equal(upstreamCalls, 0);
   await action(host, 'hint-vote', { ...ballot, hintLevel: 2 }, 409);
   const ns = await mf.getDurableObjectNamespace('RACE_ROOMS');
   const stub = ns.get(ns.idFromName(host.code));
@@ -78,9 +62,9 @@ try {
   await action(host, 'hint-vote', { ...ballot, hintLevel: 2 });
   await action(guest, 'hint-vote', { ...ballot, hintLevel: 2 });
   const second = await waitFor(guest, (r) => r.hint.level === 2);
-  assert.match(second.hint.summary, /학습 능력/);
-  assert.doesNotMatch(second.hint.summary, /표 안|두 번째|\[1\]/);
-  assert.equal(upstreamCalls, fallback ? 3 : 1, 'Second hint reuses the persisted excerpt');
+  assert.equal(second.hint.summary, card.summary);
+  assert.deepEqual(second.hint.relatedTitles, card.relatedTitles);
+  assert.equal(upstreamCalls, 0, 'Both stages work with all external requests forbidden');
   assert.equal(second.hint.source, first.hint.source);
   assert.equal(second.hint.sourceUrl, first.hint.sourceUrl);
 
@@ -111,9 +95,13 @@ try {
 
   // Completed-room disconnection retains the final record, transfers host, and clears on rematch.
   const simple = await api('/rooms', { nickname: '방장', mode: 'custom', startTitle: '출발', goalTitle: '목표' });
+  assert.equal(simple.room.hintAvailable, false, 'Unsupported custom goal warns before start');
   const h = simple.session;
   const g = (await api(`/rooms/${h.code}/join`, { nickname: '친구' })).session;
-  await action(g, 'ready'); await action(h, 'start', { hostToken: h.hostToken });
+  await action(g, 'ready'); const noCard = (await action(h, 'start', { hostToken: h.hostToken })).room;
+  assert.equal(noCard.hint.available, false);
+  assert.equal(noCard.hint.canRequest, false);
+  await action(h, 'hint-vote', { hintLevel: 1, startedAt: noCard.startedAt }, 409);
   await action(h, 'progress', { nextTitle: '목표' }); await action(g, 'forfeit');
   const s = ns.get(ns.idFromName(h.code));
   await s.fetch('https://room/__test/disconnect', { method: 'POST', body: h.playerId });
@@ -124,5 +112,39 @@ try {
   assert.deepEqual(disconnected.players.find((p) => p.id === h.playerId).path, ['출발', '목표']);
   assert.equal((await action(g, 'rematch', { hostToken: disconnected.hostToken })).room.players.length, 1);
   await action(g, 'leave');
-  console.log(JSON.stringify({ ok: true, wikipediaFallback: fallback, majority: true, twoStages: true, noEarlyLeak: true, cacheReused: true, departedResultsRetained: true, scoreBaselineRetained: true, rematchCleanup: true }));
+  // Exercise every supported goal through the real API, not only pure helpers.
+  for (const title of HINT_GOAL_TITLES) {
+    const made = await api('/rooms', { nickname: '카드검증', mode: 'custom', startTitle: '테스트 출발', goalTitle: title });
+    const user = made.session;
+    const begun = (await action(user, 'start', { hostToken: user.hostToken })).room;
+    assert.equal(begun.hint.summary, '');
+    assert.deepEqual(begun.hint.relatedTitles, []);
+    const ballot = { hintLevel: 1, startedAt: begun.startedAt };
+    const one = (await action(user, 'hint-vote', ballot)).room.hint;
+    assert.equal(one.level, 1, title + ': immediate stage one');
+    assert.equal(one.summary, getHintCard(title).summary);
+    await ns.get(ns.idFromName(user.code)).fetch('https://room/__test/advance-hint');
+    const two = (await action(user, 'hint-vote', { ...ballot, hintLevel: 2 })).room.hint;
+    assert.deepEqual(two.relatedTitles, getHintCard(title).relatedTitles);
+    await action(user, 'leave');
+  }
+  // Full ten-round series: supported goals, broad starts, no repeated goal.
+  const series = await api('/rooms', { nickname: '라운드검증', mode: 'rounds', roundCount: 10 });
+  const used = new Set();
+  for (let round = 1; round <= 10; round++) {
+    const race = (await action(series.session, 'start', { hostToken: series.session.hostToken })).room;
+    assert.equal(race.round, round);
+    assert.ok(getHintCard(race.goalTitle));
+    assert.ok(!used.has(race.goalTitle));
+    used.add(race.goalTitle);
+    assert.notEqual(race.startTitle, race.goalTitle);
+    await action(series.session, 'forfeit');
+    if (round < 10) {
+      const waiting = (await action(series.session, 'next-round', { hostToken: series.session.hostToken })).room;
+      assert.equal(waiting.hint, null); assert.equal(waiting.goalTitle, null);
+    }
+  }
+  await action(series.session, 'leave');
+  assert.equal(upstreamCalls, 0);
+  console.log(JSON.stringify({ ok: true, preparedCards: HINT_GOAL_TITLES.length, upstreamCalls, tenDistinctRounds: true, majority: true, twoStages: true, noEarlyLeak: true, departedResultsRetained: true, rematchCleanup: true }));
 } finally { await mf.dispose(); }

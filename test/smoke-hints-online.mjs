@@ -21,9 +21,12 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   assert.equal(hint.level, 1, JSON.stringify(hint));
-  assert.ok(hint.categories.length);
-  assert.equal(hint.summary, '');
-  assert.ok(['namuwiki', 'wikipedia'].includes(hint.source));
+  assert.equal(hint.format, 'card-v1');
+  assert.equal(hint.available, true);
+  assert.ok(hint.summary.length >= 15);
+  assert.deepEqual(hint.relatedTitles, []);
+  assert.equal(hint.card, undefined);
+  assert.equal(hint.source, 'wikipedia');
   if (process.env.NAMU_RACE_EXPECT_HINT_SOURCE) assert.equal(hint.source, process.env.NAMU_RACE_EXPECT_HINT_SOURCE);
   const stageOneSource = hint.sourceUrl;
   if (process.env.NAMU_RACE_FULL_HINT_SMOKE === '1') {
@@ -44,9 +47,10 @@ try {
     assert.equal(hint.level, 2);
     assert.equal(hint.sourceUrl, stageOneSource);
     assert.ok(hint.summary.length >= 15, `${goalTitle}: no usable description`);
-    console.log(JSON.stringify({ liveStageTwo: true, description: hint.summary }));
+    assert.ok(hint.relatedTitles.length >= 2);
+    console.log(JSON.stringify({ liveStageTwo: true, description: hint.summary, relatedTitles: hint.relatedTitles }));
   }
-  console.log(JSON.stringify({ ok: true, goalTitle, source: hint.source, sourceUrl: hint.sourceUrl, categories: hint.categories, summaryHiddenBeforeStageTwo: true }));
+  console.log(JSON.stringify({ ok: true, goalTitle, source: hint.source, sourceUrl: hint.sourceUrl, relatedHiddenBeforeStageTwo: true }));
 } finally {
   if (session) await api(`/rooms/${session.code}/action`, { action: 'leave', playerId: session.playerId, playerToken: session.playerToken });
 }

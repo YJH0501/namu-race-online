@@ -1,0 +1,1087 @@
+{
+  "version": "2026-09-06.1",
+  "preparedAt": "2026-09-06T10:01:26.519Z",
+  "cards": [
+    {
+      "title": "대한민국",
+      "categories": [],
+      "summary": "대한민국은 동아시아의 한반도 군사 분계선 남부에 위치한 나라이다.",
+      "source": "wikipedia",
+      "sourceTitle": "대한민국",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%8C%80%ED%95%9C%EB%AF%BC%EA%B5%AD",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "동아시아",
+        "대한민국 제6공화국",
+        "무궁화"
+      ],
+      "sourceRevision": 42210003,
+      "reviewed": true
+    },
+    {
+      "title": "서울특별시",
+      "categories": [],
+      "summary": "서울특별시는 대한민국의 수도이자 문화·인문·정치·경제 중심지 역할을 하는 도시로, 경기도와 인천광역시까지 아우르는 수도권의 중심지 기능을 하고 있다.",
+      "source": "wikipedia",
+      "sourceTitle": "서울특별시",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%84%9C%EC%9A%B8%ED%8A%B9%EB%B3%84%EC%8B%9C",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "대한민국",
+        "경기도",
+        "인천광역시"
+      ],
+      "sourceRevision": 42440516,
+      "reviewed": true
+    },
+    {
+      "title": "부산광역시",
+      "categories": [],
+      "summary": "부산광역시는 대한민국 남동부에 위치한 광역시이다.",
+      "source": "wikipedia",
+      "sourceTitle": "부산광역시",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%B6%80%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "대한민국",
+        "광역시",
+        "무역"
+      ],
+      "sourceRevision": 42339930,
+      "reviewed": true
+    },
+    {
+      "title": "인공지능",
+      "categories": [],
+      "summary": "인공지능은 컴퓨터가 학습, 추론, 지각, 언어 처리, 문제 해결, 계획과 의사 결정처럼 지능과 관련된 일을 수행하도록 하는 방법을 연구하는 컴퓨터 과학 분야이다.",
+      "source": "wikipedia",
+      "sourceTitle": "인공지능",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "지능",
+        "생성형 인공지능"
+      ],
+      "sourceRevision": 42434567,
+      "reviewed": true
+    },
+    {
+      "title": "컴퓨터",
+      "categories": [],
+      "summary": "컴퓨터는 방대한 정보를 저장하고 검색하고 처리하는, 프로그래밍이 가능한 정보 처리 시스템, 전자적 기계 장치 또는 자동으로 계산을 수행하고 기계장치들을 제어하는 전자 기기다.",
+      "source": "wikipedia",
+      "sourceTitle": "컴퓨터",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%BB%B4%ED%93%A8%ED%84%B0",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "계산기",
+        "제어",
+        "산술"
+      ],
+      "sourceRevision": 42407727,
+      "reviewed": true
+    },
+    {
+      "title": "스마트폰",
+      "categories": [],
+      "summary": "스마트폰은 기존 휴대 전화의 기능과 고급 컴퓨팅 기능을 결합한 모바일 장치이다.",
+      "source": "wikipedia",
+      "sourceTitle": "스마트폰",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%8A%A4%EB%A7%88%ED%8A%B8%ED%8F%B0",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "휴대 전화",
+        "전자우편",
+        "소셜 미디어"
+      ],
+      "sourceRevision": 42397492,
+      "reviewed": true
+    },
+    {
+      "title": "축구",
+      "categories": [],
+      "summary": "축구는 11명의 선수들이 각각 한 팀을 이루어 주로 발을 사용하여 골대에 공을 넣는 구기 단체 스포츠, 현재 세계적으로 가장 인기있는 스포츠이다.",
+      "source": "wikipedia",
+      "sourceTitle": "축구",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%B6%95%EA%B5%AC",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "공",
+        "구기",
+        "직사각형"
+      ],
+      "sourceRevision": 42422024,
+      "reviewed": true
+    },
+    {
+      "title": "야구",
+      "categories": [],
+      "summary": "야구 또는 베이스볼은 두 팀이 야구공과 야구 방망이, 야구 글러브를 사용해 승패를 겨루는 구기 종목이다.",
+      "source": "wikipedia",
+      "sourceTitle": "야구",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%95%BC%EA%B5%AC",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "투수",
+        "타자",
+        "이닝"
+      ],
+      "sourceRevision": 42270138,
+      "reviewed": true
+    },
+    {
+      "title": "영화",
+      "categories": [],
+      "summary": "영화는 순간을 기록한 장면을 연속적으로 촬영하여 기록한 동영상을, 같이 기록한 음성과 함께 편집하여 어떤 내용을 전달하게끔 꾸며서 만든 영상물이다.",
+      "source": "wikipedia",
+      "sourceTitle": "영화",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%98%81%ED%99%94",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "영사기",
+        "영화관"
+      ],
+      "sourceRevision": 42434676,
+      "reviewed": true
+    },
+    {
+      "title": "음악",
+      "categories": [],
+      "summary": "음악은 소리를 재료로 하는 시간예술이다.",
+      "source": "wikipedia",
+      "sourceTitle": "음악",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9D%8C%EC%95%85",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "악보",
+        "현대음악"
+      ],
+      "sourceRevision": 42012009,
+      "reviewed": true
+    },
+    {
+      "title": "과학",
+      "categories": [],
+      "summary": "과학은 세계에 대해 검증 가능한 가설과 예측의 형태로 지식을 구축하고 조직하는 체계적인 학문이다.",
+      "source": "wikipedia",
+      "sourceTitle": "과학",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B3%BC%ED%95%99",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "가설",
+        "학문",
+        "자연과학"
+      ],
+      "sourceRevision": 42021734,
+      "reviewed": true
+    },
+    {
+      "title": "수학",
+      "categories": [],
+      "summary": "수학은 수, 양, 구조, 공간, 변화 등의 개념을 연구하는 학문이다.",
+      "source": "wikipedia",
+      "sourceTitle": "수학",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%88%98%ED%95%99",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "공간",
+        "학문",
+        "산술"
+      ],
+      "sourceRevision": 42157064,
+      "reviewed": true
+    },
+    {
+      "title": "물리학",
+      "categories": [],
+      "summary": "물리학은 물질과 그것의 시공간에서의 운동, 그리고 그것과 관련된 에너지나 힘 등을 연구하는 자연과학의 한 분야이다.",
+      "source": "wikipedia",
+      "sourceTitle": "물리학",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%AC%BC%EB%A6%AC%ED%95%99",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "물질",
+        "에너지",
+        "자연과학"
+      ],
+      "sourceRevision": 42263994,
+      "reviewed": true
+    },
+    {
+      "title": "화학",
+      "categories": [],
+      "summary": "화학은 물질의 성질, 조성, 구조, 변화 및 그에 수반하는 에너지의 변화를 연구하는 자연과학의 한 분야이다.",
+      "source": "wikipedia",
+      "sourceTitle": "화학",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%99%94%ED%95%99",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "물질",
+        "자연과학",
+        "물리학"
+      ],
+      "sourceRevision": 41798456,
+      "reviewed": true
+    },
+    {
+      "title": "생물학",
+      "categories": [],
+      "summary": "생물학은 생명현상과 살아있는 생명체의 물리적 구조, 화학적 과정, 분자적 상호작용, 생리적 메커니즘, 발생 및 진화에 대해 연구하는 자연과학이다.",
+      "source": "wikipedia",
+      "sourceTitle": "생물학",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%83%9D%EB%AC%BC%ED%95%99",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "생명",
+        "생명체",
+        "해부학"
+      ],
+      "sourceRevision": 42425245,
+      "reviewed": true
+    },
+    {
+      "title": "지구",
+      "categories": [],
+      "summary": "지구는 태양으로부터 세 번째 행성이며, 조금 두꺼운 대기층으로 둘러싸여 있고, 지금까지 발견된 지구형 행성 가운데 가장 크다.",
+      "source": "wikipedia",
+      "sourceTitle": "지구",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%A7%80%EA%B5%AC",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "태양",
+        "행성",
+        "달"
+      ],
+      "sourceRevision": 42428230,
+      "reviewed": true
+    },
+    {
+      "title": "태양",
+      "categories": [],
+      "summary": "태양은 태양계의 중심에 있으며 지구에서 가장 가까운 항성이다.",
+      "source": "wikipedia",
+      "sourceTitle": "태양",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%83%9C%EC%96%91",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "태양계",
+        "지구",
+        "항성"
+      ],
+      "sourceRevision": 42436044,
+      "reviewed": true
+    },
+    {
+      "title": "달",
+      "categories": [],
+      "summary": "달은 지구의 유일한 자연위성이고, 태양계의 위성 중에서 5번째로 크다.",
+      "source": "wikipedia",
+      "sourceTitle": "달",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%8B%AC",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "지구",
+        "위성",
+        "태양계"
+      ],
+      "sourceRevision": 42201893,
+      "reviewed": true
+    },
+    {
+      "title": "우주",
+      "categories": [],
+      "summary": "우주는 행성들, 별들, 은하들 및 기타 모든 형태의 물질과 에너지를 포함하여 모든 공간과 시간 및 그 내용물이다.",
+      "source": "wikipedia",
+      "sourceTitle": "우주",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9A%B0%EC%A3%BC",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "행성",
+        "은하",
+        "물질"
+      ],
+      "sourceRevision": 42405354,
+      "reviewed": true
+    },
+    {
+      "title": "은하",
+      "categories": [],
+      "summary": "은하는 항성, 밀집성, 성간 물질, 암흑 물질 등이 중력에 의해 묶여져서 이루는 거대한 천체들의 무리이다.",
+      "source": "wikipedia",
+      "sourceTitle": "은하",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9D%80%ED%95%98",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "항성",
+        "암흑 물질",
+        "천체"
+      ],
+      "sourceRevision": 42380810,
+      "reviewed": true
+    },
+    {
+      "title": "자동차",
+      "categories": [],
+      "summary": "자동차는 엔진에서 만든 동력을 바퀴에 전달하여 지상에서 승객이나 화물을 운반하는 탈것이다.",
+      "source": "wikipedia",
+      "sourceTitle": "자동차",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9E%90%EB%8F%99%EC%B0%A8",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "엔진",
+        "바퀴",
+        "탈것"
+      ],
+      "sourceRevision": 42403637,
+      "reviewed": true
+    },
+    {
+      "title": "철도",
+      "categories": [],
+      "summary": "철도는 철 궤도와 철차륜의 마찰을 주행 방식으로 하는 광범위한 교통수단을 일컫는 말이다.",
+      "source": "wikipedia",
+      "sourceTitle": "철도",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%B2%A0%EB%8F%84",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "바퀴",
+        "마찰력"
+      ],
+      "sourceRevision": 41873412,
+      "reviewed": true
+    },
+    {
+      "title": "항공기",
+      "categories": [],
+      "summary": "항공기는 사람이나 물건을 싣고 공중을 날 수 있는 탈것 또는 날 수 있는 기계를 통틀어 이르는 말이다.",
+      "source": "wikipedia",
+      "sourceTitle": "항공기",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%95%AD%EA%B3%B5%EA%B8%B0",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "탈것",
+        "우주선",
+        "비행기"
+      ],
+      "sourceRevision": 41846233,
+      "reviewed": true
+    },
+    {
+      "title": "선박",
+      "categories": [],
+      "summary": "선박 또는 배는 사람이나 물건 등을 물 위 또는 물 속에서 이동할 수 있도록 하는 물 위의 교통수단을 말한다.",
+      "source": "wikipedia",
+      "sourceTitle": "선박",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%84%A0%EB%B0%95",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "물",
+        "잠수함"
+      ],
+      "sourceRevision": 42266667,
+      "reviewed": true
+    },
+    {
+      "title": "한글",
+      "categories": [],
+      "summary": "한글은 한국어의 공식 표기 문자이며 세종대왕이 한국어를 표기하기 위하여 1443년 창제한 《훈민정음》을 20세기 초반부터 달리 이르는 명칭이다.",
+      "source": "wikipedia",
+      "sourceTitle": "한글",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%95%9C%EA%B8%80",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "문자",
+        "세종대왕",
+        "한국"
+      ],
+      "sourceRevision": 42334278,
+      "reviewed": true
+    },
+    {
+      "title": "한국어",
+      "categories": [],
+      "summary": "한국어는 대한민국과 조선민주주의인민공화국의 공용어이다.",
+      "source": "wikipedia",
+      "sourceTitle": "한국어",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%95%9C%EA%B5%AD%EC%96%B4",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "대한민국",
+        "한반도",
+        "한민족"
+      ],
+      "sourceRevision": 42330531,
+      "reviewed": true
+    },
+    {
+      "title": "영어",
+      "categories": [],
+      "summary": "영어는 영국의 구성국인 잉글랜드에서 기원한 서게르만어군 언어이다.",
+      "source": "wikipedia",
+      "sourceTitle": "영어",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%98%81%EC%96%B4",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "영국",
+        "잉글랜드",
+        "서게르만어군"
+      ],
+      "sourceRevision": 42336109,
+      "reviewed": true
+    },
+    {
+      "title": "일본",
+      "categories": [],
+      "summary": "일본국, 약칭 일본은 동아시아에 있는 섬나라로, 네 개의 주요 섬과 수천 개의 부속도서들로 구성되어 있다.",
+      "source": "wikipedia",
+      "sourceTitle": "일본",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9D%BC%EB%B3%B8",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "동아시아",
+        "섬",
+        "홋카이도"
+      ],
+      "sourceRevision": 42403627,
+      "reviewed": true
+    },
+    {
+      "title": "미국",
+      "categories": [],
+      "summary": "미합중국, 약칭 미국은 50개의 주와 특별구 1개로 이루어진 연방제 공화국이다.",
+      "source": "wikipedia",
+      "sourceTitle": "미국",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%AF%B8%EA%B5%AD",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "태평양",
+        "북아메리카",
+        "캐나다"
+      ],
+      "sourceRevision": 42264323,
+      "reviewed": true
+    },
+    {
+      "title": "프랑스",
+      "categories": [],
+      "summary": "프랑스 공화국, 약칭 프랑스, 또는 불란서는 서유럽의 본토와 남아메리카의 프랑스령 기아나, 프랑스령 폴리네시아를 비롯해 여러 대륙에 걸친 해외 지역으로 이루어진 국가이다.",
+      "source": "wikipedia",
+      "sourceTitle": "프랑스",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%94%84%EB%9E%91%EC%8A%A4",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "서유럽",
+        "남아메리카",
+        "프랑스령 기아나"
+      ],
+      "sourceRevision": 42173477,
+      "reviewed": true
+    },
+    {
+      "title": "독일",
+      "categories": [],
+      "summary": "독일연방공화국, 약칭 독일은 중앙유럽에 위치한 국가이다.",
+      "source": "wikipedia",
+      "sourceTitle": "독일",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%8F%85%EC%9D%BC",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "국가",
+        "유엔",
+        "유럽"
+      ],
+      "sourceRevision": 42381780,
+      "reviewed": true
+    },
+    {
+      "title": "영국",
+      "categories": [],
+      "summary": "그레이트브리튼 북아일랜드 연합왕국, 약칭 영국은 유럽 본토 해안에서 북서쪽으로 떨어진 곳에 위치한 섬나라이자 입헌군주국이다.",
+      "source": "wikipedia",
+      "sourceTitle": "영국",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%98%81%EA%B5%AD",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "유럽",
+        "영국 해협",
+        "잉글랜드"
+      ],
+      "sourceRevision": 42145567,
+      "reviewed": true
+    },
+    {
+      "title": "로마",
+      "categories": [],
+      "summary": "로마는 이탈리아의 수도이자 최대 도시로, 라치오주의 주도이며, 테베레강 연안에 있다.",
+      "source": "wikipedia",
+      "sourceTitle": "로마",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%A1%9C%EB%A7%88",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "이탈리아",
+        "로마 제국"
+      ],
+      "sourceRevision": 42427297,
+      "reviewed": true
+    },
+    {
+      "title": "고대 그리스",
+      "categories": [],
+      "summary": "고대 그리스란 그리스의 역사 가운데 기원전 1100년경부터 기원전 146년 로마에게 정복당한 시대를 뜻한다.",
+      "source": "wikipedia",
+      "sourceTitle": "고대 그리스",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B3%A0%EB%8C%80_%EA%B7%B8%EB%A6%AC%EC%8A%A4",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "미노스 문명",
+        "미케네 문명",
+        "고대 로마"
+      ],
+      "sourceRevision": 42096222,
+      "reviewed": true
+    },
+    {
+      "title": "조선",
+      "categories": [],
+      "summary": "조선은 한반도에 있던 옛 국가이다.",
+      "source": "wikipedia",
+      "sourceTitle": "조선",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%A1%B0%EC%84%A0",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "한반도",
+        "서울특별시",
+        "한성부"
+      ],
+      "sourceRevision": 41826753,
+      "reviewed": true
+    },
+    {
+      "title": "고구려",
+      "categories": [],
+      "summary": "고구려는 오늘날 한반도 북부와 만주에 존재했던 삼국 시대 한국의 고대 왕국으로, 국성은 고씨이다.",
+      "source": "wikipedia",
+      "sourceTitle": "고구려",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B3%A0%EA%B5%AC%EB%A0%A4",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "한반도",
+        "만주",
+        "한국"
+      ],
+      "sourceRevision": 42437652,
+      "reviewed": true
+    },
+    {
+      "title": "백제",
+      "categories": [],
+      "summary": "백제는 한국의 고대 국가 중 하나로, 고구려, 신라와 함께 삼국 시대를 구성하였다.",
+      "source": "wikipedia",
+      "sourceTitle": "백제",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%B0%B1%EC%A0%9C",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "한국",
+        "고구려",
+        "신라"
+      ],
+      "sourceRevision": 42362614,
+      "reviewed": true
+    },
+    {
+      "title": "신라",
+      "categories": [],
+      "summary": "신라는 기원전 57년부터 기원후 935년까지 고구려, 백제와 함께 고대 한반도의 삼국 시대를 이끌고 발해와 함께 남북국 시대를 구성하였던 국가로, 세계적으로 오랫동안 지속된 왕국 중 하나이다.",
+      "source": "wikipedia",
+      "sourceTitle": "신라",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%8B%A0%EB%9D%BC",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "한반도",
+        "발해",
+        "국가"
+      ],
+      "sourceRevision": 42334315,
+      "reviewed": true
+    },
+    {
+      "title": "고려",
+      "categories": [],
+      "summary": "고려는 918년부터 1392년까지 한반도에 존재했던 나라이다.",
+      "source": "wikipedia",
+      "sourceTitle": "고려",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B3%A0%EB%A0%A4",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "한반도",
+        "통일신라",
+        "신라"
+      ],
+      "sourceRevision": 42398584,
+      "reviewed": true
+    },
+    {
+      "title": "동물",
+      "categories": [],
+      "summary": "동물은 엽록소를 갖지 않고 세포벽을 갖지 않으며 몸속에 여러 기관이 있는 생물 중 다세포인 것을 말한다.",
+      "source": "wikipedia",
+      "sourceTitle": "동물",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%8F%99%EB%AC%BC",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "엽록소",
+        "세포벽",
+        "진핵생물"
+      ],
+      "sourceRevision": 42152701,
+      "reviewed": true
+    },
+    {
+      "title": "고양이",
+      "categories": [
+        "대한민국 환경부 지정 야생화된 동물"
+      ],
+      "summary": "고양이는 식육목 고양이과에 속하는 포유류이다.",
+      "source": "wikipedia",
+      "sourceTitle": "고양이",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B3%A0%EC%96%91%EC%9D%B4",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "포유류",
+        "중동"
+      ],
+      "sourceRevision": 42199017,
+      "reviewed": true
+    },
+    {
+      "title": "호랑이",
+      "categories": [
+        "IUCN 적색 목록 위기종",
+        "CITES 부속서 I 보호종"
+      ],
+      "summary": "호랑이 또는 범, 칡범, 갈범은 아시아 원산의 표범속 고양이과 동물이다.",
+      "source": "wikipedia",
+      "sourceTitle": "호랑이",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%98%B8%EB%9E%91%EC%9D%B4",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "아무르표범",
+        "아시아"
+      ],
+      "sourceRevision": 42429398,
+      "reviewed": true
+    },
+    {
+      "title": "사자",
+      "categories": [
+        "IUCN 적색 목록 취약종",
+        "CITES 부속서 II 보호종"
+      ],
+      "summary": "사자는 표범속에 속하는 대형 고양이과 동물로, 현재는 사하라 이남 아프리카와 인도에서만 서식한다.",
+      "source": "wikipedia",
+      "sourceTitle": "사자",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%82%AC%EC%9E%90",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "사하라 이남 아프리카",
+        "인도"
+      ],
+      "sourceRevision": 42421543,
+      "reviewed": true
+    },
+    {
+      "title": "공룡",
+      "categories": [],
+      "summary": "공룡은 공룡상목에 속하는 생물들을 통틀어 일컫는 용어이다.",
+      "source": "wikipedia",
+      "sourceTitle": "공룡",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B3%B5%EB%A3%A1",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "트라이아스기",
+        "진화",
+        "백악기"
+      ],
+      "sourceRevision": 42095598,
+      "reviewed": true
+    },
+    {
+      "title": "강",
+      "categories": [],
+      "summary": "강 또는 가람은 하늘에서 내린 비가 바다로 흘러가는 경로이다.",
+      "source": "wikipedia",
+      "sourceTitle": "강",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B0%95",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "바다",
+        "하천",
+        "육지"
+      ],
+      "sourceRevision": 39023663,
+      "reviewed": true
+    },
+    {
+      "title": "사막",
+      "categories": [],
+      "summary": "사막은 간단하게 강수량이 적은 지역이다.",
+      "source": "wikipedia",
+      "sourceTitle": "사막",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%82%AC%EB%A7%89",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "강수량",
+        "고위도",
+        "그린란드"
+      ],
+      "sourceRevision": 40304163,
+      "reviewed": true
+    },
+    {
+      "title": "불",
+      "categories": [],
+      "summary": "불은 연료가 산화제와 빠르게 산화하는 발열 연소 화학 과정으로, 열, 빛, 그리고 다양한 생성물을 방출한다.",
+      "source": "wikipedia",
+      "sourceTitle": "불",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%B6%88",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "연료",
+        "열",
+        "빛"
+      ],
+      "sourceRevision": 42287377,
+      "reviewed": true
+    },
+    {
+      "title": "물",
+      "categories": [],
+      "summary": "물은 산소와 수소가 결합된 화학 물질이다.",
+      "source": "wikipedia",
+      "sourceTitle": "물",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%AC%BC",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "산소",
+        "수소",
+        "고체"
+      ],
+      "sourceRevision": 42263946,
+      "reviewed": true
+    },
+    {
+      "title": "도시",
+      "categories": [],
+      "summary": "도시는 인간의 정치·경제·사회적인 활동이 중심이 되는 장소이며, 인구 집중으로 인해 비교적 인구 및 인구 밀도가 높은 지역이다.",
+      "source": "wikipedia",
+      "sourceTitle": "도시",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%8F%84%EC%8B%9C",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "인구",
+        "도심",
+        "교외"
+      ],
+      "sourceRevision": 41898039,
+      "reviewed": true
+    },
+    {
+      "title": "국가",
+      "categories": [],
+      "summary": "국가는 사회와 특정 영토 안의 인구를 규제하는 정치적 실체이다.",
+      "source": "wikipedia",
+      "sourceTitle": "국가",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B5%AD%EA%B0%80",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "영토",
+        "인구",
+        "정치"
+      ],
+      "sourceRevision": 41270565,
+      "reviewed": true
+    },
+    {
+      "title": "역사",
+      "categories": [],
+      "summary": "역사는 인류 사회의 변천과 흥망의 과정, 지난 시대에 남긴 기록물, 그리고 이를 연구하는 학문 분야 등을 가리킨다.",
+      "source": "wikipedia",
+      "sourceTitle": "역사",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%97%AD%EC%82%AC",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "학문",
+        "사회과학",
+        "인문학"
+      ],
+      "sourceRevision": 42434661,
+      "reviewed": true
+    },
+    {
+      "title": "경제학",
+      "categories": [],
+      "summary": "경제학은 자원이 제한된 상황에서 사람이 어떻게 행동하는지 연구하는 사회과학의 한 분야이다.",
+      "source": "wikipedia",
+      "sourceTitle": "경제학",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B2%BD%EC%A0%9C%ED%95%99",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "사회과학",
+        "경제"
+      ],
+      "sourceRevision": 42425266,
+      "reviewed": true
+    },
+    {
+      "title": "심리학",
+      "categories": [],
+      "summary": "심리학은 인간과 동물의 행동과 그 행동에 관련된 심리적, 생리적, 사회적 과정 그리고 이 둘 사이의 상호작용을 과학적으로 연구하는 경험과학의 한 분야를 뜻한다.",
+      "source": "wikipedia",
+      "sourceTitle": "심리학",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%8B%AC%EB%A6%AC%ED%95%99",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "생리학",
+        "인지심리학"
+      ],
+      "sourceRevision": 42127840,
+      "reviewed": true
+    },
+    {
+      "title": "의학",
+      "categories": [],
+      "summary": "의학은 인체의 구조와 기능을 조사하여 인체의 보건, 질병이나 상해의 치료 및 예방에 관한 방법과 기술을 연구하는 학문이다.",
+      "source": "wikipedia",
+      "sourceTitle": "의학",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9D%98%ED%95%99",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "인체",
+        "건강",
+        "질병"
+      ],
+      "sourceRevision": 42215678,
+      "reviewed": true
+    },
+    {
+      "title": "프로그래밍 언어",
+      "categories": [],
+      "summary": "프로그래밍 언어는 컴퓨터 프로그램을 표현하기 위한 인공 언어이다.",
+      "source": "wikipedia",
+      "sourceTitle": "프로그래밍 언어",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D_%EC%96%B8%EC%96%B4",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "소프트웨어 개발",
+        "기계어",
+        "컴파일러"
+      ],
+      "sourceRevision": 42103681,
+      "reviewed": true
+    },
+    {
+      "title": "올림픽",
+      "categories": [],
+      "summary": "올림픽은 전 세계 각 대륙 각국에서 모인 수천 명의 선수가 참가해 여름과 겨울에 스포츠 경기를 하는 국제적인 대회이다.",
+      "source": "wikipedia",
+      "sourceTitle": "올림픽",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%98%AC%EB%A6%BC%ED%94%BD",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "여름",
+        "겨울",
+        "스포츠"
+      ],
+      "sourceRevision": 42368053,
+      "reviewed": true
+    },
+    {
+      "title": "갈륨",
+      "categories": [],
+      "summary": "갈륨은 화학 원소로 기호는 Ga이고, 원자 번호는 31이다.",
+      "source": "wikipedia",
+      "sourceTitle": "갈륨",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B0%88%EB%A5%A8",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "아연",
+        "반도체"
+      ],
+      "sourceRevision": 40959082,
+      "reviewed": true
+    },
+    {
+      "title": "연필",
+      "categories": [],
+      "summary": "연필은 종이와 같은 마이크로 단위의 입자가 달라붙을 수 있는 거친 표면에 글씨를 쓰거나 그림을 그리는 등의 자취를 남길 수 있는 도구이다.",
+      "source": "wikipedia",
+      "sourceTitle": "연필",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%97%B0%ED%95%84",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "종이",
+        "지우개"
+      ],
+      "sourceRevision": 41930229,
+      "reviewed": true
+    },
+    {
+      "title": "커피",
+      "categories": [],
+      "summary": "커피, 커피차 또는 커피음료는 커피 나무 열매의 씨를 볶아 가루로 낸 것을 따뜻한 물과 차가운 물 또는 증기로 우려내어 마시는, 쓴맛이 나는 짙은 갈색의 음료이다.",
+      "source": "wikipedia",
+      "sourceTitle": "커피",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%BB%A4%ED%94%BC",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "카페인",
+        "설탕",
+        "예멘"
+      ],
+      "sourceRevision": 42427581,
+      "reviewed": true
+    },
+    {
+      "title": "광합성",
+      "categories": [],
+      "summary": "광합성은 식물 및 다른 생명체가 빛에너지를 화학 에너지로 전환하기 위해 사용하는 과정이다.",
+      "source": "wikipedia",
+      "sourceTitle": "광합성",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B4%91%ED%95%A9%EC%84%B1",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "식물",
+        "생물",
+        "이산화 탄소"
+      ],
+      "sourceRevision": 42088178,
+      "reviewed": true
+    },
+    {
+      "title": "라디오",
+      "categories": [],
+      "summary": "라디오는 전파의 변조를 통해서 신호를 전달하는 기술을 두루 일컫는 말이다.",
+      "source": "wikipedia",
+      "sourceTitle": "라디오",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%9D%BC%EB%94%94%EC%98%A4",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "진폭 변조",
+        "주파수 변조"
+      ],
+      "sourceRevision": 42165567,
+      "reviewed": true
+    },
+    {
+      "title": "반도체",
+      "categories": [],
+      "summary": "반도체는 전기 전도체와 절연체 사이의 도전율을 가진 물질이다.",
+      "source": "wikipedia",
+      "sourceTitle": "반도체",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%B0%98%EB%8F%84%EC%B2%B4",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "절연체",
+        "도전율",
+        "전자"
+      ],
+      "sourceRevision": 42274429,
+      "reviewed": true
+    },
+    {
+      "title": "박물관",
+      "categories": [],
+      "summary": "박물관은 미술, 문화, 역사, 과학, 민속 등 다양한 분야의 학술적 자료를 수집, 보존, 연구하고 대중에 전시하는 기관이다.",
+      "source": "wikipedia",
+      "sourceTitle": "박물관",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%B0%95%EB%AC%BC%EA%B4%80",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "미술",
+        "문화",
+        "역사"
+      ],
+      "sourceRevision": 41392432,
+      "reviewed": true
+    },
+    {
+      "title": "지도",
+      "categories": [],
+      "summary": "지도는 지구 표면의 일부나 전체의 상태를 약속된 기호나 문자를 사용하여 일정한 비율로 줄여 평면상에 나타낸 것으로 국경지도, 종교지도, 역사지도, 전쟁지도 등 나타내고자 하는 목적에 따라 여러 종류의 지도가 있다.",
+      "source": "wikipedia",
+      "sourceTitle": "지도",
+      "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%A7%80%EB%8F%84",
+      "sourceLicense": "CC BY-SA 4.0",
+      "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "relatedTitles": [
+        "지구",
+        "지도학"
+      ],
+      "sourceRevision": 40995909,
+      "reviewed": true
+    }
+  ]
+}

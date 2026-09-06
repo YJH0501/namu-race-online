@@ -176,7 +176,7 @@ function customPanel() {
 }
 
 function randomPanel() {
-  return '<div class="mode-panel"><p><strong>나무위키 전체 문서에서 무작위로 선택합니다.</strong><br><span class="muted">출발과 목표는 모두가 준비한 뒤 시작과 동시에 공개돼요.</span></p></div>';
+  return '<div class="mode-panel"><p><strong>출발은 확장 목록, 목표는 힌트 지원 목록에서 선택합니다.</strong><br><span class="muted">출발과 목표는 모두가 준비한 뒤 시작과 동시에 공개돼요.</span></p></div>';
 }
 
 function roundsPanel() {
@@ -222,15 +222,39 @@ function playerPathDetails(room, player) {
   return `${player.departed ? '<p class="result-detail departed-note">방 나감 · 기록 유지</p>' : ''}<details class="path-details" data-player-path="${escapeHtml(player.id)}" ${state.expandedPaths.has(player.id) ? 'open' : ''}><summary>${summary}</summary>${!rounds.length ? `<p class="result-detail">힌트 ${player.hintLevel || 0}단계 사용</p>` : ''}${content}</details>`;
 }
 
+function hintAvailabilityHtml(room) {
+  if (room.hintPolicy !== 'prepared-v1') return '';
+  const text = room.hintAvailable === false
+    ? '이 목표는 준비된 힌트 카드가 없어요. 게임은 가능하지만 이번 레이스는 힌트 없이 진행돼요.'
+    : '힌트 카드 준비 완료 · 과반수 투표로 설명 → 연관 개념 순서로 공개돼요.';
+  const counts = ['random', 'rounds'].includes(room.mode)
+    ? `<br>출발 ${Number(room.randomStartCount).toLocaleString()}개 · 힌트 지원 목표 ${Number(room.hintGoalCount).toLocaleString()}개에서 선택해요.` : '';
+  return `<p class="host-box" role="status">${text}${counts}</p>`;
+}
+
 function hintPanelHtml() {
   const hint = state.room?.hint;
   if (!hint) return '';
   const wait = Math.max(0, Math.ceil((hint.nextAvailableAt - Date.now()) / 1000));
   const loading = hint.status === 'loading';
-  const wikipedia = hint.source === 'wikipedia';
-  const sourceName = wikipedia ? '위키백과' : '나무위키';
-  const button = loading ? '목표 문서에서 힌트 가져오는 중…' : wait ? `${wait}초 후 다음 투표 가능` : hint.voted ? `찬성했어요 · ${hint.votes}/${hint.required}표` : `${hint.level + 1}단계 힌트 찬성 · ${hint.votes}/${hint.required}표`;
-  return `<div class="hint-head"><strong>목표 문서 힌트</strong><span>${hint.level}/2단계</span></div><p class="hint-rule">진행 중인 참가자의 과반수가 찬성하면 모두에게 공개돼요. 점수 감점은 없어요.</p>${hint.level >= 1 && wikipedia ? '<p class="hint-rule">위키백과 보조 힌트 · 나무위키 설명을 불러오지 못해 제목이 일치하는 문서로 보완했어요.</p>' : ''}${hint.level >= 1 ? `<p><strong>분류</strong><br>${hint.categories.length ? hint.categories.map(escapeHtml).join(' · ') : '분류 정보를 추출하지 못했어요.'}</p>` : ''}${hint.level >= 2 ? `<p><strong>짧은 설명</strong><br>${escapeHtml(hint.summary)}</p>` : ''}${hint.status === 'unavailable' ? '<p class="hint-error" role="status">나무위키와 위키백과에서 제공할 수 있는 힌트를 찾지 못했어요. 잠시 후 다시 투표할 수 있어요.</p>' : ''}${hint.level < 2 && hint.eligible ? `<button class="button secondary" data-action="hint-vote" ${state.busy || loading || wait || hint.voted ? 'disabled' : ''}>${button}</button>` : ''}${hint.level >= 1 ? `<small>출처: ${sourceName} 기여자 · ${escapeHtml(hint.sourceLicense || 'CC BY-NC-SA 2.0 KR')}<br>「${escapeHtml(hint.sourceTitle || state.room.goalTitle)}」 발췌·일부 생략<br>${escapeHtml(hint.sourceUrl || '')}<br>${escapeHtml(hint.sourceLicenseUrl || '')}<br>힌트와 출처 주소는 이동 링크가 아니에요.</small>` : ''}`;
+  const sourceName = hint.source === 'wikipedia' ? '위키백과' : '나무위키';
+  const prepared = hint.format === 'card-v1';
+  const available = hint.available !== false;
+  const button = loading ? '힌트 공개 처리 중…' : wait ? `${wait}초 후 다음 투표 가능` : hint.voted ? `찬성했어요 · ${hint.votes}/${hint.required}표` : `${hint.level + 1}단계 힌트 찬성 · ${hint.votes}/${hint.required}표`;
+  let content = '';
+  if (hint.level >= 1) content += prepared
+    ? `<p><strong>1단계 · 어떤 대상인가요?</strong><br>${escapeHtml(hint.summary)}</p>`
+    : `<p><strong>분류</strong><br>${hint.categories.map(escapeHtml).join(' · ') || '저장된 분류 정보가 없어요.'}</p>`;
+  if (hint.level >= 2) content += prepared
+    ? `<p><strong>2단계 · 연관 개념</strong><br>${(hint.relatedTitles || []).map(escapeHtml).join(' · ')}<br><small>연관성을 바탕으로 탐색해 보세요. 실제 연결이나 최단 경로를 보장하지 않아요.</small></p>`
+    : `<p><strong>짧은 설명</strong><br>${escapeHtml(hint.summary)}</p>`;
+  return `<div class="hint-head"><strong>목표 문서 힌트</strong><span>${hint.level}/2단계</span></div>
+    <p class="hint-rule">진행 중인 참가자의 과반수가 찬성하면 모두에게 공개돼요. 점수 감점은 없어요.</p>
+    ${prepared && available ? '<p class="hint-rule">미리 준비된 힌트 카드 · 게임 중 외부 문서를 조회하지 않아요.</p>' : ''}
+    ${content}
+    ${!available ? '<p class="hint-error" role="status">이 목표는 준비된 힌트가 없어요. 이번 레이스는 힌트 없이 진행돼요.</p>' : ''}
+    ${available && hint.level < 2 && hint.eligible ? `<button class="button secondary" data-action="hint-vote" ${state.busy || loading || wait || hint.voted ? 'disabled' : ''}>${button}</button>` : ''}
+    ${hint.level >= 1 ? `<small>출처: ${sourceName} 기여자 · ${escapeHtml(hint.sourceLicense || 'CC BY-NC-SA 2.0 KR')}<br>「${escapeHtml(hint.sourceTitle || state.room.goalTitle)}」 발췌·일부 생략<br>${escapeHtml(hint.sourceUrl || '')}<br>${escapeHtml(hint.sourceLicenseUrl || '')}<br>힌트와 출처 주소는 이동 링크가 아니에요.</small>` : ''}`;
 }
 
 function mountHintPanel() {
@@ -260,7 +284,7 @@ function playerList(room, racing = false) {
 function lobbyView(room) {
   const me = currentPlayer();
   const host = Boolean(state.session.hostToken);
-  return `<main class="shell"><section class="lobby"><div class="lobby-top">${brand()}<div><span class="mode-label">${escapeHtml(modeName(room.mode))}${room.mode === 'rounds' ? ` · ${room.round}/${room.totalRounds}` : ''}</span><button class="room-code" data-copy="${escapeHtml(room.code)}">${escapeHtml(room.code)} ${state.copied ? '✓' : '⎘'}</button><button class="button ghost" data-action="leave">나가기</button></div></div><article class="card lobby-card"><header class="lobby-head"><div><p class="eyebrow">Online waiting room</p><h1>${room.mode === 'rounds' && room.round > 1 ? `${room.round}라운드 준비` : '친구들을 기다리는 중'}</h1><p class="muted">6자리 방 코드를 공유하고 모두 준비되면 출발하세요.</p></div><span class="status ready">${room.players.length} / 8명</span></header><div class="lobby-body"><div>${routeView(room)}<div class="host-box"><strong>${room.mode === 'rounds' ? `${room.round} / ${room.totalRounds}라운드` : 'Windows·Mac 공통 방 코드'}</strong><br>${room.mode === 'rounds' ? '새 경로는 모두가 준비한 뒤 시작할 때 공개됩니다.' : '다른 네트워크에 있는 친구도 코드만 입력하면 참가할 수 있어요.'}<br><span class="connection-state ${state.connection === 'live' ? 'live' : ''}"><i class="online-dot"></i>${state.connection === 'live' ? '실시간 연결됨' : '재연결 중'}</span></div><p class="notice">${escapeHtml(state.notice)}</p></div><div><div class="player-list">${playerList(room)}</div><div class="lobby-actions">${host ? `<button class="button" data-action="start" ${state.busy || !allReady() ? 'disabled' : ''}>${allReady() ? `${room.mode === 'rounds' ? `${room.round}라운드` : '레이스'} 시작` : '모두의 준비를 기다리는 중'}</button>` : `<button class="button ${me?.ready ? 'secondary' : ''}" data-action="ready" ${state.busy ? 'disabled' : ''}>${me?.ready ? '준비 취소' : '준비 완료'}</button>`}</div></div></div></article></section></main>`;
+  return `<main class="shell"><section class="lobby"><div class="lobby-top">${brand()}<div><span class="mode-label">${escapeHtml(modeName(room.mode))}${room.mode === 'rounds' ? ` · ${room.round}/${room.totalRounds}` : ''}</span><button class="room-code" data-copy="${escapeHtml(room.code)}">${escapeHtml(room.code)} ${state.copied ? '✓' : '⎘'}</button><button class="button ghost" data-action="leave">나가기</button></div></div><article class="card lobby-card"><header class="lobby-head"><div><p class="eyebrow">Online waiting room</p><h1>${room.mode === 'rounds' && room.round > 1 ? `${room.round}라운드 준비` : '친구들을 기다리는 중'}</h1><p class="muted">6자리 방 코드를 공유하고 모두 준비되면 출발하세요.</p></div><span class="status ready">${room.players.length} / 8명</span></header><div class="lobby-body"><div>${routeView(room)}${hintAvailabilityHtml(room)}<div class="host-box"><strong>${room.mode === 'rounds' ? `${room.round} / ${room.totalRounds}라운드` : 'Windows·Mac 공통 방 코드'}</strong><br>${room.mode === 'rounds' ? '새 경로는 모두가 준비한 뒤 시작할 때 공개됩니다.' : '다른 네트워크에 있는 친구도 코드만 입력하면 참가할 수 있어요.'}<br><span class="connection-state ${state.connection === 'live' ? 'live' : ''}"><i class="online-dot"></i>${state.connection === 'live' ? '실시간 연결됨' : '재연결 중'}</span></div><p class="notice">${escapeHtml(state.notice)}</p></div><div><div class="player-list">${playerList(room)}</div><div class="lobby-actions">${host ? `<button class="button" data-action="start" ${state.busy || !allReady() ? 'disabled' : ''}>${allReady() ? `${room.mode === 'rounds' ? `${room.round}라운드` : '레이스'} 시작` : '모두의 준비를 기다리는 중'}</button>` : `<button class="button ${me?.ready ? 'secondary' : ''}" data-action="ready" ${state.busy ? 'disabled' : ''}>${me?.ready ? '준비 취소' : '준비 완료'}</button>`}</div></div></div></article></section></main>`;
 }
 
 function raceView(room, me) {

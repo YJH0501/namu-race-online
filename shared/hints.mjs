@@ -20,7 +20,7 @@ export function hintVoteInfo(room, viewerId, now = Date.now()) {
     hint.level === 1 ? (hint.revealedAt || 0) + HINT_COOLDOWN_MS : 0);
   return { votes: votes.length, required: Math.floor(voters.length / 2) + 1,
     voted: votes.includes(viewerId), eligible: room.status === 'racing' && ids.has(viewerId),
-    nextAvailableAt, canRequest: room.status === 'racing' && voters.length > 0 &&
+    nextAvailableAt, canRequest: hint.available !== false && room.status === 'racing' && voters.length > 0 &&
       hint.level < 2 && hint.status !== 'loading' && now >= nextAvailableAt };
 }
 
@@ -29,8 +29,10 @@ export function publicHint(room, viewerId, now = Date.now()) {
   if (room.status === 'waiting' || !room.players.some((p) => p.id === viewerId)) return null;
   const hint = room.hint || newHintState();
   return { ...hintVoteInfo(room, viewerId, now), level: hint.level, status: hint.status,
+    format: hint.format || 'legacy', available: hint.available !== false,
     categories: hint.level >= 1 ? hint.categories : [],
-    summary: hint.level >= 2 ? hint.summary : '',
+    summary: hint.level >= (hint.format === 'card-v1' ? 1 : 2) ? hint.summary : '',
+    relatedTitles: hint.level >= 2 && hint.format === 'card-v1' ? hint.relatedTitles || [] : [],
     sourceUrl: hint.level >= 1 ? hint.sourceUrl : '',
     source: hint.level >= 1 ? hint.source || 'namuwiki' : '',
     sourceTitle: hint.level >= 1 ? hint.sourceTitle || room.goalTitle || '' : '',
@@ -60,7 +62,9 @@ export function reconcileHint(room, now = Date.now()) {
 export function completeHint(room, requestId, data, now = Date.now()) {
   const hint = room.hint;
   if (!hint || hint.requestId !== requestId || hint.status !== 'loading' || room.status !== 'racing') return false;
-  const available = data && (hint.level === 0 ? data.categories.length || data.summary : data.summary);
+  const available = data && (hint.format === 'card-v1'
+    ? data.summary && data.relatedTitles?.length >= 2
+    : hint.level === 0 ? data.categories.length || data.summary : data.summary);
   hint.votes = [];
   hint.requestId = null;
   if (!available) {
@@ -70,6 +74,7 @@ export function completeHint(room, requestId, data, now = Date.now()) {
   }
   hint.categories = data.categories;
   hint.summary = data.summary;
+  if (hint.format === 'card-v1') hint.relatedTitles = [...data.relatedTitles];
   hint.sourceUrl = data.sourceUrl;
   hint.source = data.source || 'namuwiki';
   hint.sourceTitle = data.sourceTitle || room.goalTitle || '';
