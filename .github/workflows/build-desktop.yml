@@ -36,7 +36,10 @@ jobs:
       - run: npm run check
       - name: Verify hint voting and retained results
         timeout-minutes: 3
-        run: node test/integration-hints.mjs
+        run: |
+          node test/integration-hints.mjs
+          node test/integration-hints.mjs --wikipedia
+          node test/integration-wikipedia-source.mjs
       - name: Configure online server
         env:
           NAMU_RACE_SERVER_URL: ${{ vars.NAMU_RACE_SERVER_URL }}

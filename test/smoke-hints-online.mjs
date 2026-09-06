@@ -14,7 +14,7 @@ try {
   const { room } = await api(`/rooms/${session.code}/action`, { action: 'start', hostToken: session.hostToken });
   await api(`/rooms/${session.code}/action`, { ...body, action: 'hint-vote', hintLevel: 1, startedAt: room.startedAt });
   let hint;
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 32; i++) {
     const result = await api(`/rooms/${session.code}?playerId=${session.playerId}&token=${session.playerToken}`);
     hint = result.room.hint;
     if (hint.level === 1 || hint.status === 'unavailable') break;
@@ -23,6 +23,9 @@ try {
   assert.equal(hint.level, 1, JSON.stringify(hint));
   assert.ok(hint.categories.length);
   assert.equal(hint.summary, '');
+  assert.ok(['namuwiki', 'wikipedia'].includes(hint.source));
+  if (process.env.NAMU_RACE_EXPECT_HINT_SOURCE) assert.equal(hint.source, process.env.NAMU_RACE_EXPECT_HINT_SOURCE);
+  const stageOneSource = hint.sourceUrl;
   if (process.env.NAMU_RACE_FULL_HINT_SMOKE === '1') {
     await new Promise((resolve) => setTimeout(resolve, Math.max(0, hint.nextAvailableAt - Date.now()) + 100));
     await api(`/rooms/${session.code}/action`, { ...body, action: 'hint-vote', hintLevel: 2, startedAt: room.startedAt });
@@ -32,10 +35,11 @@ try {
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
     assert.equal(hint.level, 2);
+    assert.equal(hint.sourceUrl, stageOneSource);
     assert.ok(hint.summary.length >= 15, `${goalTitle}: no usable description`);
     console.log(JSON.stringify({ liveStageTwo: true, description: hint.summary }));
   }
-  console.log(JSON.stringify({ ok: true, goalTitle, liveSource: true, categories: hint.categories, summaryHiddenBeforeStageTwo: true }));
+  console.log(JSON.stringify({ ok: true, goalTitle, source: hint.source, sourceUrl: hint.sourceUrl, categories: hint.categories, summaryHiddenBeforeStageTwo: true }));
 } finally {
   if (session) await api(`/rooms/${session.code}/action`, { action: 'leave', playerId: session.playerId, playerToken: session.playerToken });
 }

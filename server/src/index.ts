@@ -824,7 +824,11 @@ export class RaceRoom extends DurableObject<Env> {
   }
 
   private async loadHint(requestId: string, title: string) {
-    const data = await getGoalHint(title).catch(() => null);
+    // The unreleased short description is already persisted with stage one.
+    // Reuse that exact source after hibernation instead of depending on isolate cache.
+    const stored = this.room?.hint;
+    const data = stored?.level === 1 && stored.summary && this.room?.goalTitle === title
+      ? { ...stored } : await getGoalHint(title).catch(() => null);
     if (this.room && completeHint(this.room, requestId, data)) await this.persistAndBroadcast();
   }
 }

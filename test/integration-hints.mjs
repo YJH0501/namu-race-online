@@ -4,13 +4,28 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 
 const compiled = await build({ entryPoints: ['test/hints-worker.ts'], bundle: true, format: 'esm', write: false, external: ['cloudflare:workers'], target: 'es2022' });
 let upstreamCalls = 0;
+const fallback = process.argv.includes('--wikipedia');
+let fixtureTitle = '';
 const fixture = '<meta property="og:title" content="인공지능"><meta property="og:description" content="인공지능의 설명입니다."><a href="/w/분류:컴퓨터%20과학">컴퓨터 과학</a><table><div class="wiki-paragraph">이 표 안의 내용은 힌트에 들어가면 안 됩니다.</div></table><div class="wiki-paragraph">인공지능은 인간의 학습 능력과 추론 능력을 컴퓨터로 구현하는 기술이다.<sup class="wiki-footnote">[1]</sup> 두 번째 문장.</div>';
 const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: compiled.outputFiles[0].text, compatibilityDate: '2026-09-02',
   durableObjects: { RACE_ROOMS: { className: 'RaceRoom', useSQLite: true } },
   outboundService: async (request) => {
+    const url = new URL(request.url);
+    upstreamCalls++;
+    if (fallback && url.origin === 'https://ko.wikipedia.org') {
+      if (url.pathname.startsWith('/api/rest_v1/page/summary/')) {
+        fixtureTitle = decodeURIComponent(url.pathname.slice('/api/rest_v1/page/summary/'.length));
+        return Response.json({ type: 'standard', namespace: { id: 0 }, pageid: 123,
+          title: fixtureTitle, extract: `${fixtureTitle}은 인간의 학습 능력과 추론 능력을 컴퓨터로 구현하는 기술이다. 두 번째 문장.` });
+      }
+      assert.equal(url.pathname, '/w/api.php');
+      assert.equal(url.searchParams.get('pageids'), '123');
+      return Response.json({ query: { pages: [{ pageid: 123, ns: 0, title: fixtureTitle,
+        categories: [{ title: '분류:컴퓨터 과학' }], pageprops: {} }] } });
+    }
     assert.equal(new URL(request.url).origin, 'https://namu-race.yangkun050178.chatgpt.site');
     assert.equal(new URL(request.url).pathname, '/api/article');
-    upstreamCalls++;
+    if (fallback) return new Response('<p>나무위키 문서를 불러오지 못했습니다. (403)</p>', { status: 502, headers: { 'content-type': 'text/html' } });
     return new Response(fixture, { headers: { 'content-type': 'text/html' } });
   },
 }));
@@ -53,7 +68,9 @@ try {
   assert.deepEqual(first.hint.categories, ['컴퓨터 과학']);
   assert.equal(first.hint.summary, '', 'Summary must not leak before stage two');
   assert.equal((await view(guest)).room.hint.level, 1);
-  assert.equal(upstreamCalls, 1);
+  assert.equal(first.hint.source, fallback ? 'wikipedia' : 'namuwiki');
+  assert.equal(first.hint.sourceLicense, fallback ? 'CC BY-SA 4.0' : 'CC BY-NC-SA 2.0 KR');
+  assert.equal(upstreamCalls, fallback ? 3 : 1);
   await action(host, 'hint-vote', { ...ballot, hintLevel: 2 }, 409);
   const ns = await mf.getDurableObjectNamespace('RACE_ROOMS');
   const stub = ns.get(ns.idFromName(host.code));
@@ -63,7 +80,9 @@ try {
   const second = await waitFor(guest, (r) => r.hint.level === 2);
   assert.match(second.hint.summary, /학습 능력/);
   assert.doesNotMatch(second.hint.summary, /표 안|두 번째|\[1\]/);
-  assert.equal(upstreamCalls, 1, 'Second hint reuses the bounded cached excerpt');
+  assert.equal(upstreamCalls, fallback ? 3 : 1, 'Second hint reuses the persisted excerpt');
+  assert.equal(second.hint.source, first.hint.source);
+  assert.equal(second.hint.sourceUrl, first.hint.sourceUrl);
 
   // A finisher leaves while the other is still racing: preserve their score baseline and path.
   await action(guest, 'progress', { nextTitle: started.goalTitle });
@@ -105,5 +124,5 @@ try {
   assert.deepEqual(disconnected.players.find((p) => p.id === h.playerId).path, ['출발', '목표']);
   assert.equal((await action(g, 'rematch', { hostToken: disconnected.hostToken })).room.players.length, 1);
   await action(g, 'leave');
-  console.log(JSON.stringify({ ok: true, majority: true, twoStages: true, noEarlyLeak: true, cacheReused: true, departedResultsRetained: true, scoreBaselineRetained: true, rematchCleanup: true }));
+  console.log(JSON.stringify({ ok: true, wikipediaFallback: fallback, majority: true, twoStages: true, noEarlyLeak: true, cacheReused: true, departedResultsRetained: true, scoreBaselineRetained: true, rematchCleanup: true }));
 } finally { await mf.dispose(); }

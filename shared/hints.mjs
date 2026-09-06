@@ -3,7 +3,8 @@ export const HINT_LOAD_TIMEOUT_MS = 15_000;
 
 export function newHintState() {
   return { level: 0, votes: [], status: 'idle', revealedAt: null, retryAt: 0,
-    requestId: null, requestedAt: 0, categories: [], summary: '', sourceUrl: '' };
+    requestId: null, requestedAt: 0, categories: [], summary: '', sourceUrl: '',
+    source: '', sourceTitle: '', sourceLicense: '', sourceLicenseUrl: '' };
 }
 
 export function hintVoters(room) {
@@ -30,7 +31,11 @@ export function publicHint(room, viewerId, now = Date.now()) {
   return { ...hintVoteInfo(room, viewerId, now), level: hint.level, status: hint.status,
     categories: hint.level >= 1 ? hint.categories : [],
     summary: hint.level >= 2 ? hint.summary : '',
-    sourceUrl: hint.level >= 1 ? hint.sourceUrl : '' };
+    sourceUrl: hint.level >= 1 ? hint.sourceUrl : '',
+    source: hint.level >= 1 ? hint.source || 'namuwiki' : '',
+    sourceTitle: hint.level >= 1 ? hint.sourceTitle || room.goalTitle || '' : '',
+    sourceLicense: hint.level >= 1 ? hint.sourceLicense || 'CC BY-NC-SA 2.0 KR' : '',
+    sourceLicenseUrl: hint.level >= 1 ? hint.sourceLicenseUrl || 'https://creativecommons.org/licenses/by-nc-sa/2.0/kr/' : '' };
 }
 
 // Re-evaluate after finishes/departures as well as votes. Repeated requests are idempotent.
@@ -66,6 +71,10 @@ export function completeHint(room, requestId, data, now = Date.now()) {
   hint.categories = data.categories;
   hint.summary = data.summary;
   hint.sourceUrl = data.sourceUrl;
+  hint.source = data.source || 'namuwiki';
+  hint.sourceTitle = data.sourceTitle || room.goalTitle || '';
+  hint.sourceLicense = data.sourceLicense || 'CC BY-NC-SA 2.0 KR';
+  hint.sourceLicenseUrl = data.sourceLicenseUrl || 'https://creativecommons.org/licenses/by-nc-sa/2.0/kr/';
   hint.level += 1;
   hint.status = 'ready';
   hint.revealedAt = now;

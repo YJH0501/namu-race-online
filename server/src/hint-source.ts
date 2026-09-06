@@ -1,5 +1,6 @@
 // @ts-expect-error Plain ESM helpers are shared with deterministic Node tests.
 import { cleanHintText, createHintCache, selectHintText } from '../../shared/hints.mjs';
+import { getWikipediaHint } from './wikipedia-hint-source';
 
 const cache = createHintCache();
 const ORIGIN = 'https://namu.wiki';
@@ -61,26 +62,22 @@ export async function extractHint(html: string, title: string) {
     if (match) paragraphs.unshift(text.slice(match.index, match.index + 600));
   }
   const data = selectHintText(title, categories, paragraphs, description);
-  return data.categories.length || data.summary ? { ...data, sourceUrl: `${ORIGIN}/w/${encodeURIComponent(title)}` } : null;
+  return data.categories.length || data.summary ? { ...data, source: 'namuwiki', sourceTitle: title,
+    sourceUrl: `${ORIGIN}/w/${encodeURIComponent(title)}`, sourceLicense: 'CC BY-NC-SA 2.0 KR',
+    sourceLicenseUrl: 'https://creativecommons.org/licenses/by-nc-sa/2.0/kr/' } : null;
 }
 
-async function fetchHint(title: string) {
+async function fetchNamuHint(title: string) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 8000);
+  const timer = setTimeout(() => controller.abort(), 4000);
   try {
     let url = new URL(`/api/article?title=${encodeURIComponent(title)}`, READER_ORIGIN);
     let response: Response | undefined;
-    let retried = false;
     for (let redirect = 0; redirect < 4; redirect += 1) {
       response = await fetch(url.href, { redirect: 'manual', signal: controller.signal, headers: {
         Accept: 'text/html', 'Accept-Language': 'ko-KR,ko;q=0.9',
         'User-Agent': 'Mozilla/5.0 (compatible; NamuRace/1.0; +https://namu-race.yangkun050178.chatgpt.site)',
       } });
-      if (!retried && [502, 503, 504].includes(response.status)) {
-        retried = true;
-        await response.body?.cancel();
-        continue;
-      }
       if (![301, 302, 303, 307, 308].includes(response.status)) break;
       const location = response.headers.get('location');
       await response.body?.cancel();
@@ -123,5 +120,11 @@ async function fetchHint(title: string) {
 }
 
 export function getGoalHint(title: string) {
-  return cache.get(title, fetchHint);
+  return cache.get(title, async () => {
+    const namu = await fetchNamuHint(title);
+    if (namu?.summary) return namu;
+    // Keep the sources separate: Wikipedia is explicitly labelled and never
+    // substituted by fuzzy search, AI-generated definitions, or an access bypass.
+    return await getWikipediaHint(title) || namu;
+  });
 }
