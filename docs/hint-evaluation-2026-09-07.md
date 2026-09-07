@@ -32,4 +32,10 @@
 
 API 문서: [Wikidata data access](https://www.wikidata.org/wiki/Wikidata:Data_access), [P8885](https://www.wikidata.org/wiki/Property:P8885), [Cloudflare development](https://developers.cloudflare.com/workers/local-development/).
 
+## 공개 환경 확인
+
+2026-09-07 실제 공개 사이트/게임 서버에서 칼슘의 분류와 60초 후 설명 공개, 테크볼의 자동 준비, Electron 네트워크 방식의 사이토카인 힌트를 확인했다. 2인 호버링 레이스에서는 과반수 전 준비 토큰 없음, 클라이언트의 비공개 캐시 조회 차단, 동일 분류 공개와 2단계 설명 비공개를 확인했다. 로컬에서는 37개 단위 검사, 64개 기존 카드의 실제 방 API, 10개 라운드, 자동 문서 힌트의 서버 재진입/이전 라운드 차단, D1 동시 요청 12건 통합과 실패 캐시를 검증했다.
+
+미공개 캐시 조회는 서버만 보관한 별도 토큰으로 허용한다. 참가자가 받는 준비 토큰으로 GET 캐시를 읽을 수 없다. 테스트는 `test/smoke-document-multiplayer.mjs`, `test/smoke-hints-online.mjs`, `test/smoke-hints-electron.cjs`로 재현한다. 이 확인은 브라우저 UI 전수 검사나 모든 사용자 Mac의 실행 보증이 아니다.
+
 JSON에 보존된 원문 발췌는 MIT 코드 라이선스에서 제외된다. 각 결과의 sourceUrl 및 sourceLicense를 따른다(나무위키 CC BY-NC-SA 2.0 KR, 위키백과 CC BY-SA 4.0, 위키데이터 CC0).
