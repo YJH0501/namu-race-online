@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-09-07",
+  "evidence": "docs/catalog-live-sample-2026-09-07.json",
+  "note": "Observed current canonical titles and failed reader requests. Exclusions do not assert permanent deletion.",
+  "canonicalTitles": {
+    "파이널 판타지 14/중국 서버": "파이널 판타지 XIV/중국 서버",
+    "블랙 임팩트! 조직의 손이 닿는 순간": "블랙 임팩트! 조직의 손길이 닿는 순간",
+    "슈퍼주니어-T": "SUPER JUNIOR-T",
+    "카루타 잡기 위기일발": "카루타 게임 위기일발",
+    "채태인/2018년": "채태인/선수 경력/2018년",
+    "홍성흔/2013년": "홍성흔/선수 경력/2013년",
+    "JIT 컴파일": "JIT"
+  },
+  "exclude": [
+    "1대 100/1인/2011~2015년",
+    "퍼스트(폐급인척 했던 학교생활)",
+    "독일/기업",
+    "ABA 수상목록",
+    "버스커 버스커/공연 활동",
+    "WWE/사건사고 및 논란",
+    "장한갑",
+    "세계정복자 4/정복/1950",
+    "Stray Kids 정규 앨범 2집"
+  ]
+}

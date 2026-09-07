@@ -1,0 +1,1281 @@
+{
+  "catalog": {
+    "version": "catalog-100k-2026-09-07",
+    "count": 100000,
+    "sha256": "7e0ccb59b6c634d94940ace36b19c451be335eacd993429f774fdafefb5cd6ea",
+    "validation": "historical-filtered-plus-live-link-seed; not-all-live-verified"
+  },
+  "seed": "namu-catalog-live-check-v1",
+  "startedAt": "2026-09-07T08:49:40.031Z",
+  "requested": 100,
+  "records": [
+    {
+      "title": "1대 100/1인/2011~2015년",
+      "group": "added",
+      "status": 502,
+      "ms": 5117,
+      "exact": false,
+      "page": null
+    },
+    {
+      "title": "파이널 판타지 14/중국 서버",
+      "group": "added",
+      "status": 200,
+      "ms": 334,
+      "exact": false,
+      "page": {
+        "title": "파이널 판타지 XIV/중국 서버",
+        "heading": "파이널 판타지 XIV/중국 서버",
+        "links": 108,
+        "missing": false
+      }
+    },
+    {
+      "title": "퍼스트(폐급인척 했던 학교생활)",
+      "group": "added",
+      "status": 502,
+      "ms": 113,
+      "exact": false,
+      "page": null
+    },
+    {
+      "title": "DJMAX TECHNIKA 3/난이도 표기 문제",
+      "group": "added",
+      "status": 200,
+      "ms": 349,
+      "exact": true,
+      "page": {
+        "title": "DJMAX TECHNIKA 3/난이도 표기 문제",
+        "heading": "DJMAX TECHNIKA 3/난이도 표기 문제",
+        "links": 142,
+        "missing": false
+      }
+    },
+    {
+      "title": "안토니오 이노키",
+      "group": "added",
+      "status": 200,
+      "ms": 261,
+      "exact": true,
+      "page": {
+        "title": "안토니오 이노키",
+        "heading": "안토니오 이노키",
+        "links": 219,
+        "missing": false
+      }
+    },
+    {
+      "title": "독일/기업",
+      "group": "added",
+      "status": 502,
+      "ms": 174,
+      "exact": false,
+      "page": null
+    },
+    {
+      "title": "블랙 임팩트! 조직의 손이 닿는 순간",
+      "group": "added",
+      "status": 200,
+      "ms": 318,
+      "exact": false,
+      "page": {
+        "title": "블랙 임팩트! 조직의 손길이 닿는 순간",
+        "heading": "블랙 임팩트! 조직의 손길이 닿는 순간",
+        "links": 219,
+        "missing": false
+      }
+    },
+    {
+      "title": "빛이여",
+      "group": "added",
+      "status": 200,
+      "ms": 155,
+      "exact": true,
+      "page": {
+        "title": "빛이여",
+        "heading": "빛이여",
+        "links": 9,
+        "missing": false
+      }
+    },
+    {
+      "title": "DataErr0r",
+      "group": "added",
+      "status": 200,
+      "ms": 168,
+      "exact": true,
+      "page": {
+        "title": "DataErr0r",
+        "heading": "DataErr0r",
+        "links": 102,
+        "missing": false
+      }
+    },
+    {
+      "title": "kim:kyungho 1997",
+      "group": "added",
+      "status": 200,
+      "ms": 326,
+      "exact": true,
+      "page": {
+        "title": "kim:kyungho 1997",
+        "heading": "kim:kyungho 1997",
+        "links": 317,
+        "missing": false
+      }
+    },
+    {
+      "title": "폴라 달시니",
+      "group": "added",
+      "status": 200,
+      "ms": 127,
+      "exact": true,
+      "page": {
+        "title": "폴라 달시니",
+        "heading": "폴라 달시니",
+        "links": 5,
+        "missing": false
+      }
+    },
+    {
+      "title": "아리스가와 아리스",
+      "group": "added",
+      "status": 200,
+      "ms": 311,
+      "exact": true,
+      "page": {
+        "title": "아리스가와 아리스",
+        "heading": "아리스가와 아리스",
+        "links": 256,
+        "missing": false
+      }
+    },
+    {
+      "title": "독립문역",
+      "group": "added",
+      "status": 200,
+      "ms": 346,
+      "exact": true,
+      "page": {
+        "title": "독립문역",
+        "heading": "독립문역",
+        "links": 259,
+        "missing": false
+      }
+    },
+    {
+      "title": "ABA 수상목록",
+      "group": "added",
+      "status": 502,
+      "ms": 107,
+      "exact": false,
+      "page": null
+    },
+    {
+      "title": "대탈출/미래대학교",
+      "group": "added",
+      "status": 200,
+      "ms": 307,
+      "exact": true,
+      "page": {
+        "title": "대탈출/미래대학교",
+        "heading": "대탈출/미래대학교",
+        "links": 219,
+        "missing": false
+      }
+    },
+    {
+      "title": "이이다 히로시",
+      "group": "added",
+      "status": 200,
+      "ms": 160,
+      "exact": true,
+      "page": {
+        "title": "이이다 히로시",
+        "heading": "이이다 히로시",
+        "links": 34,
+        "missing": false
+      }
+    },
+    {
+      "title": "버스커 버스커/공연 활동",
+      "group": "added",
+      "status": 502,
+      "ms": 192,
+      "exact": false,
+      "page": null
+    },
+    {
+      "title": "WWE/사건사고 및 논란",
+      "group": "added",
+      "status": 502,
+      "ms": 112,
+      "exact": false,
+      "page": null
+    },
+    {
+      "title": "벽람항로/장비",
+      "group": "added",
+      "status": 200,
+      "ms": 245,
+      "exact": true,
+      "page": {
+        "title": "벽람항로/장비",
+        "heading": "벽람항로/장비",
+        "links": 106,
+        "missing": false
+      }
+    },
+    {
+      "title": "사레 하비히츠부르그",
+      "group": "added",
+      "status": 200,
+      "ms": 221,
+      "exact": true,
+      "page": {
+        "title": "사레 하비히츠부르그",
+        "heading": "사레 하비히츠부르그",
+        "links": 14,
+        "missing": false
+      }
+    },
+    {
+      "title": "후쿠오카고속도로 카시선",
+      "group": "added",
+      "status": 200,
+      "ms": 279,
+      "exact": true,
+      "page": {
+        "title": "후쿠오카고속도로 카시선",
+        "heading": "후쿠오카고속도로 카시선",
+        "links": 286,
+        "missing": false
+      }
+    },
+    {
+      "title": "하늘의 혈맥",
+      "group": "added",
+      "status": 200,
+      "ms": 179,
+      "exact": true,
+      "page": {
+        "title": "하늘의 혈맥",
+        "heading": "하늘의 혈맥",
+        "links": 130,
+        "missing": false
+      }
+    },
+    {
+      "title": "망자의 궁전",
+      "group": "added",
+      "status": 200,
+      "ms": 271,
+      "exact": true,
+      "page": {
+        "title": "망자의 궁전",
+        "heading": "망자의 궁전",
+        "links": 81,
+        "missing": false
+      }
+    },
+    {
+      "title": "악당의 아빠를 꼬셔라",
+      "group": "added",
+      "status": 200,
+      "ms": 148,
+      "exact": true,
+      "page": {
+        "title": "악당의 아빠를 꼬셔라",
+        "heading": "악당의 아빠를 꼬셔라",
+        "links": 17,
+        "missing": false
+      }
+    },
+    {
+      "title": "박카스 스타리그 2010/대진표",
+      "group": "added",
+      "status": 200,
+      "ms": 371,
+      "exact": true,
+      "page": {
+        "title": "박카스 스타리그 2010/대진표",
+        "heading": "박카스 스타리그 2010/대진표",
+        "links": 132,
+        "missing": false
+      }
+    },
+    {
+      "title": "대교어린이TV",
+      "group": "added",
+      "status": 200,
+      "ms": 324,
+      "exact": true,
+      "page": {
+        "title": "대교어린이TV",
+        "heading": "대교어린이TV",
+        "links": 472,
+        "missing": false
+      }
+    },
+    {
+      "title": "요노모리 코베니",
+      "group": "added",
+      "status": 200,
+      "ms": 157,
+      "exact": true,
+      "page": {
+        "title": "요노모리 코베니",
+        "heading": "요노모리 코베니",
+        "links": 51,
+        "missing": false
+      }
+    },
+    {
+      "title": "아키야마 신이치",
+      "group": "added",
+      "status": 200,
+      "ms": 178,
+      "exact": true,
+      "page": {
+        "title": "아키야마 신이치",
+        "heading": "아키야마 신이치",
+        "links": 47,
+        "missing": false
+      }
+    },
+    {
+      "title": "나즈와 카람",
+      "group": "added",
+      "status": 200,
+      "ms": 134,
+      "exact": true,
+      "page": {
+        "title": "나즈와 카람",
+        "heading": "나즈와 카람",
+        "links": 15,
+        "missing": false
+      }
+    },
+    {
+      "title": "장한갑",
+      "group": "added",
+      "status": 502,
+      "ms": 364,
+      "exact": false,
+      "page": null
+    },
+    {
+      "title": "요마세역",
+      "group": "added",
+      "status": 200,
+      "ms": 132,
+      "exact": true,
+      "page": {
+        "title": "요마세역",
+        "heading": "요마세역",
+        "links": 30,
+        "missing": false
+      }
+    },
+    {
+      "title": "김만후",
+      "group": "added",
+      "status": 200,
+      "ms": 181,
+      "exact": true,
+      "page": {
+        "title": "김만후",
+        "heading": "김만후",
+        "links": 151,
+        "missing": false
+      }
+    },
+    {
+      "title": "비운동권",
+      "group": "added",
+      "status": 200,
+      "ms": 127,
+      "exact": true,
+      "page": {
+        "title": "비운동권",
+        "heading": "비운동권",
+        "links": 34,
+        "missing": false
+      }
+    },
+    {
+      "title": "CuteG",
+      "group": "added",
+      "status": 200,
+      "ms": 256,
+      "exact": true,
+      "page": {
+        "title": "CuteG",
+        "heading": "CuteG",
+        "links": 67,
+        "missing": false
+      }
+    },
+    {
+      "title": "세키(동패)",
+      "group": "added",
+      "status": 200,
+      "ms": 404,
+      "exact": true,
+      "page": {
+        "title": "세키(동패)",
+        "heading": "세키(동패)",
+        "links": 10,
+        "missing": false
+      }
+    },
+    {
+      "title": "세계정복자 4/정복/1950",
+      "group": "added",
+      "status": 502,
+      "ms": 114,
+      "exact": false,
+      "page": null
+    },
+    {
+      "title": "슈퍼주니어-T",
+      "group": "added",
+      "status": 200,
+      "ms": 359,
+      "exact": false,
+      "page": {
+        "title": "SUPER JUNIOR-T",
+        "heading": "SUPER JUNIOR-T",
+        "links": 279,
+        "missing": false
+      }
+    },
+    {
+      "title": "코미디",
+      "group": "added",
+      "status": 200,
+      "ms": 223,
+      "exact": true,
+      "page": {
+        "title": "코미디",
+        "heading": "코미디",
+        "links": 131,
+        "missing": false
+      }
+    },
+    {
+      "title": "클로에(에픽세븐)",
+      "group": "added",
+      "status": 200,
+      "ms": 368,
+      "exact": true,
+      "page": {
+        "title": "클로에(에픽세븐)",
+        "heading": "클로에(에픽세븐)",
+        "links": 264,
+        "missing": false
+      }
+    },
+    {
+      "title": "네임리스(KOF)",
+      "group": "added",
+      "status": 200,
+      "ms": 174,
+      "exact": true,
+      "page": {
+        "title": "네임리스(KOF)",
+        "heading": "네임리스(KOF)",
+        "links": 108,
+        "missing": false
+      }
+    },
+    {
+      "title": "정색",
+      "group": "added",
+      "status": 200,
+      "ms": 235,
+      "exact": true,
+      "page": {
+        "title": "정색",
+        "heading": "정색",
+        "links": 13,
+        "missing": false
+      }
+    },
+    {
+      "title": "진남",
+      "group": "added",
+      "status": 200,
+      "ms": 156,
+      "exact": true,
+      "page": {
+        "title": "진남",
+        "heading": "진남",
+        "links": 7,
+        "missing": false
+      }
+    },
+    {
+      "title": "시스(스타워즈)",
+      "group": "added",
+      "status": 200,
+      "ms": 240,
+      "exact": true,
+      "page": {
+        "title": "시스(스타워즈)",
+        "heading": "시스(스타워즈)",
+        "links": 291,
+        "missing": false
+      }
+    },
+    {
+      "title": "강준우(축구)",
+      "group": "added",
+      "status": 200,
+      "ms": 232,
+      "exact": true,
+      "page": {
+        "title": "강준우(축구)",
+        "heading": "강준우(축구)",
+        "links": 48,
+        "missing": false
+      }
+    },
+    {
+      "title": "카를라 예거",
+      "group": "added",
+      "status": 200,
+      "ms": 244,
+      "exact": true,
+      "page": {
+        "title": "카를라 예거",
+        "heading": "카를라 예거",
+        "links": 46,
+        "missing": false
+      }
+    },
+    {
+      "title": "카루타 잡기 위기일발",
+      "group": "added",
+      "status": 200,
+      "ms": 312,
+      "exact": false,
+      "page": {
+        "title": "카루타 게임 위기일발",
+        "heading": "카루타 게임 위기일발",
+        "links": 39,
+        "missing": false
+      }
+    },
+    {
+      "title": "만능 수리공 매니",
+      "group": "added",
+      "status": 200,
+      "ms": 456,
+      "exact": true,
+      "page": {
+        "title": "만능 수리공 매니",
+        "heading": "만능 수리공 매니",
+        "links": 40,
+        "missing": false
+      }
+    },
+    {
+      "title": "투우사의 노래",
+      "group": "added",
+      "status": 200,
+      "ms": 465,
+      "exact": true,
+      "page": {
+        "title": "투우사의 노래",
+        "heading": "투우사의 노래",
+        "links": 20,
+        "missing": false
+      }
+    },
+    {
+      "title": "치링치링 시크릿 쥬쥬/등장인물",
+      "group": "added",
+      "status": 200,
+      "ms": 862,
+      "exact": true,
+      "page": {
+        "title": "치링치링 시크릿 쥬쥬/등장인물",
+        "heading": "치링치링 시크릿 쥬쥬/등장인물",
+        "links": 49,
+        "missing": false
+      }
+    },
+    {
+      "title": "애각창",
+      "group": "added",
+      "status": 200,
+      "ms": 178,
+      "exact": true,
+      "page": {
+        "title": "애각창",
+        "heading": "애각창",
+        "links": 25,
+        "missing": false
+      }
+    },
+    {
+      "title": "채태인/2018년",
+      "group": "added",
+      "status": 200,
+      "ms": 203,
+      "exact": false,
+      "page": {
+        "title": "채태인/선수 경력/2018년",
+        "heading": "채태인/선수 경력/2018년",
+        "links": 30,
+        "missing": false
+      }
+    },
+    {
+      "title": "집행자",
+      "group": "added",
+      "status": 200,
+      "ms": 196,
+      "exact": true,
+      "page": {
+        "title": "집행자",
+        "heading": "집행자",
+        "links": 23,
+        "missing": false
+      }
+    },
+    {
+      "title": "죠스(007 시리즈)",
+      "group": "added",
+      "status": 200,
+      "ms": 154,
+      "exact": true,
+      "page": {
+        "title": "죠스(007 시리즈)",
+        "heading": "죠스(007 시리즈)",
+        "links": 47,
+        "missing": false
+      }
+    },
+    {
+      "title": "Anarchy in the UK",
+      "group": "added",
+      "status": 200,
+      "ms": 2263,
+      "exact": true,
+      "page": {
+        "title": "Anarchy in the UK",
+        "heading": "Anarchy in the UK",
+        "links": 65,
+        "missing": false
+      }
+    },
+    {
+      "title": "북포항IC",
+      "group": "added",
+      "status": 200,
+      "ms": 155,
+      "exact": true,
+      "page": {
+        "title": "북포항IC",
+        "heading": "북포항IC",
+        "links": 100,
+        "missing": false
+      }
+    },
+    {
+      "title": "홍성흔/2013년",
+      "group": "added",
+      "status": 200,
+      "ms": 251,
+      "exact": false,
+      "page": {
+        "title": "홍성흔/선수 경력/2013년",
+        "heading": "홍성흔/선수 경력/2013년",
+        "links": 37,
+        "missing": false
+      }
+    },
+    {
+      "title": "서치라이트맨",
+      "group": "added",
+      "status": 200,
+      "ms": 164,
+      "exact": true,
+      "page": {
+        "title": "서치라이트맨",
+        "heading": "서치라이트맨",
+        "links": 23,
+        "missing": false
+      }
+    },
+    {
+      "title": "간다외어대학",
+      "group": "added",
+      "status": 200,
+      "ms": 170,
+      "exact": true,
+      "page": {
+        "title": "간다외어대학",
+        "heading": "간다외어대학",
+        "links": 129,
+        "missing": false
+      }
+    },
+    {
+      "title": "김철수(클로저스)/대사",
+      "group": "added",
+      "status": 200,
+      "ms": 277,
+      "exact": true,
+      "page": {
+        "title": "김철수(클로저스)/대사",
+        "heading": "김철수(클로저스)/대사",
+        "links": 143,
+        "missing": false
+      }
+    },
+    {
+      "title": "베아트리체(괭이갈매기 울 적에)",
+      "group": "added",
+      "status": 200,
+      "ms": 219,
+      "exact": true,
+      "page": {
+        "title": "베아트리체(괭이갈매기 울 적에)",
+        "heading": "베아트리체(괭이갈매기 울 적에)",
+        "links": 126,
+        "missing": false
+      }
+    },
+    {
+      "title": "자주곡사포",
+      "group": "added",
+      "status": 200,
+      "ms": 191,
+      "exact": true,
+      "page": {
+        "title": "자주곡사포",
+        "heading": "자주곡사포",
+        "links": 165,
+        "missing": false
+      }
+    },
+    {
+      "title": "더 가디언(소설)",
+      "group": "added",
+      "status": 200,
+      "ms": 170,
+      "exact": true,
+      "page": {
+        "title": "더 가디언(소설)",
+        "heading": "더 가디언(소설)",
+        "links": 6,
+        "missing": false
+      }
+    },
+    {
+      "title": "남녀칠세부동석",
+      "group": "added",
+      "status": 200,
+      "ms": 145,
+      "exact": true,
+      "page": {
+        "title": "남녀칠세부동석",
+        "heading": "남녀칠세부동석",
+        "links": 70,
+        "missing": false
+      }
+    },
+    {
+      "title": "One Juicy Step",
+      "group": "added",
+      "status": 200,
+      "ms": 105,
+      "exact": true,
+      "page": {
+        "title": "One Juicy Step",
+        "heading": "One Juicy Step",
+        "links": 14,
+        "missing": false
+      }
+    },
+    {
+      "title": "왕실",
+      "group": "added",
+      "status": 200,
+      "ms": 215,
+      "exact": true,
+      "page": {
+        "title": "왕실",
+        "heading": "왕실",
+        "links": 430,
+        "missing": false
+      }
+    },
+    {
+      "title": "유 퀴즈 온 더 블럭/52회",
+      "group": "added",
+      "status": 200,
+      "ms": 214,
+      "exact": true,
+      "page": {
+        "title": "유 퀴즈 온 더 블럭/52회",
+        "heading": "유 퀴즈 온 더 블럭/52회",
+        "links": 391,
+        "missing": false
+      }
+    },
+    {
+      "title": "시오에 몬지로",
+      "group": "added",
+      "status": 200,
+      "ms": 201,
+      "exact": true,
+      "page": {
+        "title": "시오에 몬지로",
+        "heading": "시오에 몬지로",
+        "links": 212,
+        "missing": false
+      }
+    },
+    {
+      "title": "텐노지역",
+      "group": "added",
+      "status": 200,
+      "ms": 450,
+      "exact": true,
+      "page": {
+        "title": "텐노지역",
+        "heading": "텐노지역",
+        "links": 426,
+        "missing": false
+      }
+    },
+    {
+      "title": "타카츠카사 마사오미",
+      "group": "added",
+      "status": 200,
+      "ms": 146,
+      "exact": true,
+      "page": {
+        "title": "타카츠카사 마사오미",
+        "heading": "타카츠카사 마사오미",
+        "links": 9,
+        "missing": false
+      }
+    },
+    {
+      "title": "Stray Kids 정규 앨범 2집",
+      "group": "added",
+      "status": 502,
+      "ms": 102,
+      "exact": false,
+      "page": null
+    },
+    {
+      "title": "던스타",
+      "group": "added",
+      "status": 200,
+      "ms": 173,
+      "exact": true,
+      "page": {
+        "title": "던스타",
+        "heading": "던스타",
+        "links": 96,
+        "missing": false
+      }
+    },
+    {
+      "title": "MrGear",
+      "group": "added",
+      "status": 200,
+      "ms": 117,
+      "exact": true,
+      "page": {
+        "title": "MrGear",
+        "heading": "MrGear",
+        "links": 3,
+        "missing": false
+      }
+    },
+    {
+      "title": "캠퍼스타운역",
+      "group": "added",
+      "status": 200,
+      "ms": 224,
+      "exact": true,
+      "page": {
+        "title": "캠퍼스타운역",
+        "heading": "캠퍼스타운역",
+        "links": 243,
+        "missing": false
+      }
+    },
+    {
+      "title": "Let It Die",
+      "group": "added",
+      "status": 200,
+      "ms": 219,
+      "exact": true,
+      "page": {
+        "title": "Let It Die",
+        "heading": "Let It Die",
+        "links": 45,
+        "missing": false
+      }
+    },
+    {
+      "title": "나루토 신시대 프로젝트",
+      "group": "added",
+      "status": 200,
+      "ms": 146,
+      "exact": true,
+      "page": {
+        "title": "나루토 신시대 프로젝트",
+        "heading": "나루토 신시대 프로젝트",
+        "links": 23,
+        "missing": false
+      }
+    },
+    {
+      "title": "bluehole 마이너 갤러리",
+      "group": "added",
+      "status": 200,
+      "ms": 124,
+      "exact": true,
+      "page": {
+        "title": "bluehole 마이너 갤러리",
+        "heading": "bluehole 마이너 갤러리",
+        "links": 23,
+        "missing": false
+      }
+    },
+    {
+      "title": "FC 유나이티드 오브 맨체스터",
+      "group": "added",
+      "status": 200,
+      "ms": 191,
+      "exact": true,
+      "page": {
+        "title": "FC 유나이티드 오브 맨체스터",
+        "heading": "FC 유나이티드 오브 맨체스터",
+        "links": 102,
+        "missing": false
+      }
+    },
+    {
+      "title": "백마도사",
+      "group": "added",
+      "status": 200,
+      "ms": 132,
+      "exact": true,
+      "page": {
+        "title": "백마도사",
+        "heading": "백마도사",
+        "links": 48,
+        "missing": false
+      }
+    },
+    {
+      "title": "세종대왕(영웅)",
+      "group": "added",
+      "status": 200,
+      "ms": 134,
+      "exact": true,
+      "page": {
+        "title": "세종대왕(영웅)",
+        "heading": "세종대왕(영웅)",
+        "links": 8,
+        "missing": false
+      }
+    },
+    {
+      "title": "본리중학교",
+      "group": "added",
+      "status": 200,
+      "ms": 204,
+      "exact": true,
+      "page": {
+        "title": "본리중학교",
+        "heading": "본리중학교",
+        "links": 150,
+        "missing": false
+      }
+    },
+    {
+      "title": "미국 우주군",
+      "group": "seed",
+      "status": 200,
+      "ms": 289,
+      "exact": true,
+      "page": {
+        "title": "미국 우주군",
+        "heading": "미국 우주군",
+        "links": 572,
+        "missing": false
+      }
+    },
+    {
+      "title": "하모니",
+      "group": "seed",
+      "status": 200,
+      "ms": 147,
+      "exact": true,
+      "page": {
+        "title": "하모니",
+        "heading": "하모니",
+        "links": 57,
+        "missing": false
+      }
+    },
+    {
+      "title": "미국 해군",
+      "group": "seed",
+      "status": 200,
+      "ms": 430,
+      "exact": true,
+      "page": {
+        "title": "미국 해군",
+        "heading": "미국 해군",
+        "links": 662,
+        "missing": false
+      }
+    },
+    {
+      "title": "자주포",
+      "group": "seed",
+      "status": 200,
+      "ms": 263,
+      "exact": true,
+      "page": {
+        "title": "자주포",
+        "heading": "자주포",
+        "links": 260,
+        "missing": false
+      }
+    },
+    {
+      "title": "디하이드록실레이스",
+      "group": "seed",
+      "status": 200,
+      "ms": 174,
+      "exact": true,
+      "page": {
+        "title": "디하이드록실레이스",
+        "heading": "디하이드록실레이스",
+        "links": 169,
+        "missing": false
+      }
+    },
+    {
+      "title": "민법",
+      "group": "seed",
+      "status": 200,
+      "ms": 158,
+      "exact": true,
+      "page": {
+        "title": "민법",
+        "heading": "민법",
+        "links": 79,
+        "missing": false
+      }
+    },
+    {
+      "title": "한국야구학회",
+      "group": "seed",
+      "status": 200,
+      "ms": 126,
+      "exact": true,
+      "page": {
+        "title": "한국야구학회",
+        "heading": "한국야구학회",
+        "links": 24,
+        "missing": false
+      }
+    },
+    {
+      "title": "정부수반",
+      "group": "seed",
+      "status": 200,
+      "ms": 283,
+      "exact": true,
+      "page": {
+        "title": "정부수반",
+        "heading": "정부수반",
+        "links": 421,
+        "missing": false
+      }
+    },
+    {
+      "title": "A* 알고리즘",
+      "group": "seed",
+      "status": 200,
+      "ms": 174,
+      "exact": true,
+      "page": {
+        "title": "A* 알고리즘",
+        "heading": "A* 알고리즘",
+        "links": 125,
+        "missing": false
+      }
+    },
+    {
+      "title": "프랑스-벨기에 만화",
+      "group": "seed",
+      "status": 200,
+      "ms": 254,
+      "exact": true,
+      "page": {
+        "title": "프랑스-벨기에 만화",
+        "heading": "프랑스-벨기에 만화",
+        "links": 409,
+        "missing": false
+      }
+    },
+    {
+      "title": "영빠",
+      "group": "seed",
+      "status": 200,
+      "ms": 308,
+      "exact": true,
+      "page": {
+        "title": "영빠",
+        "heading": "영빠",
+        "links": 683,
+        "missing": false
+      }
+    },
+    {
+      "title": "유인",
+      "group": "seed",
+      "status": 200,
+      "ms": 167,
+      "exact": true,
+      "page": {
+        "title": "유인",
+        "heading": "유인",
+        "links": 55,
+        "missing": false
+      }
+    },
+    {
+      "title": "흐미(창법)",
+      "group": "seed",
+      "status": 200,
+      "ms": 171,
+      "exact": true,
+      "page": {
+        "title": "흐미(창법)",
+        "heading": "흐미(창법)",
+        "links": 95,
+        "missing": false
+      }
+    },
+    {
+      "title": "침강",
+      "group": "seed",
+      "status": 200,
+      "ms": 133,
+      "exact": true,
+      "page": {
+        "title": "침강",
+        "heading": "침강",
+        "links": 116,
+        "missing": false
+      }
+    },
+    {
+      "title": "여성청결제",
+      "group": "seed",
+      "status": 200,
+      "ms": 172,
+      "exact": true,
+      "page": {
+        "title": "여성청결제",
+        "heading": "여성청결제",
+        "links": 105,
+        "missing": false
+      }
+    },
+    {
+      "title": "JIT 컴파일",
+      "group": "seed",
+      "status": 200,
+      "ms": 303,
+      "exact": false,
+      "page": {
+        "title": "JIT",
+        "heading": "JIT",
+        "links": 245,
+        "missing": false
+      }
+    },
+    {
+      "title": "민코프스키 부등식",
+      "group": "seed",
+      "status": 200,
+      "ms": 349,
+      "exact": true,
+      "page": {
+        "title": "민코프스키 부등식",
+        "heading": "민코프스키 부등식",
+        "links": 232,
+        "missing": false
+      }
+    },
+    {
+      "title": "RE24",
+      "group": "seed",
+      "status": 200,
+      "ms": 147,
+      "exact": true,
+      "page": {
+        "title": "RE24",
+        "heading": "RE24",
+        "links": 95,
+        "missing": false
+      }
+    },
+    {
+      "title": "세드나(왜행성 후보 천체)",
+      "group": "seed",
+      "status": 200,
+      "ms": 200,
+      "exact": true,
+      "page": {
+        "title": "세드나(왜행성 후보 천체)",
+        "heading": "세드나(왜행성 후보 천체)",
+        "links": 191,
+        "missing": false
+      }
+    },
+    {
+      "title": "사도(도로)",
+      "group": "seed",
+      "status": 200,
+      "ms": 178,
+      "exact": true,
+      "page": {
+        "title": "사도(도로)",
+        "heading": "사도(도로)",
+        "links": 200,
+        "missing": false
+      }
+    }
+  ],
+  "finishedAt": "2026-09-07T08:51:10.432Z",
+  "summary": {
+    "added": {
+      "attempted": 80,
+      "exact": 65,
+      "withArticleLinks": 65
+    },
+    "seed": {
+      "attempted": 20,
+      "exact": 19,
+      "withArticleLinks": 19
+    }
+  }
+}

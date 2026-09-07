@@ -6,3 +6,4 @@ server-url.txt
 .e2e-profile*/
 .final-profile/
 .package-profile/
+.catalog-cache/

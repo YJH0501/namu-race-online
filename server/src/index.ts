@@ -2,7 +2,9 @@ import { DurableObject } from 'cloudflare:workers';
 // @ts-expect-error Shared runtime module intentionally stays plain ESM for Node tests.
 import { cleanTitle, customRoute, dailyRoute, utcDateKey } from '../../shared/routes.mjs';
 // @ts-expect-error Generated title snapshot intentionally stays plain ESM.
-import { RANDOM_TITLE_POOL } from '../../shared/random-title-pool.mjs';
+import { RANDOM_TITLE_POOL, RANDOM_CATALOG } from '../../shared/random-title-pool.mjs';
+// @ts-expect-error Plain ESM catalog sampler shared with deterministic tests.
+import { pickCatalogRoute } from '../../shared/catalog-selection.mjs';
 // @ts-expect-error Shared runtime module intentionally stays plain ESM for Node tests.
 import { calculateRoundScoreDetails } from '../../shared/scoring.mjs';
 // @ts-expect-error Plain ESM helpers are shared with deterministic Node tests.
@@ -138,12 +140,6 @@ function makeCode() {
 const recentRandomTitles: string[] = [];
 const RECENT_RANDOM_LIMIT = 240;
 
-function randomIndex(length: number) {
-  if (length <= 1) return 0;
-  const value = crypto.getRandomValues(new Uint32Array(1))[0];
-  return value % length;
-}
-
 function rememberRandomTitles(titles: string[]) {
   for (const title of titles) {
     const previousIndex = recentRandomTitles.indexOf(title);
@@ -156,18 +152,7 @@ function rememberRandomTitles(titles: string[]) {
 }
 
 async function randomNamuWikiRoute(excludedTitles: string[] = []) {
-  const goals = RANDOM_TITLE_POOL as readonly string[];
-  const recentGoals = recentRandomTitles;
-  const roomExcluded = new Set(excludedTitles);
-  let goalCandidates = goals.filter(t => !roomExcluded.has(t) && !recentGoals.includes(t));
-  if (!goalCandidates.length) goalCandidates = goals.filter(t => !roomExcluded.has(t));
-  if (!goalCandidates.length) goalCandidates = [...goals];
-  if (!goalCandidates.length) throw new Error('목표 문서 목록이 비어 있어요.');
-  const goalTitle = goalCandidates[randomIndex(goalCandidates.length)];
-  const excluded = new Set([...recentRandomTitles, ...excludedTitles, goalTitle]);
-  let starts = (RANDOM_TITLE_POOL as readonly string[]).filter(t => !excluded.has(t));
-  if (!starts.length) starts = (RANDOM_TITLE_POOL as readonly string[]).filter(t => t !== goalTitle);
-  const startTitle = starts[randomIndex(starts.length)];
+  const { startTitle, goalTitle } = pickCatalogRoute(RANDOM_TITLE_POOL, recentRandomTitles, excludedTitles);
   rememberRandomTitles([startTitle, goalTitle]);
   return { mode: 'random' as const, dateKey: null, startTitle, goalTitle };
 }
@@ -204,6 +189,7 @@ function publicRoom(room: Room, viewerPlayerId?: string | null) {
     hintPolicy: 'adaptive-v1',
     hintGoalCount: RANDOM_TITLE_POOL.length,
     randomStartCount: RANDOM_TITLE_POOL.length,
+    catalogVersion: RANDOM_CATALOG.version,
     scoreWeights: room.scoreWeights || { clicks: 700, time: 300 },
     activePlayerCount: room.players.length,
     players: [...room.players, ...(room.status === 'waiting' ? [] : room.departedPlayers || [])]
@@ -269,7 +255,7 @@ export default {
     const url = new URL(request.url);
     if (request.method === 'OPTIONS') return withCors(new Response(null, { status: 204 }));
     if (request.method === 'GET' && url.pathname === '/health') {
-      return withCors(json({ ok: true, service: 'namu-race-online', date: utcDateKey() }));
+      return withCors(json({ ok: true, service: 'namu-race-online', date: utcDateKey(), catalog: RANDOM_CATALOG }));
     }
     if (request.method === 'GET' && url.pathname === '/daily') {
       return withCors(json({ route: dailyRoute(utcDateKey()) }));

@@ -1,0 +1,48 @@
+{
+  "version": "catalog-100k-2026-09-07",
+  "count": 100000,
+  "sha256": "64067b6bd4886bb918a9471e62043bd3b2925ec1bdc30de709538bdf55e545f8",
+  "validation": "historical-filtered-plus-live-link-seed; not-all-live-verified",
+  "sourcePage": "https://huggingface.co/datasets/heegyu/namuwiki",
+  "sourceRevision": "5631a9bd17a096bab2cd02ea23adbf2327db0d91",
+  "snapshotDateNote": "Filename says 20210301; dataset card says 2022/03/01. Historical, not live-verified.",
+  "sourceCounts": {
+    "redirect": 295647,
+    "eligible": 562200,
+    "noArticleLink": 9165,
+    "title": 3,
+    "short": 9
+  },
+  "sourceIndexPreparedAt": "2026-09-07T06:55:57.765991+00:00",
+  "baselineCommit": "85baf35a2c413ead6624458e447ae44c622f705b",
+  "baselineCount": 15199,
+  "retainedBaseline": 15198,
+  "historicalEligibleAfterClientCompatibility": 562078,
+  "addedFromHistoricalSnapshot": 84796,
+  "addedFromCurrentCanonicalCorrections": 6,
+  "liveCorrections": {
+    "canonicalTitles": {
+      "파이널 판타지 14/중국 서버": "파이널 판타지 XIV/중국 서버",
+      "블랙 임팩트! 조직의 손이 닿는 순간": "블랙 임팩트! 조직의 손길이 닿는 순간",
+      "슈퍼주니어-T": "SUPER JUNIOR-T",
+      "카루타 잡기 위기일발": "카루타 게임 위기일발",
+      "채태인/2018년": "채태인/선수 경력/2018년",
+      "홍성흔/2013년": "홍성흔/선수 경력/2013년",
+      "JIT 컴파일": "JIT"
+    },
+    "excluded": [
+      "1대 100/1인/2011~2015년",
+      "퍼스트(폐급인척 했던 학교생활)",
+      "독일/기업",
+      "ABA 수상목록",
+      "버스커 버스커/공연 활동",
+      "WWE/사건사고 및 논란",
+      "장한갑",
+      "세계정복자 4/정복/1950",
+      "Stray Kids 정규 앨범 2집"
+    ]
+  },
+  "filter": "Historical additions: normal namespace, non-redirect, >=80 markup characters, at least one article-like link; all titles match released client normalization and exclude administration namespaces.",
+  "selection": "SHA-256 ranked additions across the whole eligible snapshot, not its first alphabetical rows; compatible September live-link seed titles retained except observed current corrections.",
+  "limits": "Historical checks do not establish current existence, live canonical title, reachability, factual quality or hint availability. Seed titles were collected from links, not exhaustively fetched."
+}
