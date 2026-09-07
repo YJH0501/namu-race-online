@@ -5,6 +5,8 @@ import { cleanTitle, customRoute, dailyRoute, utcDateKey } from '../../shared/ro
 import { RANDOM_TITLE_POOL, RANDOM_CATALOG } from '../../shared/random-title-pool.mjs';
 // @ts-expect-error Plain ESM catalog sampler shared with deterministic tests.
 import { pickCatalogRoute } from '../../shared/catalog-selection.mjs';
+// @ts-expect-error Plain ESM presence policy shared with deterministic tests.
+import { presenceDeadline, PRESENCE_TIMEOUT_MS } from '../../shared/presence.mjs';
 // @ts-expect-error Shared runtime module intentionally stays plain ESM for Node tests.
 import { calculateRoundScoreDetails } from '../../shared/scoring.mjs';
 // @ts-expect-error Plain ESM helpers are shared with deterministic Node tests.
@@ -91,8 +93,6 @@ const jsonHeaders = {
 };
 
 const ROOM_LIFETIME_MS = 6 * 60 * 60 * 1000;
-const DISCONNECT_GRACE_MS = 5_000;
-const PRESENCE_TIMEOUT_MS = 8_000;
 const MIN_ROUNDS = 2;
 const MAX_ROUNDS = 10;
 const DEFAULT_ROUNDS = 3;
@@ -255,7 +255,7 @@ export default {
     const url = new URL(request.url);
     if (request.method === 'OPTIONS') return withCors(new Response(null, { status: 204 }));
     if (request.method === 'GET' && url.pathname === '/health') {
-      return withCors(json({ ok: true, service: 'namu-race-online', date: utcDateKey(), catalog: RANDOM_CATALOG }));
+      return withCors(json({ ok: true, service: 'namu-race-online', date: utcDateKey(), catalog: RANDOM_CATALOG, presenceGraceMs: PRESENCE_TIMEOUT_MS }));
     }
     if (request.method === 'GET' && url.pathname === '/daily') {
       return withCors(json({ route: dailyRoute(utcDateKey()) }));
@@ -326,6 +326,7 @@ export class RaceRoom extends DurableObject<Env> {
     if (request.method === 'GET' && url.pathname === '/room') {
       if (!this.room) return json({ error: '방을 찾을 수 없어요.' }, 404);
       const viewer = this.playerFromUrl(url);
+      if (viewer) await this.touchPresence(viewer);
       return json({ room: publicRoom(this.room, viewer?.id) });
     }
     if (request.method === 'GET' && url.pathname === '/ws') return this.connectSocket(url);
@@ -348,6 +349,7 @@ export class RaceRoom extends DurableObject<Env> {
       currentTitle: route.startTitle,
       path: [route.startTitle],
       joinedAt: now,
+      lastSeenAt: now,
       finishedAt: null,
       forfeitedAt: null,
       navigationStack: [route.startTitle],
@@ -401,6 +403,7 @@ export class RaceRoom extends DurableObject<Env> {
       currentTitle: this.room.startTitle,
       path: [this.room.startTitle],
       joinedAt: Date.now(),
+      lastSeenAt: Date.now(),
       finishedAt: null,
       forfeitedAt: null,
       navigationStack: [this.room.startTitle],
@@ -414,6 +417,9 @@ export class RaceRoom extends DurableObject<Env> {
 
   private async action(payload: ActionPayload) {
     if (!this.room) return json({ error: '방을 찾을 수 없어요.' }, 404);
+    const actor = this.findPlayer(payload) || (payload.hostToken === this.room.hostToken
+      ? this.room.players.find(p => p.id === this.room!.hostPlayerId) : undefined);
+    if (actor) await this.touchPresence(actor);
     if (payload.action === 'leave') {
       const player = this.findPlayer(payload);
       if (!player) return json({ error: '참가자 정보를 확인할 수 없어요.' }, 401);
@@ -667,10 +673,7 @@ export class RaceRoom extends DurableObject<Env> {
       this.room.players
         .filter(
           (player) =>
-            (player.disconnectedAt &&
-              player.disconnectedAt + DISCONNECT_GRACE_MS <= now) ||
-            (player.lastSeenAt &&
-              player.lastSeenAt + PRESENCE_TIMEOUT_MS <= now),
+            presenceDeadline(player) <= now,
         )
         .map((player) => player.id),
     );
@@ -705,6 +708,15 @@ export class RaceRoom extends DurableObject<Env> {
 
   private findPlayer(payload: ActionPayload) {
     return this.room?.players.find((player) => player.id === payload.playerId && player.token === payload.playerToken);
+  }
+
+  private async touchPresence(player: Player) {
+    const now = Date.now();
+    if (!player.disconnectedAt && player.lastSeenAt && now - player.lastSeenAt < 5000) return;
+    player.lastSeenAt = now;
+    player.disconnectedAt = null;
+    await this.persist();
+    await this.scheduleAlarm();
   }
 
   private playerFromUrl(url: URL) {
@@ -792,14 +804,7 @@ export class RaceRoom extends DurableObject<Env> {
   private async scheduleAlarm() {
     if (!this.room) return;
     const expiresAt = this.room.expiresAt || this.room.createdAt + ROOM_LIFETIME_MS;
-    const disconnectDeadlines = this.room.players
-      .map((player) =>
-        player.disconnectedAt
-          ? player.disconnectedAt + DISCONNECT_GRACE_MS
-          : player.lastSeenAt
-            ? player.lastSeenAt + PRESENCE_TIMEOUT_MS
-            : Number.POSITIVE_INFINITY,
-      );
+    const disconnectDeadlines = this.room.players.map((player): number => presenceDeadline(player));
     const hintDeadline = this.room.hint?.status === 'loading' ? Math.min(this.room.hint.requestedAt + 30000, Date.now()+2000) : Infinity;
     await this.ctx.storage.setAlarm(Math.min(expiresAt, hintDeadline, ...disconnectDeadlines));
   }

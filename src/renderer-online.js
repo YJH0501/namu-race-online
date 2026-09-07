@@ -29,6 +29,7 @@ const state = {
 let socket = null;
 let socketRetry = null;
 let socketHeartbeat = null;
+let socketIdentity = '';
 let pollTimer = null;
 const preparedHintRequests = new Set();
 
@@ -226,14 +227,25 @@ function routeView(room) {
   return `<div class="route"><div><small>출발 문서</small><strong>${escapeHtml(room.startTitle)}</strong></div><span class="route-arrow">→</span><div><small>목표 문서</small><strong>${escapeHtml(room.goalTitle)}</strong></div></div>`;
 }
 
+function displayedRoundResults(room, player) {
+  const rounds = room.mode === 'rounds' ? [...(player.roundResults || [])] : [];
+  if (room.mode === 'rounds' && Array.isArray(player.path) && (player.finishedAt || player.forfeitedAt)
+      && !rounds.some(result => result.round === room.round)) {
+    rounds.push({ round: room.round, pending: true, score: 0, clicks: player.clicks,
+      elapsedMs: Math.max(0, (player.finishedAt || player.forfeitedAt) - room.startedAt),
+      finished: Boolean(player.finishedAt), hintLevel: player.hintLevel || 0, path: player.path });
+  }
+  return rounds;
+}
+
 function playerPathDetails(room, player) {
   if (!Array.isArray(player.path)) return '';
-  const rounds = room.mode === 'rounds' ? player.roundResults || [] : [];
+  const rounds = displayedRoundResults(room, player);
   const summary = rounds.length
     ? `자세히보기 · ${rounds.length}개 라운드`
     : `자세히보기 · ${player.path.length - 1}번 이동`;
   const content = rounds.length
-    ? rounds.map((result) => `<section class="round-path"><strong>${result.round}라운드 · ${result.score}점 · ${result.finished ? '완주' : '포기'}</strong><p class="result-detail">${result.clicks}클릭 · ${(result.elapsedMs / 1000).toFixed(1)}초${result.clickScore != null ? ` · 클릭 ${result.clickScore}점 + 시간 ${result.timeScore}점` : ''} · 힌트 ${result.hintLevel || 0}단계</p><div class="path-list">${result.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < result.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div></section>`).join('')
+    ? rounds.map((result) => `<section class="round-path" data-round="${result.round}"><strong>${result.round}라운드 · ${result.pending ? '점수 집계 대기' : `${result.score}점`} · ${result.finished ? '완주' : '포기'}</strong><p class="result-detail">${result.clicks}클릭 · ${(result.elapsedMs / 1000).toFixed(1)}초${result.clickScore != null ? ` · 클릭 ${result.clickScore}점 + 시간 ${result.timeScore}점` : ''} · 힌트 ${result.hintLevel || 0}단계</p><div class="path-list">${result.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < result.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div></section>`).join('')
     : `<div class="path-list">${player.path.map((title, pathIndex) => `<span>${escapeHtml(title)}</span>${pathIndex < player.path.length - 1 ? '<b>→</b>' : ''}`).join('')}</div>`;
   return `${player.departed ? '<p class="result-detail departed-note">방 나감 · 기록 유지</p>' : ''}<details class="path-details" data-player-path="${escapeHtml(player.id)}" ${state.expandedPaths.has(player.id) ? 'open' : ''}><summary>${summary}</summary>${!rounds.length ? `<p class="result-detail">힌트 ${player.hintLevel || 0}단계 사용</p>` : ''}${content}</details>`;
 }
@@ -290,7 +302,7 @@ function mountHintPanel() {
 
 function playerList(room, racing = false) {
   return room.players.map((player, index) => `
-    <div class="${racing ? 'rank-row' : 'player-row'} ${player.id === state.session.playerId ? 'me' : ''}">
+    <div data-player-row="${escapeHtml(player.id)}" class="${racing ? 'rank-row' : 'player-row'} ${player.id === state.session.playerId ? 'me' : ''}">
       ${racing ? `<span class="rank">${index + 1}</span>` : ''}<span class="avatar">${escapeHtml(player.nickname?.[0] || '?')}</span>
       ${racing ? `<span class="player-detail"><strong>${escapeHtml(player.nickname)}</strong><small>${player.finishedAt ? '목표 도착' : player.forfeitedAt ? '레이스 포기' : player.currentTitle ? escapeHtml(player.currentTitle) : '경로 비공개'}</small></span><span class="clicks ${player.forfeitedAt ? 'forfeited' : ''}">${room.mode === 'rounds' ? `${player.score || 0}점 · ` : ''}${player.clicks} 클릭${player.finishedAt ? ' 🏁' : player.forfeitedAt ? ' 포기' : ''}</span>` : `<span class="player-name">${escapeHtml(player.nickname)}${player.id === state.session.playerId ? ' <small class="muted">(나)</small>' : ''}${room.mode === 'rounds' && room.round > 1 ? ` <small class="accent">${player.score || 0}점</small>` : ''}</span><span class="status ${player.ready ? 'ready' : ''}">${player.ready ? '준비' : '대기'}</span>`}
       ${playerPathDetails(room, player)}
@@ -317,6 +329,43 @@ function finishView(room, me) {
   return `<main class="shell"><section class="finish"><article class="card finish-card"><span class="finish-icon ${forfeited ? 'forfeited' : ''}">${forfeited ? '⚑' : '★'}</span><p class="eyebrow">${settled ? 'Final results' : roundComplete ? 'Round results' : 'Spectating'}</p><h1>${settled ? '최종 결과가 나왔어요' : roundComplete ? `${room.round}라운드 결과` : forfeited ? '이번 레이스를 포기했어요' : '목표 문서에 도착!'}</h1><p class="muted">${settled || roundComplete ? '자세히보기를 열면 이번 라운드의 이동 경로를 확인할 수 있어요.' : '다른 참가자의 현재 위치와 이미 도착한 참가자의 자세한 경로를 바로 볼 수 있어요.'}</p><div class="finish-stats">${room.mode === 'rounds' ? `<div><strong>${me.score || 0}</strong><small>누적 점수</small></div>` : ''}<div><strong>${me.clicks}</strong><small>클릭</small></div><div><strong>${formatElapsed(room.startedAt, endAt)}</strong><small>${forfeited ? '진행 시간' : '완주 시간'}</small></div></div><div class="player-list">${playerList(room, true)}</div><div class="result-actions">${roundComplete && host ? `<button class="button" data-action="next-round" ${state.busy ? 'disabled' : ''}>다음 라운드 준비</button>` : roundComplete ? '<p class="muted rematch-note">방장이 다음 라운드를 열 때까지 기다리는 중…</p>' : settled && host ? `<button class="button" data-action="rematch" ${state.busy ? 'disabled' : ''}>같은 방에서 다시하기</button>` : settled ? '<p class="muted rematch-note">방장이 다시하기를 누르면 같은 방에서 새 경기를 준비합니다.</p>' : '<p class="muted rematch-note">남은 참가자들의 이동 상황을 기다리는 중…</p>'}<button class="button secondary" data-action="leave">첫 화면으로</button></div></article></section></main>`;
 }
 
+// Preserve result nodes, native details state and scroll while other players move.
+function patchResultNode(current, next) {
+  if (current.nodeType !== next.nodeType || current.nodeName !== next.nodeName) {
+    current.replaceWith(next.cloneNode(true)); return;
+  }
+  if (current.nodeType !== Node.ELEMENT_NODE) {
+    if (current.nodeValue !== next.nodeValue) current.nodeValue = next.nodeValue;
+    return;
+  }
+  const preserveOpen = current.tagName === 'DETAILS';
+  for (const attr of [...current.attributes]) {
+    if (!(preserveOpen && attr.name === 'open') && !next.hasAttribute(attr.name)) current.removeAttribute(attr.name);
+  }
+  for (const attr of [...next.attributes]) {
+    if (!(preserveOpen && attr.name === 'open') && current.getAttribute(attr.name) !== attr.value) current.setAttribute(attr.name, attr.value);
+  }
+  const key = node => node.nodeType === Node.ELEMENT_NODE
+    ? node.getAttribute('data-player-row') || node.getAttribute('data-player-path') || node.getAttribute('data-round') || node.id : null;
+  let cursor = current.firstChild;
+  for (const desired of [...next.childNodes]) {
+    const id = key(desired);
+    // Whitespace/unkeyed nodes must not consume a keyed player moved by sorting.
+    let matched = id ? [...current.childNodes].find(node => key(node) === id) : cursor;
+    if (!id) while (matched && key(matched)) matched = matched.nextSibling;
+    if (!matched) { current.insertBefore(desired.cloneNode(true), cursor); continue; }
+    if (matched !== cursor) current.insertBefore(matched, cursor);
+    const after = matched.nextSibling;
+    patchResultNode(matched, desired);
+    cursor = after;
+  }
+  while (cursor) {
+    const after = cursor.nextSibling;
+    if (cursor.id !== 'hint-panel') cursor.remove();
+    cursor = after;
+  }
+}
+
 function render() {
   window.namuRace.setUpdateBlocked(Boolean(state.restoring || state.busy || (state.session && state.room)));
   if (state.restoring) {
@@ -339,7 +388,12 @@ function render() {
   if (!me) return leaveRoom();
   if (me.finishedAt || me.forfeitedAt) {
     window.namuRace.hideWiki();
-    appRoot.innerHTML = finishView(state.room, me);
+    const html = finishView(state.room, me);
+    if (appRoot.querySelector('.finish-card')) {
+      const template = document.createElement('template');
+      template.innerHTML = html;
+      patchResultNode(appRoot.firstElementChild, template.content.firstElementChild);
+    } else appRoot.innerHTML = html;
     mountHintPanel();
     return;
   }
@@ -363,15 +417,18 @@ function closeSocket() {
   window.clearInterval(socketHeartbeat);
   socketHeartbeat = null;
   if (socket) {
-    socket.onclose = null;
+    socket.onopen = socket.onclose = socket.onmessage = socket.onerror = null;
     socket.close();
     socket = null;
   }
+  socketIdentity = '';
   state.connection = 'offline';
 }
 
 function connectSocket() {
   if (!state.session || !state.room) return;
+  const identity = `${state.serverUrl}|${state.session.code}|${state.session.playerId}|${state.session.playerToken}`;
+  if (socketIdentity === identity && socket && [WebSocket.OPEN, WebSocket.CONNECTING].includes(socket.readyState)) return;
   closeSocket();
   try {
     const url = new URL(state.serverUrl);
@@ -379,16 +436,25 @@ function connectSocket() {
     url.pathname = `/rooms/${state.session.code}/ws`;
     url.searchParams.set('playerId', state.session.playerId);
     url.searchParams.set('token', state.session.playerToken);
-    socket = new WebSocket(url);
-    socket.onopen = () => {
+    const connection = new WebSocket(url);
+    socket = connection;
+    socketIdentity = identity;
+    let lastMessageAt = Date.now();
+    connection.onopen = () => {
+      if (socket !== connection) return;
       state.connection = 'live';
-      socket.send('ping');
+      lastMessageAt = Date.now();
+      connection.send('ping');
       socketHeartbeat = window.setInterval(() => {
-        if (socket?.readyState === WebSocket.OPEN) socket.send('ping');
+        if (socket !== connection || connection.readyState !== WebSocket.OPEN) return;
+        if (Date.now() - lastMessageAt > 15000) return connection.close(4000, 'Heartbeat timeout');
+        connection.send('ping');
       }, 2500);
       render();
     };
-    socket.onmessage = (event) => {
+    connection.onmessage = (event) => {
+      if (socket !== connection) return;
+      lastMessageAt = Date.now();
       try {
         const message = JSON.parse(event.data);
         if (message.type === 'room' && message.room) {
@@ -400,8 +466,9 @@ function connectSocket() {
         // Ignore non-state messages such as pong.
       }
     };
-    socket.onerror = () => { state.connection = 'offline'; };
-    socket.onclose = () => {
+    connection.onerror = () => { if (socket === connection) state.connection = 'offline'; };
+    connection.onclose = () => {
+      if (socket !== connection) return;
       window.clearInterval(socketHeartbeat);
       socketHeartbeat = null;
       state.connection = 'offline';
@@ -410,6 +477,7 @@ function connectSocket() {
     };
   } catch {
     state.connection = 'offline';
+    socketRetry = window.setTimeout(connectSocket, 2200);
   }
 }
 
@@ -455,7 +523,7 @@ function leaveRoom() {
 
 document.addEventListener('toggle', (event) => {
   const details = event.target;
-  if (!(details instanceof HTMLDetailsElement)) return;
+  if (!(details instanceof HTMLDetailsElement) || !details.isConnected) return;
   const playerId = details.dataset.playerPath;
   if (!playerId) return;
   if (details.open) state.expandedPaths.add(playerId);

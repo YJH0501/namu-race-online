@@ -229,6 +229,7 @@ function createWindow() {
       nodeIntegration: false,
       sandbox: true,
       preload: path.join(__dirname, 'hud-preload-online.cjs'),
+      backgroundThrottling: false,
     },
   });
   createWikiView();

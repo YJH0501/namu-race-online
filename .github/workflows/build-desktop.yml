@@ -34,6 +34,11 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check
+      - name: Verify presence and stable round results
+        timeout-minutes: 3
+        run: |
+          node test/integration-presence.mjs
+          npx electron test/integration-renderer.cjs
       - name: Verify hint voting and retained results
         timeout-minutes: 3
         run: |
