@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 import { getHintCard, HINT_GOAL_TITLES } from '../shared/hint-catalog.mjs';
+import { RANDOM_TITLE_POOL } from '../shared/random-title-pool.mjs';
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare';
 
 const compiled = await build({ entryPoints: ['test/hints-worker.ts'], bundle: true, format: 'esm', write: false, external: ['cloudflare:workers'], target: 'es2022' });
@@ -30,6 +31,9 @@ async function waitFor(s, predicate) {
 try {
   const created = await api('/rooms', { nickname: '윈도우', mode: 'rounds', roundCount: 2 });
   const host = created.session;
+  const ns = await mf.getDurableObjectNamespace('RACE_ROOMS');
+  const stub = ns.get(ns.idFromName(host.code));
+  await stub.fetch('https://room/__test/goal',{method:'POST',body:'인공지능'});
   const guest = (await api(`/rooms/${host.code}/join`, { nickname: '맥웹' })).session;
   assert.equal(created.room.hint, null);
   assert.equal(upstreamCalls, 0, 'No document download in the lobby');
@@ -56,8 +60,6 @@ try {
   assert.equal(first.hint.sourceLicense, card.sourceLicense);
   assert.equal(upstreamCalls, 0);
   await action(host, 'hint-vote', { ...ballot, hintLevel: 2 }, 409);
-  const ns = await mf.getDurableObjectNamespace('RACE_ROOMS');
-  const stub = ns.get(ns.idFromName(host.code));
   await stub.fetch('https://room/__test/advance-hint');
   await action(host, 'hint-vote', { ...ballot, hintLevel: 2 });
   await action(guest, 'hint-vote', { ...ballot, hintLevel: 2 });
@@ -95,13 +97,13 @@ try {
 
   // Completed-room disconnection retains the final record, transfers host, and clears on rematch.
   const simple = await api('/rooms', { nickname: '방장', mode: 'custom', startTitle: '출발', goalTitle: '목표' });
-  assert.equal(simple.room.hintAvailable, false, 'Unsupported custom goal warns before start');
+  assert.equal(simple.room.hintAvailable, true, 'Unprepared custom goals still allow on-demand hints');
   const h = simple.session;
   const g = (await api(`/rooms/${h.code}/join`, { nickname: '친구' })).session;
   await action(g, 'ready'); const noCard = (await action(h, 'start', { hostToken: h.hostToken })).room;
-  assert.equal(noCard.hint.available, false);
-  assert.equal(noCard.hint.canRequest, false);
-  await action(h, 'hint-vote', { hintLevel: 1, startedAt: noCard.startedAt }, 409);
+  assert.equal(noCard.hint.available, true);
+  assert.equal(noCard.hint.canRequest, true);
+  assert.equal(noCard.hint.format, 'document-v1');
   await action(h, 'progress', { nextTitle: '목표' }); await action(g, 'forfeit');
   const s = ns.get(ns.idFromName(h.code));
   await s.fetch('https://room/__test/disconnect', { method: 'POST', body: h.playerId });
@@ -134,7 +136,7 @@ try {
   for (let round = 1; round <= 10; round++) {
     const race = (await action(series.session, 'start', { hostToken: series.session.hostToken })).room;
     assert.equal(race.round, round);
-    assert.ok(getHintCard(race.goalTitle));
+    assert.ok(RANDOM_TITLE_POOL.includes(race.goalTitle));
     assert.ok(!used.has(race.goalTitle));
     used.add(race.goalTitle);
     assert.notEqual(race.startTitle, race.goalTitle);

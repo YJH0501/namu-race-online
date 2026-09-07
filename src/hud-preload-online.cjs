@@ -5,6 +5,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('namuRace', {
   defaultServerUrl: () => ipcRenderer.invoke('get-default-server-url'),
   request: (serverUrl, method, path, body) => ipcRenderer.invoke('online-request', { serverUrl, method, path, body }),
+  prepareHint: (code, token) => ipcRenderer.invoke('prepare-document-hint', { code, token }),
   showWiki: (title) => ipcRenderer.send('show-wiki', title),
   hideWiki: () => ipcRenderer.send('hide-wiki'),
   setWikiBounds: (bounds) => ipcRenderer.send('set-wiki-bounds', bounds),

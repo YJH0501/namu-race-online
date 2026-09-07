@@ -256,6 +256,13 @@ ipcMain.handle('open-update-releases', (event) => {
   if (isHudSender(event)) return shell.openExternal(RELEASES_URL);
 });
 ipcMain.handle('get-default-server-url', (event) => isHudSender(event) ? configuredServerUrl() : '');
+ipcMain.handle('prepare-document-hint', async (event, payload) => {
+  if (!isHudSender(event) || !/^[A-Z0-9]{6}$/.test(payload?.code || '') || !/^[a-f0-9-]{36}$/.test(payload?.token || '')) return false;
+  try {
+    const r = await net.fetch('https://namu-race.yangkun050178.chatgpt.site/api/hints', {method:'POST',redirect:'error',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:payload.code,token:payload.token}),signal:AbortSignal.timeout(22000)});
+    await r.body?.cancel(); return r.ok;
+  } catch { return false; }
+});
 ipcMain.handle('online-request', async (event, request) => {
   if (!isHudSender(event)) return { ok: false, status: 403, data: { error: '허용되지 않은 요청입니다.' } };
   try {

@@ -21,7 +21,7 @@ export function hintVoteInfo(room, viewerId, now = Date.now()) {
   return { votes: votes.length, required: Math.floor(voters.length / 2) + 1,
     voted: votes.includes(viewerId), eligible: room.status === 'racing' && ids.has(viewerId),
     nextAvailableAt, canRequest: hint.available !== false && room.status === 'racing' && voters.length > 0 &&
-      hint.level < 2 && hint.status !== 'loading' && now >= nextAvailableAt };
+      hint.level < (hint.maxLevel || 2) && hint.status !== 'loading' && now >= nextAvailableAt };
 }
 
 // Only released text is serialized. The second hint never reaches a client early.
@@ -30,8 +30,10 @@ export function publicHint(room, viewerId, now = Date.now()) {
   const hint = room.hint || newHintState();
   return { ...hintVoteInfo(room, viewerId, now), level: hint.level, status: hint.status,
     format: hint.format || 'legacy', available: hint.available !== false,
+    maxLevel: hint.maxLevel || 2,
+    prepareToken: hint.format === 'document-v1' && hint.status === 'loading' && !hint.snapshot && hintVoteInfo(room, viewerId, now).eligible ? hint.requestId : null,
     categories: hint.level >= 1 ? hint.categories : [],
-    summary: hint.level >= (hint.format === 'card-v1' ? 1 : 2) ? hint.summary : '',
+    summary: hint.level >= (hint.format === 'card-v1' || (hint.format === 'document-v1' && !hint.categories.length) ? 1 : 2) ? hint.summary : '',
     relatedTitles: hint.level >= 2 && hint.format === 'card-v1' ? hint.relatedTitles || [] : [],
     sourceUrl: hint.level >= 1 ? hint.sourceUrl : '',
     source: hint.level >= 1 ? hint.source || 'namuwiki' : '',
@@ -45,9 +47,10 @@ export function reconcileHint(room, now = Date.now()) {
   const hint = room.hint ||= newHintState();
   const ids = new Set(hintVoters(room).map((player) => player.id));
   hint.votes = [...new Set(hint.votes)].filter((id) => ids.has(id));
-  if (hint.status === 'loading' && now - hint.requestedAt >= HINT_LOAD_TIMEOUT_MS) {
+  if (hint.status === 'loading' && now - hint.requestedAt >= (hint.format === 'document-v1' ? 30000 : HINT_LOAD_TIMEOUT_MS)) {
     hint.status = 'unavailable';
     hint.requestId = null;
+    hint.readToken = null;
     hint.votes = [];
     hint.retryAt = now + HINT_COOLDOWN_MS;
   }
@@ -55,6 +58,7 @@ export function reconcileHint(room, now = Date.now()) {
   if (!info.canRequest || info.votes < info.required) return false;
   hint.status = 'loading';
   hint.requestId = crypto.randomUUID();
+  if (hint.format === 'document-v1') hint.readToken = crypto.randomUUID();
   hint.requestedAt = now;
   return true;
 }
@@ -66,7 +70,9 @@ export function completeHint(room, requestId, data, now = Date.now()) {
     ? data.summary && data.relatedTitles?.length >= 2
     : hint.level === 0 ? data.categories.length || data.summary : data.summary);
   hint.votes = [];
+  hint.completedRequestId = requestId;
   hint.requestId = null;
+  hint.readToken = null;
   if (!available) {
     hint.status = 'unavailable';
     hint.retryAt = now + HINT_COOLDOWN_MS;
@@ -74,6 +80,10 @@ export function completeHint(room, requestId, data, now = Date.now()) {
   }
   hint.categories = data.categories;
   hint.summary = data.summary;
+  if (hint.format === 'document-v1') {
+    hint.snapshot = structuredClone(data);
+    hint.maxLevel = data.categories.length && data.summary ? 2 : 1;
+  }
   if (hint.format === 'card-v1') hint.relatedTitles = [...data.relatedTitles];
   hint.sourceUrl = data.sourceUrl;
   hint.source = data.source || 'namuwiki';

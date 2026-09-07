@@ -1,0 +1,5 @@
+{
+  "name": "namu-race-hint-probe",
+  "main": "hint-egress-probe.ts",
+  "compatibility_date": "2026-09-02"
+}

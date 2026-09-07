@@ -6,9 +6,7 @@ import { RANDOM_TITLE_POOL } from '../../shared/random-title-pool.mjs';
 // @ts-expect-error Shared runtime module intentionally stays plain ESM for Node tests.
 import { calculateRoundScoreDetails } from '../../shared/scoring.mjs';
 // @ts-expect-error Plain ESM helpers are shared with deterministic Node tests.
-import { publicHint, hintVoteInfo } from '../../shared/hints.mjs';
-// @ts-expect-error Server-owned static catalog, intentionally plain ESM.
-import { HINT_GOAL_TITLES } from '../../shared/hint-catalog.mjs';
+import { publicHint, hintVoteInfo, completeHint } from '../../shared/hints.mjs';
 // @ts-expect-error Plain ESM helpers shared with deterministic tests.
 import { newPreparedHintState, prepareRoomHint, reconcilePreparedHint } from '../../shared/prepared-hints.mjs';
 
@@ -82,6 +80,7 @@ type ActionPayload = {
   nextTitle?: string;
   hintLevel?: number;
   startedAt?: number;
+  requestId?: string;
 };
 
 const jsonHeaders = {
@@ -157,14 +156,13 @@ function rememberRandomTitles(titles: string[]) {
 }
 
 async function randomNamuWikiRoute(excludedTitles: string[] = []) {
-  const goals = HINT_GOAL_TITLES as readonly string[];
-  // A small prepared goal pool must not be exhausted by the 240-title start LRU.
-  const recentGoals = recentRandomTitles.filter(t => goals.includes(t)).slice(-Math.floor(goals.length / 2));
+  const goals = RANDOM_TITLE_POOL as readonly string[];
+  const recentGoals = recentRandomTitles;
   const roomExcluded = new Set(excludedTitles);
   let goalCandidates = goals.filter(t => !roomExcluded.has(t) && !recentGoals.includes(t));
   if (!goalCandidates.length) goalCandidates = goals.filter(t => !roomExcluded.has(t));
   if (!goalCandidates.length) goalCandidates = [...goals];
-  if (!goalCandidates.length) throw new Error('준비된 힌트 목표 목록이 비어 있어요.');
+  if (!goalCandidates.length) throw new Error('목표 문서 목록이 비어 있어요.');
   const goalTitle = goalCandidates[randomIndex(goalCandidates.length)];
   const excluded = new Set([...recentRandomTitles, ...excludedTitles, goalTitle]);
   let starts = (RANDOM_TITLE_POOL as readonly string[]).filter(t => !excluded.has(t));
@@ -203,8 +201,8 @@ function publicRoom(room: Room, viewerPlayerId?: string | null) {
     startedAt: room.startedAt,
     hint: publicHint(room, viewerPlayerId),
     hintAvailable: room.hint?.available !== false,
-    hintPolicy: 'prepared-v1',
-    hintGoalCount: HINT_GOAL_TITLES.length,
+    hintPolicy: 'adaptive-v1',
+    hintGoalCount: RANDOM_TITLE_POOL.length,
     randomStartCount: RANDOM_TITLE_POOL.length,
     scoreWeights: room.scoreWeights || { clicks: 700, time: 300 },
     activePlayerCount: room.players.length,
@@ -299,7 +297,7 @@ export default {
       }
     }
 
-    const match = url.pathname.match(/^\/rooms\/([A-Z0-9]{6})(?:\/(join|action|ws))?$/i);
+    const match = url.pathname.match(/^\/rooms\/([A-Z0-9]{6})(?:\/(join|action|ws|hint-context))?$/i);
     if (!match) return withCors(json({ error: '지원하지 않는 요청이에요.' }, 404));
     const code = cleanCode(match[1]);
     const operation = match[2] || 'room';
@@ -318,6 +316,7 @@ export default {
 
 export class RaceRoom extends DurableObject<Env> {
   private room: Room | null = null;
+  private readingHint: string | null = null;
 
   constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
@@ -329,6 +328,12 @@ export class RaceRoom extends DurableObject<Env> {
 
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
+    if (request.method === 'GET' && url.pathname === '/hint-context') {
+      const hint = this.room?.hint;
+      const token=url.searchParams.get('token');
+      if (!this.room || this.room.status !== 'racing' || hint?.format !== 'document-v1' || hint.status !== 'loading' || !hint.requestId || !token || (token !== hint.requestId && token !== hint.readToken) || Date.now()-hint.requestedAt >= 30000) return json({error:'만료된 힌트 요청이에요.'},409);
+      return json({goalTitle:this.room.goalTitle,canRead:token===hint.readToken});
+    }
     if (request.method === 'POST' && url.pathname === '/init') return this.initialize(await readBody(request));
     if (request.method === 'POST' && url.pathname === '/join') return this.join(await readBody(request));
     if (request.method === 'POST' && url.pathname === '/action') return this.action(await readBody(request));
@@ -457,6 +462,16 @@ export class RaceRoom extends DurableObject<Env> {
       await this.persistAndBroadcast();
       return json({ room: publicRoom(this.room, player.id) });
     }
+    if (payload.action === 'hint-ready') {
+      const player = this.findPlayer(payload);
+      if (!player) return json({error:'참가자 정보를 확인할 수 없어요.'},401);
+      if (this.room.status === 'racing' && payload.startedAt === this.room.startedAt && payload.requestId && payload.requestId === this.room.hint?.completedRequestId) return json({room:publicRoom(this.room,player.id)});
+      if (this.room.status !== 'racing' || payload.startedAt !== this.room.startedAt || payload.requestId !== this.room.hint?.requestId || this.room.hint?.status !== 'loading') return json({error:'만료된 힌트 요청이에요.'},409);
+      // Client notification carries no trusted content. Read only the Site's
+      // server-owned cache; arbitrary payload.summary/card fields are ignored.
+      this.ctx.waitUntil(this.readPreparedDocumentHint());
+      return json({room:publicRoom(this.room,player.id)});
+    }
     if (payload.action === 'hint-vote') {
       const player = this.findPlayer(payload);
       if (!player) return json({ error: '참가자 정보를 확인할 수 없어요.' }, 401);
@@ -464,7 +479,7 @@ export class RaceRoom extends DurableObject<Env> {
       const hint = this.room.hint;
       if (this.room.status !== 'racing' || player.finishedAt || player.forfeitedAt) return json({ error: '아직 달리는 참가자만 힌트에 투표할 수 있어요.' }, 409);
       if (payload.startedAt !== this.room.startedAt || payload.hintLevel !== hint.level + 1) return json({ error: '라운드나 힌트 단계가 바뀌었어요. 다시 확인해 주세요.' }, 409);
-      if (!hint.available) return json({ error: '이 목표는 준비된 힌트 카드가 없어요. 이 레이스는 힌트 없이 진행해 주세요.' }, 409);
+      if (!hint.available) return json({ error: '이 단계의 힌트 자료가 없어요.' }, 409);
       // Retransmission does not become an extra vote or start another fetch.
       if (hint.votes.includes(player.id) || hint.status === 'loading') return json({ room: publicRoom(this.room, player.id) });
       const info = hintVoteInfo(this.room, player.id);
@@ -799,7 +814,28 @@ export class RaceRoom extends DurableObject<Env> {
             ? player.lastSeenAt + PRESENCE_TIMEOUT_MS
             : Number.POSITIVE_INFINITY,
       );
-    await this.ctx.storage.setAlarm(Math.min(expiresAt, ...disconnectDeadlines));
+    const hintDeadline = this.room.hint?.status === 'loading' ? Math.min(this.room.hint.requestedAt + 30000, Date.now()+2000) : Infinity;
+    await this.ctx.storage.setAlarm(Math.min(expiresAt, hintDeadline, ...disconnectDeadlines));
+  }
+
+  private async readPreparedDocumentHint() {
+    const room = this.room, hint = room?.hint;
+    if (!room || hint?.format !== 'document-v1' || hint.status !== 'loading' || !hint.requestId || this.readingHint === hint.requestId) return;
+    const requestId = hint.requestId;
+    this.readingHint = requestId;
+    try {
+      if (!hint.readToken) return;
+      const url = 'https://namu-race.yangkun050178.chatgpt.site/api/hints?code='+room.code+'&token='+encodeURIComponent(hint.readToken);
+      const r = await fetch(url,{redirect:'manual',signal:AbortSignal.timeout(6000)});
+      if (!r.ok) return;
+      const text = await r.text(); if (text.length>5000) return;
+      const result = JSON.parse(text);
+      if (!result.ready) return;
+      const data = result.hint;
+      if (data && (data.source !== 'namuwiki' || data.sourceTitle !== room.goalTitle || !Array.isArray(data.categories) || data.categories.length>3 || !data.categories.every((c:unknown)=>typeof c==='string' && c.length<=60) || typeof data.summary!=='string' || data.summary.length>220 || data.sourceUrl !== 'https://namu.wiki/w/'+encodeURIComponent(room.goalTitle))) return;
+      if (this.room === room && completeHint(room,requestId,data)) await this.persistAndBroadcast();
+    } catch { /* The room alarm releases loading state; no blocked-source retries. */ }
+    finally { if(this.readingHint===requestId)this.readingHint=null; }
   }
 
   private async persistAndBroadcast() {
@@ -807,6 +843,7 @@ export class RaceRoom extends DurableObject<Env> {
     await this.persist();
     if (!this.room) return;
     await this.scheduleAlarm();
+    if (this.room.hint?.format === 'document-v1' && this.room.hint.status === 'loading' && !this.room.hint.snapshot) this.ctx.waitUntil(this.readPreparedDocumentHint());
     for (const socket of this.ctx.getWebSockets()) {
       try {
         const attachment = socket.deserializeAttachment() as { playerId?: string } | null;

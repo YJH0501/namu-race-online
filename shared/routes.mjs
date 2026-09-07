@@ -1,4 +1,4 @@
-import { HINT_GOAL_TITLES } from './hint-catalog.mjs';
+import { RANDOM_TITLE_POOL } from './random-title-pool.mjs';
 
 export const WORD_POOL = Object.freeze([
   '대한민국', '서울특별시', '부산광역시', '인공지능', '컴퓨터', '인터넷', '스마트폰', '게임',
@@ -33,16 +33,16 @@ export function utcDateKey(date = new Date()) {
 
 export function dailyRoute(dateKey = utcDateKey()) {
   const first = hashText(`start:${dateKey}`) % WORD_POOL.length;
-  let second = hashText(`goal:${dateKey}`) % HINT_GOAL_TITLES.length;
-  if (HINT_GOAL_TITLES[second] === WORD_POOL[first]) second = (second + 1) % HINT_GOAL_TITLES.length;
-  return { mode: 'daily', dateKey, startTitle: WORD_POOL[first], goalTitle: HINT_GOAL_TITLES[second] };
+  let second = hashText(`goal:${dateKey}`) % RANDOM_TITLE_POOL.length;
+  if (RANDOM_TITLE_POOL[second] === WORD_POOL[first]) second = (second + 1) % RANDOM_TITLE_POOL.length;
+  return { mode: 'daily', dateKey, startTitle: WORD_POOL[first], goalTitle: RANDOM_TITLE_POOL[second] };
 }
 
 export function randomRoute(random = Math.random) {
-  const first = Math.floor(random() * WORD_POOL.length) % WORD_POOL.length;
-  let second = Math.floor(random() * HINT_GOAL_TITLES.length) % HINT_GOAL_TITLES.length;
-  if (HINT_GOAL_TITLES[second] === WORD_POOL[first]) second = (second + 1) % HINT_GOAL_TITLES.length;
-  return { mode: 'random', dateKey: null, startTitle: WORD_POOL[first], goalTitle: HINT_GOAL_TITLES[second] };
+  const first = Math.floor(random() * RANDOM_TITLE_POOL.length) % RANDOM_TITLE_POOL.length;
+  let second = Math.floor(random() * RANDOM_TITLE_POOL.length) % RANDOM_TITLE_POOL.length;
+  if (second === first) second = (second + 1) % RANDOM_TITLE_POOL.length;
+  return { mode: 'random', dateKey: null, startTitle: RANDOM_TITLE_POOL[first], goalTitle: RANDOM_TITLE_POOL[second] };
 }
 
 export function customRoute(startValue, goalValue) {

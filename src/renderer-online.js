@@ -30,6 +30,21 @@ let socket = null;
 let socketRetry = null;
 let socketHeartbeat = null;
 let pollTimer = null;
+const preparedHintRequests = new Set();
+
+function prepareDocumentHint(room) {
+  const token = room?.hint?.prepareToken;
+  if (!token || !state.session || preparedHintRequests.has(token) || !window.namuRace.prepareHint) return;
+  preparedHintRequests.add(token);
+  if (preparedHintRequests.size > 16) preparedHintRequests.delete(preparedHintRequests.values().next().value);
+  const user = {...state.session}, serverUrl = state.serverUrl, startedAt = room.startedAt;
+  void (async()=> {
+    try {
+      if (!await window.namuRace.prepareHint(user.code,token)) return;
+      await window.namuRace.request(serverUrl,'POST','/rooms/'+user.code+'/action',{action:'hint-ready',playerId:user.playerId,playerToken:user.playerToken,requestId:token,startedAt});
+    } catch { /* Room timeout is shared by all players. */ }
+  })();
+}
 
 function readSession() {
   try {
@@ -53,6 +68,7 @@ function applyRoom(room) {
     state.expandedPaths.clear();
   }
   if (!state.session || !room) return;
+  prepareDocumentHint(room);
   const me = currentPlayer();
   if (me?.nickname) {
     state.nickname = me.nickname;
@@ -176,7 +192,7 @@ function customPanel() {
 }
 
 function randomPanel() {
-  return '<div class="mode-panel"><p><strong>출발은 확장 목록, 목표는 힌트 지원 목록에서 선택합니다.</strong><br><span class="muted">출발과 목표는 모두가 준비한 뒤 시작과 동시에 공개돼요.</span></p></div>';
+  return '<div class="mode-panel"><p><strong>출발과 목표 모두 확장 문서 목록에서 선택합니다.</strong><br><span class="muted">힌트 유무로 목표를 제한하지 않아요. 출발과 목표는 시작과 동시에 공개돼요.</span></p></div>';
 }
 
 function roundsPanel() {
@@ -223,12 +239,10 @@ function playerPathDetails(room, player) {
 }
 
 function hintAvailabilityHtml(room) {
-  if (room.hintPolicy !== 'prepared-v1') return '';
-  const text = room.hintAvailable === false
-    ? '이 목표는 준비된 힌트 카드가 없어요. 게임은 가능하지만 이번 레이스는 힌트 없이 진행돼요.'
-    : '힌트 카드 준비 완료 · 과반수 투표로 설명 → 연관 개념 순서로 공개돼요.';
+  if (room.hintPolicy !== 'adaptive-v1') return '';
+  const text = '힌트 유무로 목표를 제한하지 않아요. 과반수 투표 후 분류·설명을 준비하고 재사용해요. 자료가 없으면 일부 단계는 제공되지 않을 수 있어요.';
   const counts = ['random', 'rounds'].includes(room.mode)
-    ? `<br>출발 ${Number(room.randomStartCount).toLocaleString()}개 · 힌트 지원 목표 ${Number(room.hintGoalCount).toLocaleString()}개에서 선택해요.` : '';
+    ? `<br>출발 ${Number(room.randomStartCount).toLocaleString()}개 · 목표 ${Number(room.hintGoalCount).toLocaleString()}개에서 선택해요.` : '';
   return `<p class="host-box" role="status">${text}${counts}</p>`;
 }
 
@@ -242,18 +256,20 @@ function hintPanelHtml() {
   const available = hint.available !== false;
   const button = loading ? '힌트 공개 처리 중…' : wait ? `${wait}초 후 다음 투표 가능` : hint.voted ? `찬성했어요 · ${hint.votes}/${hint.required}표` : `${hint.level + 1}단계 힌트 찬성 · ${hint.votes}/${hint.required}표`;
   let content = '';
-  if (hint.level >= 1) content += prepared
+  if (hint.level >= 1) content += prepared || (hint.format === 'document-v1' && !hint.categories.length)
     ? `<p><strong>1단계 · 어떤 대상인가요?</strong><br>${escapeHtml(hint.summary)}</p>`
     : `<p><strong>분류</strong><br>${hint.categories.map(escapeHtml).join(' · ') || '저장된 분류 정보가 없어요.'}</p>`;
   if (hint.level >= 2) content += prepared
     ? `<p><strong>2단계 · 연관 개념</strong><br>${(hint.relatedTitles || []).map(escapeHtml).join(' · ')}<br><small>연관성을 바탕으로 탐색해 보세요. 실제 연결이나 최단 경로를 보장하지 않아요.</small></p>`
     : `<p><strong>짧은 설명</strong><br>${escapeHtml(hint.summary)}</p>`;
-  return `<div class="hint-head"><strong>목표 문서 힌트</strong><span>${hint.level}/2단계</span></div>
+  if (hint.format === 'document-v1' && hint.level === 1 && hint.maxLevel === 1 && hint.categories.length) content += '<p class="hint-rule">분류는 확인했지만 짧은 설명은 확보하지 못했어요. 이번 힌트는 여기까지예요.</p>';
+  if (hint.status === 'unavailable' && available) content += '<p class="hint-error">원문 접근 또는 설명 확인에 실패했어요. 대기 시간이 지나면 다시 시도할 수 있어요.</p>';
+  return `<div class="hint-head"><strong>목표 문서 힌트</strong><span>${hint.level}/${hint.maxLevel || 2}단계</span></div>
     <p class="hint-rule">진행 중인 참가자의 과반수가 찬성하면 모두에게 공개돼요. 점수 감점은 없어요.</p>
     ${prepared && available ? '<p class="hint-rule">미리 준비된 힌트 카드 · 게임 중 외부 문서를 조회하지 않아요.</p>' : ''}
     ${content}
     ${!available ? '<p class="hint-error" role="status">이 목표는 준비된 힌트가 없어요. 이번 레이스는 힌트 없이 진행돼요.</p>' : ''}
-    ${available && hint.level < 2 && hint.eligible ? `<button class="button secondary" data-action="hint-vote" ${state.busy || loading || wait || hint.voted ? 'disabled' : ''}>${button}</button>` : ''}
+    ${available && hint.level < (hint.maxLevel || 2) && hint.eligible ? `<button class="button secondary" data-action="hint-vote" ${state.busy || loading || wait || hint.voted ? 'disabled' : ''}>${button}</button>` : ''}
     ${hint.level >= 1 ? `<small>출처: ${sourceName} 기여자 · ${escapeHtml(hint.sourceLicense || 'CC BY-NC-SA 2.0 KR')}<br>「${escapeHtml(hint.sourceTitle || state.room.goalTitle)}」 발췌·일부 생략<br>${escapeHtml(hint.sourceUrl || '')}<br>${escapeHtml(hint.sourceLicenseUrl || '')}<br>힌트와 출처 주소는 이동 링크가 아니에요.</small>` : ''}`;
 }
 

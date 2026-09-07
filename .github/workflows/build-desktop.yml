@@ -38,6 +38,7 @@ jobs:
         timeout-minutes: 3
         run: |
           node test/integration-hints.mjs
+          node test/integration-document-hints.mjs
       - name: Configure online server
         env:
           NAMU_RACE_SERVER_URL: ${{ vars.NAMU_RACE_SERVER_URL }}

@@ -1,0 +1,2446 @@
+{
+  "seed": "namu-hint-benchmark-v1-2026-09-07",
+  "sampledAt": "2026-09-06T15:12:13.647Z",
+  "population": 15199,
+  "sampleSize": 100,
+  "requests": [
+    {
+      "kind": "namu-reader",
+      "endpoint": "https://namu-race.yangkun050178.chatgpt.site",
+      "status": 200,
+      "ms": 3920
+    },
+    {
+      "kind": "namu-reader",
+      "endpoint": "https://namu-race.yangkun050178.chatgpt.site",
+      "status": 200,
+      "ms": 456
+    },
+    {
+      "kind": "namu-reader",
+      "endpoint": "https://namu-race.yangkun050178.chatgpt.site",
+      "status": 200,
+      "ms": 346
+    },
+    {
+      "kind": "namu-reader",
+      "endpoint": "https://namu-race.yangkun050178.chatgpt.site",
+      "status": 200,
+      "ms": 169
+    },
+    {
+      "kind": "namu-reader",
+      "endpoint": "https://namu-race.yangkun050178.chatgpt.site",
+      "status": 200,
+      "ms": 319
+    },
+    {
+      "kind": "wikipedia-metadata",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 506
+    },
+    {
+      "kind": "wikipedia-metadata",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 358
+    },
+    {
+      "kind": "wikipedia-metadata",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 357
+    },
+    {
+      "kind": "wikipedia-metadata",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 340
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 302
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 87
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 301
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 295
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 295
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 1100
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 301
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 297
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 287
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 2675
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 292
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 656
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 302
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 305
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 293
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 1666
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 302
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 299
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 302
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 294
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 1072
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 297
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 1231
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 313
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 302
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 306
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 302
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 1102
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 289
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 302
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 303
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 301
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 294
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 297
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 296
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 302
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 300
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 303
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 2267
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 1251
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 301
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 617
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 296
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 981
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 304
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 301
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 297
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 300
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 306
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 1027
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 305
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 305
+    },
+    {
+      "kind": "wikipedia-summary",
+      "endpoint": "https://ko.wikipedia.org",
+      "status": 200,
+      "ms": 952
+    },
+    {
+      "kind": "wikidata-explicit-id",
+      "endpoint": "https://query.wikidata.org",
+      "status": 200,
+      "ms": 1042
+    },
+    {
+      "kind": "wikidata-explicit-id",
+      "endpoint": "https://query.wikidata.org",
+      "status": 200,
+      "ms": 1199
+    },
+    {
+      "kind": "wikidata-explicit-id",
+      "endpoint": "https://query.wikidata.org",
+      "status": 200,
+      "ms": 968
+    },
+    {
+      "kind": "wikidata-explicit-id",
+      "endpoint": "https://query.wikidata.org",
+      "status": 200,
+      "ms": 863
+    },
+    {
+      "kind": "wikidata-explicit-id",
+      "endpoint": "https://query.wikidata.org",
+      "status": 200,
+      "ms": 317
+    }
+  ],
+  "namu": [
+    {
+      "title": "프리드리히 2세(신성 로마 제국)",
+      "status": 200,
+      "available": true,
+      "reason": ""
+    },
+    {
+      "title": "사이토카인",
+      "status": 200,
+      "available": true,
+      "reason": ""
+    },
+    {
+      "title": "피시앤칩스",
+      "status": 200,
+      "available": true,
+      "reason": ""
+    },
+    {
+      "title": "칼슘",
+      "status": 200,
+      "available": true,
+      "reason": ""
+    },
+    {
+      "title": "설탕",
+      "status": 200,
+      "available": true,
+      "reason": ""
+    }
+  ],
+  "records": [
+    {
+      "title": "프리드리히 2세(신성 로마 제국)",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "사이토카인",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 59068,
+        "entityId": "Q212354",
+        "hint": {
+          "categories": [
+            "면역계"
+          ],
+          "summary": "사이토카인(cytokine)은 혈액 속에 함유되어 있는 비교적 작은 크기의 면역 단백질 중 하나다.",
+          "source": "wikipedia",
+          "sourceTitle": "사이토카인",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%82%AC%EC%9D%B4%ED%86%A0%EC%B9%B4%EC%9D%B8",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "피시앤칩스",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q203925",
+        "description": "감자와 생선을 튀긴 영국의 요리",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%ED%94%BC%EC%8B%9C_%EC%95%A4%EB%93%9C_%EC%B9%A9%EC%8A%A4"
+      }
+    },
+    {
+      "title": "칼슘",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": true,
+        "pageId": 31081,
+        "entityId": "Q706",
+        "hint": {
+          "categories": [
+            "나트륨 통로 차단제",
+            "세계 보건 기구 필수 의약품",
+            "알칼리 토금속"
+          ],
+          "summary": "칼슘(영어: Calcium 캘시엄, 문화어: 칼시움←독일어: Calcium 칼치움, 라틴어: Calcium 칼키움, 일본어: カルシウム 카루시우무)은 화학 원소로 주기율표에서 기호는 Ca이고 원자 번호는 20, 원자량은 40.078이다.",
+          "source": "wikipedia",
+          "sourceTitle": "칼슘",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%B9%BC%EC%8A%98",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q706",
+        "description": "원자 번호 20번의 화학 원소",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EC%B9%BC%EC%8A%98"
+      }
+    },
+    {
+      "title": "설탕",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 46866,
+        "entityId": "Q11002",
+        "hint": {
+          "categories": [
+            "감미료",
+            "부형제",
+            "영양소"
+          ],
+          "summary": "설탕(屑糖·雪糖, 문화어: 사탕가루, 영어: sugar)은 사탕수수나 사탕무에서 얻은 원당을 정제공장에 투입하여 만든 감미료로, 수크로스(자당)를 주성분으로 하고 있다.",
+          "source": "wikipedia",
+          "sourceTitle": "설탕",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%84%A4%ED%83%95",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "1990 베이징 아시안 게임",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "데스밸리",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "사이토신",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 635917,
+        "entityId": "Q178425",
+        "hint": {
+          "categories": [
+            "아민",
+            "피리미돈",
+            "피리미딘"
+          ],
+          "summary": "시토신 또는 사이토신(영어: cytosine, C)은 핵산인 DNA와 RNA에서 발견되는 5가지 주요 핵염기들 중 하나이며, 나머지는 아데닌(A), 구아닌(G), 티민(T), 유라실(U)이다.",
+          "source": "wikipedia",
+          "sourceTitle": "사이토신",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%82%AC%EC%9D%B4%ED%86%A0%EC%8B%A0",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "구강악안면외과",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "안경곰",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 282099,
+        "entityId": "Q137641",
+        "hint": {
+          "categories": [
+            "1825년 기재된 포유류",
+            "IUCN 적색 목록 취약종",
+            "곰과"
+          ],
+          "summary": "안경곰은 곰과의 동물이다. 몸길이 150~180cm, 어깨높이 76cm, 몸무게 85~145kg으로 몸집이 작다.",
+          "source": "wikipedia",
+          "sourceTitle": "안경곰",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%95%88%EA%B2%BD%EA%B3%B0",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "무태상어",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 1035221,
+        "entityId": "Q928469",
+        "hint": {
+          "categories": [
+            "1870년 기재된 물고기",
+            "IUCN 적색 목록 취약종",
+            "기니만"
+          ],
+          "summary": "무태상어(Carcharhinus brachyurus)는 최대 몸길이가 3m 이하이며 연골어류(軟骨魚類) 흉상어목 흉상어과의 바닷물고기로, 태평양, 대서양, 인도양에 주로 사는 상어이다.",
+          "source": "wikipedia",
+          "sourceTitle": "무태상어",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%AC%B4%ED%83%9C%EC%83%81%EC%96%B4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "견제 응원",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "유사역사학",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": true,
+        "pageId": 323879,
+        "entityId": "Q11146759",
+        "hint": {
+          "categories": [],
+          "summary": "유사역사학(類似歷史學, pseudohistory) 또는 의사역사학(擬似歷史學) 혹은 사이비역사학(似而非歷史學)이란, 역사인 듯하나 공인된 역사 기술의 관습을 따르지 않고 그 결론을 훼손하는 주장을 낮추어 이르는 말이다.",
+          "source": "wikipedia",
+          "sourceTitle": "유사역사학",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%82%AC%EC%97%AD%EC%82%AC%ED%95%99",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q11146759",
+        "description": "",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EC%9C%A0%EC%82%AC%EC%97%AD%EC%82%AC%ED%95%99"
+      }
+    },
+    {
+      "title": "그레비얼룩말",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 734789,
+        "entityId": "Q219565",
+        "hint": {
+          "categories": [
+            "1882년 기재된 포유류",
+            "IUCN 적색 목록 위기종",
+            "남수단의 포유류"
+          ],
+          "summary": "그레비얼룩말(학명: Equus grevyi)은 얼룩말의 일종이며 현존하는 얼룩말 중 가장 큰 종이다.",
+          "source": "wikipedia",
+          "sourceTitle": "그레비얼룩말",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B7%B8%EB%A0%88%EB%B9%84%EC%96%BC%EB%A3%A9%EB%A7%90",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "ADSL",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 154548,
+        "entityId": "Q161618",
+        "hint": {
+          "categories": [
+            "ITU-T 권고",
+            "디지털 가입자 회선",
+            "비대칭"
+          ],
+          "summary": "비대칭 디지털 가입자 회선(Asymmetric digital subscriber line, ADSL)은 디지털 가입자 회선(DSL) 기술의 한 종류로, 기존의 음성 대역 모뎀보다 구리 전화선을 통해 더 빠른 데이터 전송을 가능하게 하는 데이터 통신 기술이다.",
+          "source": "wikipedia",
+          "sourceTitle": "ADSL",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/ADSL",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "큰눈환도상어",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 948782,
+        "entityId": "Q508067",
+        "hint": {
+          "categories": [
+            "1840년 기재된 물고기",
+            "IUCN 적색 목록 취약종",
+            "환도상어과"
+          ],
+          "summary": "큰눈환도상어(영어: Bigeye thresher 학명: Alopias superciliosus)는 악상어목 환도상어과에 속하는 환도상어의 일종으로, 전 세계 온대 및 열대 해역에 널리 분포한다.",
+          "source": "wikipedia",
+          "sourceTitle": "큰눈환도상어",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%81%B0%EB%88%88%ED%99%98%EB%8F%84%EC%83%81%EC%96%B4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "행성과학",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 878608,
+        "entityId": "Q104499",
+        "hint": {
+          "categories": [
+            "우주과학",
+            "학제간 연구"
+          ],
+          "summary": "행성과학(行星科學, planetary science), 또는 행성학(行星學, planetology)은 지구를 포함한 행성, 달, 행성계, 특히 태양계와 이들을 이루는 과정을 연구하는 학문이다.",
+          "source": "wikipedia",
+          "sourceTitle": "행성과학",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%96%89%EC%84%B1%EA%B3%BC%ED%95%99",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "상대성 이론",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q43514",
+        "description": "물리학 이론",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EC%83%81%EB%8C%80%EC%84%B1%EC%9D%B4%EB%A1%A0"
+      }
+    },
+    {
+      "title": "수원 케이티 위즈 파크",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "정보이론",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "인도천산갑",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 1043005,
+        "entityId": "Q752467",
+        "hint": {
+          "categories": [
+            "IUCN 적색 목록 위기종",
+            "네팔의 포유류",
+            "스리랑카의 포유류"
+          ],
+          "summary": "인도천산갑(Manis crassicaudata)은 유린목에 속하는 포유류의 일종이다.",
+          "source": "wikipedia",
+          "sourceTitle": "인도천산갑",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9D%B8%EB%8F%84%EC%B2%9C%EC%82%B0%EA%B0%91",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "아자토스",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 5315,
+        "entityId": "Q1056509",
+        "hint": {
+          "categories": [
+            "1943년 창조된 가공인물",
+            "크툴루 신화의 신"
+          ],
+          "summary": "아자토스(Azathoth), \"악마 술탄\" 혹은 \"끓어오르는 혼돈의 중심\"은 하워드 필립스 러브크래프트의 호러 단편에 언급된 크툴후신화의 신적인 존재이다.",
+          "source": "wikipedia",
+          "sourceTitle": "아자토스",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%95%84%EC%9E%90%ED%86%A0%EC%8A%A4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "인도차이나표범",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 2978976,
+        "entityId": "Q153061",
+        "hint": {
+          "categories": [
+            "1930년 기재된 포유류",
+            "라오스의 포유류",
+            "미얀마의 포유류"
+          ],
+          "summary": "인도차이나표범(Panthera pardus delacouri, Indochinese leopard)은 몸길이 140~160cm 내외로 보통 인도표범보다 약간 작으며 흑표범이 발현되는 아종 중 하나이다.",
+          "source": "wikipedia",
+          "sourceTitle": "인도차이나표범",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9D%B8%EB%8F%84%EC%B0%A8%EC%9D%B4%EB%82%98%ED%91%9C%EB%B2%94",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "컴퓨터응용밀링기능사",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "레깅스",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": true,
+        "pageId": 535970,
+        "entityId": "Q660782",
+        "hint": {
+          "categories": [
+            "1980년대 패션",
+            "1990년대 패션",
+            "2000년대 패션"
+          ],
+          "summary": "레깅스(leggings)는 사람의 허리에서 발끝까지, 주로 다리를 덮는 겉옷(leg coverings)으로 바지와 비슷하다.",
+          "source": "wikipedia",
+          "sourceTitle": "레깅스",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%A0%88%EA%B9%85%EC%8A%A4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q660782",
+        "description": "사람의 신체 하부에 입는 옷으로 바지와 비슷하다.",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EB%A0%88%EA%B9%85%EC%8A%A4"
+      }
+    },
+    {
+      "title": "자(수)",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 998803,
+        "entityId": "",
+        "hint": {
+          "categories": [
+            "정수"
+          ],
+          "summary": "자(秭, 1024)는 10의 24제곱을 나타내는 한자 수사이다.",
+          "source": "wikipedia",
+          "sourceTitle": "자 (수)",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9E%90_(%EC%88%98)",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q1050038",
+        "description": "자연수",
+        "articleUrl": "https://ko.wikipedia.org/wiki/10%EC%9D%98_24%EC%A0%9C%EA%B3%B1"
+      }
+    },
+    {
+      "title": "슈르 부등식",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "스위스",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": true,
+        "pageId": 9825,
+        "entityId": "Q39",
+        "hint": {
+          "categories": [
+            "경제협력개발기구 회원국",
+            "내륙국",
+            "독일어권"
+          ],
+          "summary": "스위스 연방(영어: Swiss Confederation 스위스 컨페더레이션, 독일어: Schweizerische Eidgenossenschaft 슈바이처리셰 아이트게노센샤프트, 프랑스어: Confédération suisse 콩페데라시옹 쉬스, 이탈리아어: Confederazione Svizzera 콘페데라치오네 스비체라, 로만슈어: Confederaziun svizra 콘페데라치운 주비츠…",
+          "source": "wikipedia",
+          "sourceTitle": "스위스",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%8A%A4%EC%9C%84%EC%8A%A4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q39",
+        "description": "중앙유럽의 국가",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EC%8A%A4%EC%9C%84%EC%8A%A4"
+      }
+    },
+    {
+      "title": "지하철",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 47026,
+        "entityId": "Q5503",
+        "hint": {
+          "categories": [
+            "철도"
+          ],
+          "summary": "지하철(地下鐵, 영어: metro, underground, subway, tube) 또는 지하철도(地下鐵道)는 도시철도의 가장 대표적 형태로, 노선 대부분이 지표면 아래 터널에 부설되어 지상의 교통과 완전하게 분리된 전용 궤도를 사용하는 대량 운송 체계다.",
+          "source": "wikipedia",
+          "sourceTitle": "지하철",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%A7%80%ED%95%98%EC%B2%A0",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "ROM",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "작용제",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "싱크로트론",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 4173337,
+        "entityId": "Q689863",
+        "hint": {
+          "categories": [
+            "가속물리학",
+            "입자 가속기"
+          ],
+          "summary": "싱크로트론(synchrotron)은 사이클로트론에서 파생된 특수한 유형의 원형 입자 가속기로, 가속되는 입자 빔이 고정된 폐쇄 루프 경로를 따라 이동한다.",
+          "source": "wikipedia",
+          "sourceTitle": "싱크로트론",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%8B%B1%ED%81%AC%EB%A1%9C%ED%8A%B8%EB%A1%A0",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "씨앗(프로그래밍 언어)",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "17세기",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "verifiedIdentity": false,
+        "pageId": 3603,
+        "entityId": "Q7016",
+        "reason": "no-usable-introduction"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q7016",
+        "description": "세기",
+        "articleUrl": "https://ko.wikipedia.org/wiki/17%EC%84%B8%EA%B8%B0"
+      }
+    },
+    {
+      "title": "챔퍼나운 상수",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "앙리 푸앵카레",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": true,
+        "pageId": 6960,
+        "entityId": "Q81082",
+        "hint": {
+          "categories": [
+            "1854년 출생",
+            "1912년 사망",
+            "19세기 수필가"
+          ],
+          "summary": "쥘 앙리 푸앵카레(프랑스어: Jules Henri Poincaré, 프랑스어 발음: [ɑ̃ʁi pwɛ̃kaʁe], 1854년 4월 29일 ~ 1912년 7월 17일)는 프랑스의 수학자이다.",
+          "source": "wikipedia",
+          "sourceTitle": "앙리 푸앵카레",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%95%99%EB%A6%AC_%ED%91%B8%EC%95%B5%EC%B9%B4%EB%A0%88",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q81082",
+        "description": "프랑스의 수학자, 물리학자 (1854~1912)",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EC%95%99%EB%A6%AC_%ED%91%B8%EC%95%B5%EC%B9%B4%EB%A0%88"
+      }
+    },
+    {
+      "title": "수학덕후",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "리치고",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "대동아공영권",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 155324,
+        "entityId": "Q696192",
+        "hint": {
+          "categories": [
+            "쇼와 시대",
+            "신제국주의",
+            "일본 제국의 군사점령"
+          ],
+          "summary": "대동아공영권(大東亞共榮圈, 일본어: 大東亜共栄圏 다이토아쿄에이켄)은 쇼와 시대 일본 제국 정부와 일본군에 의해 고안, 점령지의 아시아인들에게 동아시아보다 더 큰 영역에서의 동북아시아, 동남아시아, 오세아니아의 문화적·경제적 통합이라고 선전된 개념이다.",
+          "source": "wikipedia",
+          "sourceTitle": "대동아공영권",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%8C%80%EB%8F%99%EC%95%84%EA%B3%B5%EC%98%81%EA%B6%8C",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "소련 붕괴",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q5167679",
+        "description": "1991년 12월 소련이 붕괴되기까지의 과정",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EC%86%8C%EB%A0%A8%EC%9D%98_%EB%B6%95%EA%B4%B4"
+      }
+    },
+    {
+      "title": "이스라엘 왕국",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 38078,
+        "entityId": "Q3185305",
+        "hint": {
+          "categories": [
+            "부족연맹체",
+            "유대인 정체",
+            "이스라엘 땅의 정체"
+          ],
+          "summary": "이스라엘 왕국(아람어: 𐤉𐤔𐤓𐤀𐤋, 히브리어: ממלכת ישראל המאוחדת) 또는 헤브라이 왕국은 고대 레반트 남부에 존재하던 히브리인들의 왕국으로, 이스라엘 역사상 최초의 국가이다.",
+          "source": "wikipedia",
+          "sourceTitle": "이스라엘 왕국",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%9D%B4%EC%8A%A4%EB%9D%BC%EC%97%98_%EC%99%95%EA%B5%AD",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "바키타",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 238726,
+        "entityId": "Q725493",
+        "hint": {
+          "categories": [
+            "1958년 기재된 포유류",
+            "EDGE 종",
+            "IUCN 적색 목록 위급종"
+          ],
+          "summary": "바키타(Phocoena sinus, 영어: vaquita porpoise)는 '바다의 판다'라는 별명을 가진 돌고래로 쇠돌고래 중 희귀종이다.",
+          "source": "wikipedia",
+          "sourceTitle": "바키타",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%B0%94%ED%82%A4%ED%83%80",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "아까시나무",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 106830,
+        "entityId": "Q157417",
+        "hint": {
+          "categories": [
+            "1753년 기재된 식물",
+            "목본식물",
+            "미국의 나무"
+          ],
+          "summary": "아까시나무(영어: black locust)는 콩아과(Faboideae)에 속하는 낙엽교목이다.",
+          "source": "wikipedia",
+          "sourceTitle": "아까시나무",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%95%84%EA%B9%8C%EC%8B%9C%EB%82%98%EB%AC%B4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "마름모십이이십면체",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 118338,
+        "entityId": "Q672521",
+        "hint": {
+          "categories": [
+            "아르키메데스의 다면체"
+          ],
+          "summary": "마름모십이이십면체는 아르키메데스의 다면체 중 하나이다.",
+          "source": "wikipedia",
+          "sourceTitle": "마름모십이이십면체",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%A7%88%EB%A6%84%EB%AA%A8%EC%8B%AD%EC%9D%B4%EC%9D%B4%EC%8B%AD%EB%A9%B4%EC%B2%B4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "슬로바키아 영화",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "각",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "not-standard"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "음향과",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "파출소",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 531988,
+        "entityId": "Q126540630",
+        "hint": {
+          "categories": [
+            "경찰"
+          ],
+          "summary": "지구대(地區隊) 및 파출소(派出所)는 지방경찰서 관할의 동네에 있는 작은 경찰기관이다.",
+          "source": "wikipedia",
+          "sourceTitle": "파출소",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%8C%8C%EC%B6%9C%EC%86%8C",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "한국-짐바브웨 관계",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "밴드 오브 브라더스",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 86595,
+        "entityId": "Q208048",
+        "hint": {
+          "categories": [
+            "1944년을 배경으로 한 텔레비전 드라마",
+            "1945년을 배경으로 한 텔레비전 드라마",
+            "2001년 시작한 미국의 텔레비전 프로그램"
+          ],
+          "summary": "《밴드 오브 브라더스》(영어: Band of Brothers)는 미국 HBO에서 2001년 제작한 2차 세계 대전에 있었던 실화를 바탕으로 한 10부작 미니시리즈이다.",
+          "source": "wikipedia",
+          "sourceTitle": "밴드 오브 브라더스",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%B0%B4%EB%93%9C_%EC%98%A4%EB%B8%8C_%EB%B8%8C%EB%9D%BC%EB%8D%94%EC%8A%A4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "음감",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "퀴라소 프로야구 리그",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "온더볼(책)",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "음악(교과)",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "관절염",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 237953,
+        "entityId": "Q170990",
+        "hint": {
+          "categories": [
+            "골격계 질환",
+            "류마티스내과",
+            "염증"
+          ],
+          "summary": "관절염(문화어: 뼈마디염, 영어: arthritis)은 관절의 손상을 수반하는 여러 질환이다.",
+          "source": "wikipedia",
+          "sourceTitle": "관절염",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B4%80%EC%A0%88%EC%97%BC",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "대중음악",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 131421,
+        "entityId": "Q373342",
+        "hint": {
+          "categories": [],
+          "summary": "대중음악(大衆音樂, popular music)은 현대 일반 대중을 대상으로 하고, 단순함과 통속성 및 오락성을 지니며 대중매체를 통해 전파되는, 이를 통해 이윤을 추구하는 상업적 목적을 지닌 새로운 형태의 음악을 총칭하는 말이다.",
+          "source": "wikipedia",
+          "sourceTitle": "대중음악",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%8C%80%EC%A4%91%EC%9D%8C%EC%95%85",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "국민주택채권",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 4125253,
+        "entityId": "",
+        "hint": {
+          "categories": [
+            "부동산",
+            "채권"
+          ],
+          "summary": "국민주택채권(國民住宅債券)은 국민주택사업에 필요한 자금을 조달할 목적으로 대한민국 정부가 주택도시기금의 부담으로 발행하는 채권을 가리킨다.",
+          "source": "wikipedia",
+          "sourceTitle": "국민주택채권",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B5%AD%EB%AF%BC%EC%A3%BC%ED%83%9D%EC%B1%84%EA%B6%8C",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "지리학자",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 233692,
+        "entityId": "Q901402",
+        "hint": {
+          "categories": [
+            "과학 관련 직업",
+            "사회과학 관련 직업",
+            "인문학 관련 직업"
+          ],
+          "summary": "지리학자(geographer)는 지구의 자연 환경과 인간 사회, 그리고 사회와 자연이 상호 작용하는 방식을 포함하여 지리학을 연구하는 자연 과학자, 사회 과학자 또는 인문학자를 말한다.",
+          "source": "wikipedia",
+          "sourceTitle": "지리학자",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%A7%80%EB%A6%AC%ED%95%99%EC%9E%90",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "중성자별",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": true,
+        "pageId": 73085,
+        "entityId": "Q4202",
+        "hint": {
+          "categories": [
+            "별난 물질",
+            "중성자",
+            "항성 진화"
+          ],
+          "summary": "중성자별(中性子-, neutron star)은 초신성 폭발이 일어난 직후 무거운 별의 중력 붕괴로 만들어진 밀집성의 일종이다.",
+          "source": "wikipedia",
+          "sourceTitle": "중성자별",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%A4%91%EC%84%B1%EC%9E%90%EB%B3%84",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q4202",
+        "description": "거대한 별의 붕괴된 핵심",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EC%A4%91%EC%84%B1%EC%9E%90%EB%B3%84"
+      }
+    },
+    {
+      "title": "허공",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "not-standard"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "미러관계",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q2631417",
+        "description": "",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EB%9F%AC%EC%8B%9C%EC%95%84-%EB%AF%B8%EA%B5%AD_%EA%B4%80%EA%B3%84"
+      }
+    },
+    {
+      "title": "티토누스절",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 4252947,
+        "entityId": "Q855125",
+        "hint": {
+          "categories": [
+            "절 (지질학)",
+            "쥐라기 후기"
+          ],
+          "summary": "티토누스절(Tithonian)은 중생대 쥐라기의 후기에 해당하는 절이다.",
+          "source": "wikipedia",
+          "sourceTitle": "티토누스절",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%8B%B0%ED%86%A0%EB%88%84%EC%8A%A4%EC%A0%88",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "홈런왕 유상철",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "법인차",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "2018년",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "verifiedIdentity": false,
+        "pageId": 66296,
+        "entityId": "Q25291",
+        "reason": "no-usable-introduction"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q25291",
+        "description": "연도",
+        "articleUrl": "https://ko.wikipedia.org/wiki/2018%EB%85%84"
+      }
+    },
+    {
+      "title": "모멘트",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "한국-나우루 관계",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "광주고등법원",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": true,
+        "pageId": 269612,
+        "entityId": "Q12585080",
+        "hint": {
+          "categories": [
+            "1952년 설립",
+            "광주 동구 소재의 관공서",
+            "대한민국의 고등법원"
+          ],
+          "summary": "광주고등법원(光州高等法院)은 대한민국의 고등법원 1심 판결에 대한 항소 사건, 1심 결정·명령에 대한 항고 사건, 선거 소송 등을 심판한다.",
+          "source": "wikipedia",
+          "sourceTitle": "광주고등법원",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B4%91%EC%A3%BC%EA%B3%A0%EB%93%B1%EB%B2%95%EC%9B%90",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q12585080",
+        "description": "",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EA%B4%91%EC%A3%BC%EA%B3%A0%EB%93%B1%EB%B2%95%EC%9B%90"
+      }
+    },
+    {
+      "title": "올랭프 드 구즈",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "네덜란드인",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 561405,
+        "entityId": "Q200569",
+        "hint": {
+          "categories": [
+            "네덜란드 사람"
+          ],
+          "summary": "네덜란드인(네덜란드어: Nederlanders 네데를란더르스)은 네덜란드를 원주 지역으로 하는 게르만계 민족으로, 공통 문화를 공유하고 네덜란드어를 구사한다.",
+          "source": "wikipedia",
+          "sourceTitle": "네덜란드인",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%84%A4%EB%8D%9C%EB%9E%80%EB%93%9C%EC%9D%B8",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "야오밍",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 54435,
+        "entityId": "Q58590",
+        "hint": {
+          "categories": [
+            "1980년 출생",
+            "2000년 하계 올림픽 농구 참가 선수",
+            "2001년 하계 유니버시아드 농구 참가 선수"
+          ],
+          "summary": "야오밍(중국어 간체자: 姚明, 병음: Yáo Míng, 한자음: 요명, 1980년 9월 12일~)은 중화인민공화국의 은퇴한 농구 선수로 중국 농구 협회(CBA)의 상하이 샤크스와 전미 농구 협회(NBA)의 휴스턴 로키츠에서 뛰었다.",
+          "source": "wikipedia",
+          "sourceTitle": "야오밍",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%95%BC%EC%98%A4%EB%B0%8D",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "폴란드 침공",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 157294,
+        "entityId": "Q150812",
+        "hint": {
+          "categories": [
+            "1939년 10월",
+            "1939년 9월",
+            "1939년 분쟁"
+          ],
+          "summary": "폴란드 침공(영어: Invasion of Poland), 또는 9월 전역(폴란드어: Kampania wrześniowa), 1939년 방어전(폴란드어: Wojna obronna 1939 roku), 제4차 폴란드 분할(폴란드어: IV rozbiór Polski) 나치 독일에서는 폴란드 캠페인(독일어: Polenfeldzug) 또는 백색 상황(독일어: Fall Weiss 팔 바이스)으로 불리…",
+          "source": "wikipedia",
+          "sourceTitle": "폴란드 침공",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%8F%B4%EB%9E%80%EB%93%9C_%EC%B9%A8%EA%B3%B5",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "빌드업(웹툰)",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "쌍둥이 도시",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 613743,
+        "entityId": "Q244793",
+        "hint": {
+          "categories": [],
+          "summary": "쌍둥이 도시(Twin cities)란 지리적으로 가까운 두 개의 도시가 도시의 성장과 팽창에 따라 하나의 권역으로 통합되어 서로 상생, 발전해가는 현상을 가리킨다.",
+          "source": "wikipedia",
+          "sourceTitle": "쌍둥이 도시",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%8C%8D%EB%91%A5%EC%9D%B4_%EB%8F%84%EC%8B%9C",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "맘마미아",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "성경",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": true,
+        "pageId": 12077,
+        "entityId": "Q1845",
+        "hint": {
+          "categories": [
+            "유대-기독교 주제"
+          ],
+          "summary": "성경(聖經, 히브리어: ביבל, 그리스어: τὰ βιβλία) 또는 성서(聖書, 라틴어: Biblia, 영어: Bible)는 기독교, 유대교에서 가장 중요한 경전을 일컫는 용어이다.",
+          "source": "wikipedia",
+          "sourceTitle": "성경",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%84%B1%EA%B2%BD",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q1845",
+        "description": "유대교와 기독교의 신성한 책의 수집",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EC%84%B1%EA%B2%BD"
+      }
+    },
+    {
+      "title": "에티오피아 정교회",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "프랑코포니(국제기구)",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "포함-배제의 원리",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q849335",
+        "description": "",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%ED%8F%AC%ED%95%A8%EB%B0%B0%EC%A0%9C%EC%9D%98_%EC%9B%90%EB%A6%AC"
+      }
+    },
+    {
+      "title": "인도느림보곰",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "전자리상어",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 3044768,
+        "entityId": "Q28832",
+        "hint": {
+          "categories": [
+            "1858년 기재된 물고기",
+            "바닷물고기",
+            "전자리상어과"
+          ],
+          "summary": "전자리상어(학명:Squatina japonica)는 전자리상어목 전자리상어과에 속하는 물고기이다.",
+          "source": "wikipedia",
+          "sourceTitle": "전자리상어",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%A0%84%EC%9E%90%EB%A6%AC%EC%83%81%EC%96%B4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "알파나선",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "유니버스",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "not-standard"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "멀티플렉스",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 364381,
+        "entityId": "Q1153108",
+        "hint": {
+          "categories": [
+            "영화관"
+          ],
+          "summary": "멀티플렉스(영어: multiplex), 메가플렉스(megaplex), 복합 영화관(複合映畵管), 복합 상영관(複合上映館)은 영화관의 한 형태로서 다수의 상영관이 한 건물에 모여 있는 극장을 말한다.",
+          "source": "wikipedia",
+          "sourceTitle": "멀티플렉스",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%A9%80%ED%8B%B0%ED%94%8C%EB%A0%89%EC%8A%A4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "결벽남자! 아오야마군",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 1780464,
+        "entityId": "Q22124083",
+        "hint": {
+          "categories": [
+            "2014년 만화",
+            "2017년 애니메이션",
+            "TMS 엔터테인먼트"
+          ],
+          "summary": "《결벽남자! 아오야마군》(일본어: 潔癖男子！青山くん)은 사카모토 타쿠의 일본의 만화이며, 2014년 6월호부터 10월호까지 「미라클 점프」(슈에이샤)에서 연재되었으며, 주간 영 점프로 옮겨 2015년 9호부터 연재중이다.",
+          "source": "wikipedia",
+          "sourceTitle": "결벽남자! 아오야마군",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B2%B0%EB%B2%BD%EB%82%A8%EC%9E%90!_%EC%95%84%EC%98%A4%EC%95%BC%EB%A7%88%EA%B5%B0",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "나와틀어",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 185835,
+        "entityId": "Q13300",
+        "hint": {
+          "categories": [
+            "VSO형 언어",
+            "교착어",
+            "나와어파"
+          ],
+          "summary": "나와틀어(nāwatl ['naː.watɬ])는 유트아즈텍어족에 속하는 언어 또는 언어군이다.",
+          "source": "wikipedia",
+          "sourceTitle": "나와틀어",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%82%98%EC%99%80%ED%8B%80%EC%96%B4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "코모도왕도마뱀",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 245404,
+        "entityId": "Q4504",
+        "hint": {
+          "categories": [
+            "1912년 기재된 파충류",
+            "CITES 부속서 I 보호종",
+            "IUCN 적색 목록 위기종"
+          ],
+          "summary": "코모도왕도마뱀(Komodo monitor) 또는 코모도드래곤(Komodo dragon)은 인도네시아의 코모도섬, 린차섬, 플로레스섬, 길리모탕섬, 파달섬, 코모도국립공원 등에서 서식하는 대형 도마뱀이다.",
+          "source": "wikipedia",
+          "sourceTitle": "코모도왕도마뱀",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%BD%94%EB%AA%A8%EB%8F%84%EC%99%95%EB%8F%84%EB%A7%88%EB%B1%80",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "버니어 캘리퍼스",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "대한민국/자원/생물자원/곤충",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "강도",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 80351,
+        "entityId": "Q53706",
+        "hint": {
+          "categories": [
+            "재산범죄",
+            "형법"
+          ],
+          "summary": "강도(強盜)는 다른 사람의 재산을 빼앗는 범죄자를 말한다.",
+          "source": "wikipedia",
+          "sourceTitle": "강도",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EA%B0%95%EB%8F%84",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "수마트라오랑우탄",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 142306,
+        "entityId": "Q543424",
+        "hint": {
+          "categories": [
+            "1827년 기재된 포유류",
+            "CITES 부속서 I 보호종",
+            "IUCN 적색 목록 위급종"
+          ],
+          "summary": "수마트라오랑우탄(Pongo abelii)은 세 종의 오랑우탄 중 하나로 인도네시아의 수마트라섬만 서식하는 고유종이다.수마트라오랑우탄은 수컷은 약 140cm 정도의 키에 90kg까지 성장한다.",
+          "source": "wikipedia",
+          "sourceTitle": "수마트라오랑우탄",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%88%98%EB%A7%88%ED%8A%B8%EB%9D%BC%EC%98%A4%EB%9E%91%EC%9A%B0%ED%83%84",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "호버링",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "보르네오코끼리",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 317990,
+        "entityId": "Q835120",
+        "hint": {
+          "categories": [
+            "1950년 기재된 포유류",
+            "IUCN 적색 목록 위기종",
+            "말레이시아의 포유류"
+          ],
+          "summary": "보르네오코끼리(Elephas maximus borneensis)는 동남아시아의 보르네오섬에 서식하는 아시아코끼리의 아종이다.",
+          "source": "wikipedia",
+          "sourceTitle": "보르네오코끼리",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%B3%B4%EB%A5%B4%EB%84%A4%EC%98%A4%EC%BD%94%EB%81%BC%EB%A6%AC",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "라스베이거스 그랑프리",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 3937877,
+        "entityId": "Q111443584",
+        "hint": {
+          "categories": [
+            "2023년 시작된 스포츠 행사",
+            "포뮬러 원 그랑프리"
+          ],
+          "summary": "라스베이거스 그랑프리(Las Vegas Grand Prix)는 오스트레일리아에서 한 해에 한 번 개최되는 모터 레이스이다.",
+          "source": "wikipedia",
+          "sourceTitle": "라스베이거스 그랑프리",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EB%9D%BC%EC%8A%A4%EB%B2%A0%EC%9D%B4%EA%B1%B0%EC%8A%A4_%EA%B7%B8%EB%9E%91%ED%94%84%EB%A6%AC",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "테크볼",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 4177841,
+        "entityId": "Q19578052",
+        "hint": {
+          "categories": [
+            "구기",
+            "실내 스포츠",
+            "축구 종류"
+          ],
+          "summary": "테크볼(Teqball)은 곡선 형태의 테이블에서 축구와 탁구의 요소를 결합하여 즐기는 공 스포츠이다.",
+          "source": "wikipedia",
+          "sourceTitle": "테크볼",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%ED%85%8C%ED%81%AC%EB%B3%BC",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "중화민국 북양정부",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "슈뢰딩거의 고양이",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": true,
+        "pageId": 41400,
+        "entityId": "Q8588",
+        "hint": {
+          "categories": [
+            "가공의 고양이",
+            "물리학 개념",
+            "사고 실험"
+          ],
+          "summary": "슈뢰딩거의 고양이(Schrödingers Katze, Schrödinger's cat)는 1935년에 오스트리아의 물리학자 에르빈 슈뢰딩거가 양자역학의 불완전함을 보이기 위해서 고안한 사고 실험이다.",
+          "source": "wikipedia",
+          "sourceTitle": "슈뢰딩거의 고양이",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%8A%88%EB%A2%B0%EB%94%A9%EA%B1%B0%EC%9D%98_%EA%B3%A0%EC%96%91%EC%9D%B4",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q8588",
+        "description": "에르빈 슈뢰딩거에 의해 고안된 사고 실험",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EC%8A%88%EB%A2%B0%EB%94%A9%EA%B1%B0%EC%9D%98_%EA%B3%A0%EC%96%91%EC%9D%B4"
+      }
+    },
+    {
+      "title": "전략무기제한협정",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "redirect-not-identity-proof"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": true,
+        "entityUrl": "http://www.wikidata.org/entity/Q623994",
+        "description": "핵무기의 생산과 배치를 제한하기 위한 미국과 소련 간의 회담",
+        "articleUrl": "https://ko.wikipedia.org/wiki/%EC%A0%84%EB%9E%B5_%EB%AC%B4%EA%B8%B0_%EC%A0%9C%ED%95%9C_%ED%98%91%EC%83%81"
+      }
+    },
+    {
+      "title": "철학사/서양과 중근동",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": false,
+        "reason": "missing"
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    },
+    {
+      "title": "사과",
+      "prepared": false,
+      "wikipedia": {
+        "candidate": true,
+        "verifiedIdentity": false,
+        "pageId": 87304,
+        "entityId": "Q89",
+        "hint": {
+          "categories": [
+            "1768년 기재된 식물",
+            "사과나무",
+            "아시아의 식물상"
+          ],
+          "summary": "사과(沙果)는 과일로 세계적으로 널리 재배되는 열매 가운데 하나다.",
+          "source": "wikipedia",
+          "sourceTitle": "사과",
+          "sourceUrl": "https://ko.wikipedia.org/wiki/%EC%82%AC%EA%B3%BC",
+          "sourceLicense": "CC BY-SA 4.0",
+          "sourceLicenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+        }
+      },
+      "wikidata": {
+        "tested": true,
+        "matched": false
+      }
+    }
+  ],
+  "summary": {
+    "prepared": 0,
+    "wikipediaCandidates": 51,
+    "wikipediaIdentityConfirmed": 9,
+    "wikidataTested": 100,
+    "wikidataMatches": 18,
+    "wikidataKoreanDescriptions": 14,
+    "namuAttempted": 5,
+    "namuAvailable": 5,
+    "verifiedNamuRouteHints": "not measured: no pre-existing Namu link graph; Wikipedia links are not Namu links",
+    "requests": 67
+  }
+}

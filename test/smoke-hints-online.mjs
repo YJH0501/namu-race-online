@@ -14,19 +14,29 @@ try {
   const { room } = await api(`/rooms/${session.code}/action`, { action: 'start', hostToken: session.hostToken });
   await api(`/rooms/${session.code}/action`, { ...body, action: 'hint-vote', hintLevel: 1, startedAt: room.startedAt });
   let hint;
+  let preparedToken;
   for (let i = 0; i < 32; i++) {
     const result = await api(`/rooms/${session.code}?playerId=${session.playerId}&token=${session.playerToken}`);
     hint = result.room.hint;
+    if (hint.prepareToken && preparedToken !== hint.prepareToken) {
+      preparedToken = hint.prepareToken;
+      const r = await fetch('https://namu-race.yangkun050178.chatgpt.site/api/hints',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({code:session.code,token:preparedToken}),signal:AbortSignal.timeout(22000)});
+      assert.ok(r.ok || r.status===409,await r.text());
+      // Cache hits can be published by the room alarm before the client's
+      // redundant preparation/notification finishes. Read the authoritative state.
+      const notify=await fetch(origin+`/rooms/${session.code}/action`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...body,action:'hint-ready',requestId:preparedToken,startedAt:room.startedAt})});
+      assert.ok(notify.ok || notify.status===409,await notify.text());
+    }
     if (hint.level === 1 || hint.status === 'unavailable') break;
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
   assert.equal(hint.level, 1, JSON.stringify(hint));
-  assert.equal(hint.format, 'card-v1');
+  assert.ok(['card-v1','document-v1'].includes(hint.format));
   assert.equal(hint.available, true);
-  assert.ok(hint.summary.length >= 15);
+  assert.ok(hint.format==='card-v1' ? hint.summary.length >= 15 : hint.categories.length || hint.summary);
   assert.deepEqual(hint.relatedTitles, []);
   assert.equal(hint.card, undefined);
-  assert.equal(hint.source, 'wikipedia');
+  assert.equal(hint.source, hint.format==='card-v1'?'wikipedia':'namuwiki');
   if (process.env.NAMU_RACE_EXPECT_HINT_SOURCE) assert.equal(hint.source, process.env.NAMU_RACE_EXPECT_HINT_SOURCE);
   const stageOneSource = hint.sourceUrl;
   if (process.env.NAMU_RACE_FULL_HINT_SMOKE === '1') {
@@ -47,7 +57,7 @@ try {
     assert.equal(hint.level, 2);
     assert.equal(hint.sourceUrl, stageOneSource);
     assert.ok(hint.summary.length >= 15, `${goalTitle}: no usable description`);
-    assert.ok(hint.relatedTitles.length >= 2);
+    if(hint.format==='card-v1')assert.ok(hint.relatedTitles.length >= 2);
     console.log(JSON.stringify({ liveStageTwo: true, description: hint.summary, relatedTitles: hint.relatedTitles }));
   }
   console.log(JSON.stringify({ ok: true, goalTitle, source: hint.source, sourceUrl: hint.sourceUrl, relatedHiddenBeforeStageTwo: true }));

@@ -59,12 +59,14 @@ test('진행 중 이탈에 따른 과반수 재계산과 완료자 제외', () =
   assert.equal(hintVoteInfo(room, 'a', 70000).eligible, false);
 });
 
-test('지원하지 않는 직접 지정 목표는 재시도 없이 힌트 미지원', () => {
+test('카드 없는 목표도 과반수로 자동 준비를 요청할 수 있다', () => {
   const room = roomFor('카드 없는 문서');
   room.hint.votes = ['a', 'b'];
-  assert.equal(hintVoteInfo(room, 'a', 99999999).canRequest, false);
-  assert.equal(reconcilePreparedHint(room), false);
-  assert.equal(publicHint(room, 'a').available, false);
+  assert.equal(hintVoteInfo(room, 'a', 99999999).canRequest, true);
+  assert.equal(reconcilePreparedHint(room), true);
+  assert.equal(room.hint.format, 'document-v1');
+  assert.equal(publicHint(room, 'a').status, 'loading');
+  assert.equal(publicHint(room, 'a').level, 0);
 });
 
 test('기존 방의 공개된 설명과 서버 저장 스냅샷은 배포 후에도 유지된다', () => {
@@ -95,13 +97,16 @@ test('실패했던 기존 0단계 방은 지원 카드로 전환하고, 설명 �
   assert.deepEqual(publicHint(room, 'b').categories, ['기존 분류']);
 });
 
-test('일일 목표도 힌트 지원 목록에서 결정하고 같은 날짜는 같은 경로다', () => {
+test('일일 목표는 넓은 문서 목록에서 결정하고 같은 날짜는 같은 경로다', () => {
+  const used = new Set();
   for (let day = 1; day <= 365; day++) {
     const date = new Date(Date.UTC(2026, 0, day)).toISOString().slice(0, 10);
     const route = dailyRoute(date);
-    assert.ok(getHintCard(route.goalTitle)); assert.notEqual(route.startTitle, route.goalTitle);
+    assert.ok(RANDOM_TITLE_POOL.includes(route.goalTitle)); assert.notEqual(route.startTitle, route.goalTitle);
+    used.add(route.goalTitle);
     assert.deepEqual(route, dailyRoute(date));
   }
+  assert.ok(used.size > 300, 'The daily pool is not limited to 64 hints');
 });
 
 test('운영 서버 번들에는 실시간 힌트 조회 코드가 들어가지 않는다', async () => {
