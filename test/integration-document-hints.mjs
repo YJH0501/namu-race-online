@@ -4,7 +4,9 @@ import {Miniflare,convertV4MiniflareOptions} from 'miniflare';
 const compiled=await build({entryPoints:['test/hints-worker.ts'],bundle:true,format:'esm',write:false,external:['cloudflare:workers']});
 let ready=false, calls=0;
 const goal='테크볼';
-const source={source:'namuwiki',sourceTitle:goal,sourceUrl:'https://namu.wiki/w/'+encodeURIComponent(goal),sourceLicense:'CC BY-NC-SA 2.0 KR',categories:['스포츠'],summary:'테크볼은 축구와 탁구를 결합한 스포츠이다.'};
+const canonical = process.argv.includes('--redirect') ? '테크볼/현재 문서' : goal;
+const source={source:'namuwiki',sourceTitle:canonical,sourceUrl:'https://namu.wiki/w/'+encodeURIComponent(canonical),sourceLicense:'CC BY-NC-SA 2.0 KR',categories:['스포츠'],summary:'테크볼은 축구와 탁구를 결합한 스포츠이다.',
+ ...(canonical!==goal ? {requestedTitle:goal,redirectChain:[goal,canonical]} : {})};
 const mf=new Miniflare(convertV4MiniflareOptions({modules:true,script:compiled.outputFiles[0].text,compatibilityDate:'2026-09-02',durableObjects:{RACE_ROOMS:{className:'RaceRoom',useSQLite:true}},outboundService:async r=>{
  const u=new URL(r.url);assert.equal(u.origin,'https://namu-race.yangkun050178.chatgpt.site');assert.equal(u.pathname,'/api/hints');assert.equal(r.method,'GET');calls++;
  // Exercise real re-entrant DO ticket validation, just as the Site does.
@@ -29,6 +31,7 @@ try{
  let first;
  for(let i=0;i<160;i++){first=(await view(h)).room;if(first.hint.level===1)break;await new Promise(r=>setTimeout(r,25));}
  assert.equal(first.hint.level,1);assert.deepEqual(first.hint.categories,['스포츠']);assert.equal(first.hint.summary,'');assert.equal(first.hint.snapshot,undefined);assert.equal(first.hint.prepareToken,null);
+ assert.equal(first.goalTitle,goal);assert.equal(first.hint.sourceTitle,canonical);assert.equal(first.hint.sourceUrl,source.sourceUrl);
  assert.equal((await view(g)).room.hint.level,1);await api('/rooms/'+h.code+'/hint-context?token='+id,undefined,409);
  const ns=await mf.getDurableObjectNamespace('RACE_ROOMS');await ns.get(ns.idFromName(h.code)).fetch('https://room/__test/advance-hint');
  const before=calls;await action(h,'hint-vote',{...ballot,hintLevel:2});await action(g,'hint-vote',{...ballot,hintLevel:2});const second=(await view(g)).room;

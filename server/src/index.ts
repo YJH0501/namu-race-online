@@ -7,6 +7,8 @@ import { RANDOM_TITLE_POOL, RANDOM_CATALOG } from '../../shared/random-title-poo
 import { pickCatalogRoute } from '../../shared/catalog-selection.mjs';
 // @ts-expect-error Plain ESM presence policy shared with deterministic tests.
 import { presenceDeadline, PRESENCE_TIMEOUT_MS } from '../../shared/presence.mjs';
+// @ts-expect-error Plain ESM validation shared with deterministic tests.
+import { validDocumentHint } from '../../shared/document-hint-validation.mjs';
 // @ts-expect-error Shared runtime module intentionally stays plain ESM for Node tests.
 import { calculateRoundScoreDetails } from '../../shared/scoring.mjs';
 // @ts-expect-error Plain ESM helpers are shared with deterministic Node tests.
@@ -823,7 +825,7 @@ export class RaceRoom extends DurableObject<Env> {
       const result = JSON.parse(text);
       if (!result.ready) return;
       const data = result.hint;
-      if (data && (data.source !== 'namuwiki' || data.sourceTitle !== room.goalTitle || !Array.isArray(data.categories) || data.categories.length>3 || !data.categories.every((c:unknown)=>typeof c==='string' && c.length<=60) || typeof data.summary!=='string' || data.summary.length>220 || data.sourceUrl !== 'https://namu.wiki/w/'+encodeURIComponent(room.goalTitle))) return;
+      if (data && !validDocumentHint(data, room.goalTitle)) return;
       if (this.room === room && completeHint(room,requestId,data)) await this.persistAndBroadcast();
     } catch { /* The room alarm releases loading state; no blocked-source retries. */ }
     finally { if(this.readingHint===requestId)this.readingHint=null; }

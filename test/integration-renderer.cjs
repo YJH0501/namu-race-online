@@ -77,6 +77,14 @@ app.whenReady().then(async () => {
       staleClose(); staleMessage({data:JSON.stringify({type:'room',room:null})});
       check(socket===second && state.connection==='live' && socketHeartbeat!==null,'stale callback disrupted current socket');
       closeSocket(); clearTimeout(pollTimer);
+      let confirmations=0;
+      window.confirm=()=>{confirmations++; return false;};
+      document.querySelector('[data-action="leave"]').click();
+      check(state.session!==null && details.isConnected && details.open,'cancelled exit discarded results');
+      check(confirmations===1,'result exit has no confirmation');
+      window.confirm=()=>{confirmations++; return true;};
+      document.querySelector('[data-action="leave"]').click();
+      check(state.session===null && state.room===null && confirmations===2,'confirmed exit did not leave');
       return {ok:true, stableResults:true, roundTwoDetails:true, liveUpdates:true, reusedSocket:true};
     })()
   `);

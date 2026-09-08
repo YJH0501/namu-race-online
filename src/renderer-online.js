@@ -577,7 +577,12 @@ document.addEventListener('click', (event) => {
   const button = event.target.closest('[data-action]');
   if (!button || button.disabled) return;
   const action = button.dataset.action;
-  if (action === 'leave') return leaveRoom();
+  if (action === 'leave') {
+    const me = currentPlayer();
+    if ((me?.finishedAt || me?.forfeitedAt) &&
+        !window.confirm('방을 나가고 첫 화면으로 돌아갈까요?\n나가면 이 화면에서 결과와 경로를 더 볼 수 없어요.')) return;
+    return leaveRoom();
+  }
   if (action === 'create') {
     if (state.nickname.trim().length < 2) { state.notice = '닉네임은 2글자 이상 입력해 주세요.'; return render(); }
     return runAction(async () => request('POST', '/rooms', {
